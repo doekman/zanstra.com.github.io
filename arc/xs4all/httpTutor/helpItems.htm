@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <style type="text/css">
+    </style>
+    <script language="javascript" src="help.js"> </script>
+    <script language="javascript">
+function obj2str(o,r) {  var s='';   for(var i in o) {     if(!r||r.test(i)) {      s+=i+': '+o[i]+'\n';   } }  return s;}
+    </script>
+  </head>
+  <body>
+    <h1>HTTP Tutor help items</h1>
+    <p>
+      This list includes items for <a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">HTTP</a>,
+      <a href="http://andrew2.andrew.cmu.edu/rfc/rfc2518.html">WebDAV</a> and
+      <a href="http://www.w3.org/TR/P3P/">P3P</a>. Grouped by "field" and ascending sorted, they are:
+    </p>
+    <h2>Methods</h2>
+    <p>
+      <script language="javascript">
+var aList=[]; //list of anchors in text
+var a1, a2;
+aMethods.sort(fnSortHelpItems);
+for(var i in aMethods) {
+  if(aMethods[i].url.indexOf(sURLseperator)==-1) {
+    aList[aList.length]='<a href="'+aMethods[i].url+'">'+aMethods[i].name.toLowerCase()+'</a>';
+  }
+  else {
+    a1=aMethods[i].url.split(sURLseperator);
+    for(var j in a1) {
+      a2=a1[j].split(sTitleURLseperator);
+      aList[aList.length]='<a href="'+a2[1]+'">'+aMethods[i].name.toLowerCase()+' ('+a2[0]+')</a>';
+    }
+  }
+}
+document.writeln(aList.join(', ')+'.');
+      </script>
+    </p>
+    <h2>Headers</h2>
+    <p>
+      <script language="javascript">
+var aList=[]; //list of anchors in text
+aHeaders.sort(fnSortHelpItems);
+for(var i in aHeaders) {
+  aList[aList.length]='<a href="'+aHeaders[i].url+'">'+aHeaders[i].name+'</a>';
+}
+document.writeln(aList.join(', ')+'.');
+      </script>
+    </p>
+    <h2>Status codes</h2>
+    <p>
+      <script language="javascript">
+var aList=[]; //list of anchors in text
+aStatusHelp.sort(fnSortHelpItems);
+for(var i in aStatusHelp) {
+  aList[aList.length]='<a href="'+aStatusHelp[i].url+'">'+aStatusHelp[i].name+'</a>';
+}
+document.writeln(aList.join(', ')+'.');
+      </script>
+    </p>
+  </body>
+</html>

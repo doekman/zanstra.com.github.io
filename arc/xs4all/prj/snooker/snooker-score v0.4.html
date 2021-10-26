@@ -1,0 +1,397 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Snooker scores - Version 0.4</title>
+  <meta name="author" content="Doeke Zanstra"/>
+  <style type="text/css">
+h1 { text-align: center }  
+#score { text-align: center }
+#player0 { float:left }
+#player1 { float:right }  
+#butbar { clear:both; margin:4em 0 0 0;  }
+#start { text-align: center }
+#actions div span.label { display:block; float:left; width:60px; }
+#player0, #player1 { margin:3px; padding:4px }
+#player0.turn, #player1.turn { margin:0; border:3px solid slateblue }
+#player0.win, #player1.win { background: yellow; color red }
+#player0name, #player1name { font: 18pt bold Verdana, sans-serif; }
+#player0score, #player1score { font: 24pt bold Verdana, sans-serif; color:gray }
+#reds { font-weight: bold; color:red }
+#msg { font: 12pt bold Verdana, sans-serif; color: slateblue; margin-top:2em; }
+#dbg {
+  float:right;
+  font-family: monospace;
+  text-align: right;
+}
+
+  </style>
+  <script type="text/javascript">
+var RED_BALLS=15;  
+  
+//--| From: http://erik.eae.net/playground/arrayextras/arrayextras.js
+if (!Array.prototype.forEach) {
+	Array.prototype.forEach = function (f, obj) {
+		var l = this.length;	// must be fixed during loop... see docs
+		for (var i = 0; i < l; i++) {
+			f.call(obj, this[i], i, this);
+		}
+	};
+}
+//--| By Doeke Zanstra
+String.prototype.forEach = function (f, sep, obj) {
+  var list=this.split(sep||",");
+  var l = list.length;	// must be fixed during loop... see docs
+  for (var i = 0; i < l; i++) {
+  	f.call(obj, list[i], i, list);
+  }
+}  
+function $(id) { 
+  var res; 
+  if(typeof id=="string") res=document.getElementById(id); 
+  else res=id;
+  if(res==null) throw new Error("Element ["+id+"] niet gevonden.");
+  return res;  
+}  
+function hide(id) { var element=$(id); element.style.display="none"; }
+function show(id) { var element=$(id); element.style.display=""; }
+function disable(id) { var element=$(id); element.disabled=true; }
+function enable(id) { var element=$(id); element.disabled=false; }
+function replaceTextByInput(id,val) {
+  var o=$(id); //should be a span
+  var inp=document.createElement("input");
+  inp.type="text";
+  inp.id=id;
+  inp.value=val;
+  o.parentNode.replaceChild(inp,o);
+}
+function replaceInputByText(id) {
+  var element=$(id);
+  var span=document.createElement("span");
+  span.id=id;
+  span.appendChild(document.createTextNode(element.value));
+  element.parentNode.replaceChild(span,element);
+}
+var ball={White:0,Red:1,Yellow:2,Green:3,Brown:4,Blue:5,Pink:6,Black:7};
+function Player(name) {
+  this.name=name;
+  this.score=0;
+}
+function dbgTable(dit) {
+  return [ "turn: "+dit.turn
+  , "reds: "+dit.reds
+  , "allowed: "+dit.allowed
+  , "points: "+dit.pointsOnTable()
+  , "fouled:"+dit.fouled
+  ].join('<br>');
+}
+function Table() {
+  this.players=[];
+  this.turn=0; //which player has turn
+  this.reds=RED_BALLS; //number of red balls on table
+  this.allowed=1; //which ball to put (1=red, 0=any colored, 2..7 colored)
+  this.fouled=false; //if previous action was a foul, so a a free ball is possible
+  for(var i=0; i<arguments.length; i++) {
+    this.players[this.players.length]=new Player(arguments[i]);
+  }
+}
+Table.prototype.getName=function(nr) {
+  return this.players[nr].name;
+}
+Table.prototype.getScore=function(nr) {
+  return this.players[nr].score;
+}
+Table.prototype.getTurn=function() {
+  return this.turn;
+}
+Table.prototype.getReds=function() {
+  return this.reds;
+}
+Table.prototype.getWinner=function() {
+  if(this.allowed!=8) return -1;
+  var a=this.players[0].score;
+  var b=this.players[1].score;
+  if(a>b) return 0;
+  else if(a<b) return 1;
+  return 2;
+}
+/** @return {number} 0: colored ball, 1: red, 2:yellow etc. */
+Table.prototype.getAllowed=function() {
+  return this.allowed;
+}
+Table.prototype.preventDraw=function() {
+  //als de zwarte geput/gefoult is, en de stand is gelijk, dan moet men nog een keer de zwarte putten
+  if(this.allowed==8&&this.players[0].score==this.players[1].score) {
+    this.allowed=7;
+    this.turn=parseInt(Math.random()*2,10); //flip coins
+    return true;
+  }
+  return false;
+}
+/** @param {number} negative: foul, 0:nothing, positive:shot
+  * @return {number} active player */
+Table.prototype.setShot=function(nr,multi) {
+  var res;
+  if(nr==100) { //opgeven
+    this._nextPlayer();
+    this.players[this.turn].score+=this.pointsOnTable();
+    this.reds=0;
+    this.allowed=8;    
+  }
+  else if(nr>0) { //een bal geput
+    if(nr==1) { //rode geput
+      if(multi==0&&!this.fouled) throw new Error("Free ball is not allowed");
+      this.players[this.turn].score+=nr*(multi==0?1:multi);
+      if(this.reds>0) this.allowed=0; //elke gekleurde bal, zolang die maar niet rood of wit is...
+      else this.allowed=2; //verplicht gele putten 
+      this.reds-=multi; //achteraf verhogen, want na putten laatste rode mag je nog een kleur naar keuze putten...
+    }
+    else {
+      this.players[this.turn].score+=nr;
+      if(this.reds>0) this.allowed=1;
+      else this.allowed=Math.max(this.allowed+1,2);
+      if(this.preventDraw()) res="PREVENT_DRAW";
+    }
+  }
+  else if(nr==0) { //niets geput
+    this._nextPlayer();
+    if(this.reds>0) this.allowed=1;
+    else if(this.allowed<2) this.allowed=2;
+  }
+  else { //foul
+    this._nextPlayer();
+    this.players[this.turn].score+=-nr;
+    if(this.reds>0) this.allowed=1;
+    if(nr==-7&&this.allowed==7) {
+      this.allowed=8; //game over
+      if(this.preventDraw()) res="PREVENT_DRAW";
+    }
+  }
+  this.fouled=nr<0;
+  return res;
+}
+Table.prototype.pointsOnTable=function() {
+  var points=0;
+  if(this.allowed==0) points+=7;
+  if(this.allowed<=1) points+=this.reds*(7+1)
+  for(var i=Math.max(2,this.allowed); i<=7; i++) points+=i;
+  return points;
+}
+Table.prototype._nextPlayer=function() {
+  if(++this.turn>=this.players.length) this.turn=0;    
+}
+var controller=
+{ state:"undefined"
+, restart:function() {
+    if(!confirm("Are you sure to restart the game?")) return;
+    controller.init();
+    $("breaks").innerHTML="";
+  }
+, init:function() {
+    controller.state="start";
+    hide("actions");
+    $("player0").className="";
+    $("player1").className="";
+    replaceTextByInput("player0nameInput","player 0");    
+    replaceTextByInput("player1nameInput","player 1");    
+    $("player0score").innerHTML="&mdash;";
+    $("player1score").innerHTML="&mdash;";
+    show("start");
+    $("startButton").focus();
+  }
+, start:function() {
+    if(controller.state=="start") {
+      var p=[$("player0nameInput").value,$("player1nameInput").value];
+      if(p[0]==""||p[1]=="") {
+        alert("Enter both players names");
+        return;
+      }
+      controller.state="playing";
+      this.table=new Table(p[0],p[1]);
+      //update player info
+      replaceInputByText("player0nameInput");
+      replaceInputByText("player1nameInput");
+      $("player0score").innerHTML="0";
+      $("player1score").innerHTML="0";
+      controller.updateScore();
+      controller.turn=0;
+      $("player0").className="turn";
+      $("player1").className="";
+      controller.newBreak();
+      //set rest of screen
+      hide("start");
+      show("actions");
+      "Foul4,Foul5,Foul6,Foul7,Missed,GiveUp".forEach(enable);
+      controller.updateActions();
+      controller.updateStats();
+      $("Put1").focus();
+      dbg();
+    } 
+  }
+, updateScore:function() {
+    var T=controller.table;
+    var a=T.getScore(0), b=T.getScore(1), c=T.pointsOnTable(), d=T.getWinner();
+    $("player0score").innerHTML=a;
+    $("player1score").innerHTML=b;
+    if(d==0||d==1) { //we have a winner
+      msg(T.getName(d)+" wins this frame");
+    }
+    else if(Math.abs(a-b)>c) {
+      msg(T.getName(a>b?1:0)+" should give up. There are only "+c+" points on the table left");
+    }
+  }
+, updateActions:function() {
+    var mag=controller.table.getAllowed();
+    switch(mag) {
+      case 0:
+        "Put1,Put1n".forEach(disable);
+        "Put2,Put3,Put4,Put5,Put6,Put7,Foul4,Foul5,Foul6,Foul7".forEach(enable);
+        $("Put2").focus();
+        break;
+      case 1:
+      case 2: case 3: case 4: case 5: case 6: case 7:
+        "1,1n,2,3,4,5,6,7".forEach( function(i) {
+          if(mag==i.charAt(0)) enable("Put"+i) 
+          else disable("Put"+i)} 
+        );
+        "4,5,6,7".forEach(function(i) {
+          if(mag>i) disable("Foul"+i)
+          else enable("Foul"+i)} 
+        );
+        $("Put"+mag).focus();
+        break;
+      case 8: 
+        "Put1,Put1n,Put2,Put3,Put4,Put5,Put6,Put7,Foul4,Foul5,Foul6,Foul7,Missed,GiveUp".forEach(disable);
+        $("Restart").focus();
+        break;
+      default:
+        throw new Error("Unrecognized value from getAllowed: "+mag);
+    }
+  }
+, action:function(nr,multi) {
+    msg("&nbsp;");
+    if(nr==1&&multi>controller.table.getReds()) {
+      msg("There are not so many red balls on the table");
+      return;
+    }
+    if(nr==1&&multi==0&&controller.table.fouled==false) {
+      msg("Free ball is only possible after a foul (and you should be snookered)");
+      return;
+    }
+    controller.addToBreak(nr,multi);
+    if(nr==1&&multi>2) msg("Yeah, right");
+    var res=controller.table.setShot(nr,multi);
+    if(res=="PREVENT_DRAW") {
+      msg("<em>Re-spotted black</em>: to prevent a draw, put the black ball back on the table. Faith already has determined who get's the first shot.");
+    }
+    var turn=controller.table.getTurn();
+    if(turn!=controller.turn) {
+      $("player"+controller.turn).className="";
+      controller.turn=turn;
+      $("player"+turn).className="turn";
+      controller.newBreak();
+    }
+    if(controller.table.getAllowed()==8) { //frame over
+      controller.turn=controller.table.getWinner();
+      $("player"+controller.turn).className+=" win";
+    }
+    else {
+    }
+    controller.updateScore();
+    controller.updateActions();
+    controller.updateStats();
+    dbg();
+  }
+, newBreak:function() {
+    var li=document.createElement("li");
+    li.appendChild(document.createTextNode(controller.table.getName(controller.turn)+": "));
+    controller.currentBreak=$("breaks").appendChild(li);
+  }
+, addToBreak:function(s,t) {
+    t=+t; if(!isNaN(t)&&t!=1) s+='('+t+')';
+    controller.currentBreak.innerHTML+=(/: *$/.test(controller.currentBreak.innerHTML)?"  ":", ")+s;
+  }
+, updateStats:function() {
+    $("reds").innerHTML=controller.table.getReds(); //debug
+  }
+}
+
+function msg(s) {
+  //toont een bericht. Wordt gewist bij de volgende zet
+  $("msg").innerHTML=s;
+}
+
+function dbg() {
+  $("dbg").innerHTML=dbgTable(controller.table);
+}
+  </script>
+</head>
+<body onload="controller.init();">
+  <h1>Snooker score</h1>
+  <div id="snooker">
+    <div id="score">
+      <div id="player0">
+        <div id="player0name"><span id="player0nameInput">Player 0</span></div>
+        <div id="player0score">&nbsp;</div>
+      </div>
+      <div id="player1">
+        <div id="player1name"><span id="player1nameInput">Player 1</span></div>
+        <div id="player1score">&nbsp;</div>
+      </div>
+      versus
+      <div id="msg">&nbsp;</div>
+    </div><!--score-->
+    <div id="butbar">
+      <div id="start"><input type="button" value="Start" id="startButton" onclick="setTimeout('controller.start();',0);"/></div>
+      <div id="actions">
+        <div>
+          <span class="label">Put</span>
+          <input type="button" id="Put1" value="Red (1)" accesskey="1" onclick="controller.action(1,1);"/>
+          <select onchange="controller.action(1,this.options[this.selectedIndex].value);this.options[0].selected=true;" id="Put1n">
+            <option selected>Multi-put</option>
+            <option value="0">&nbsp;&nbsp;free ball</option>
+            <option value="2">&nbsp;&nbsp;2</option>
+            <option value="3">&nbsp;&nbsp;3</option>
+            <option value="4">&nbsp;&nbsp;4</option>
+            <option value="5">&nbsp;&nbsp;5</option>
+            <option value="6">&nbsp;&nbsp;6</option>
+            <option value="7">&nbsp;&nbsp;7</option>
+          </select>
+          <input type="button" id="Put2" value="Yellow (2)" accesskey="2" onclick="controller.action(2);"/>
+          <input type="button" id="Put3" value="Green (3)" accesskey="3" onclick="controller.action(3);"/>
+          <input type="button" id="Put4" value="Brown (4)" accesskey="4" onclick="controller.action(4);"/>
+          <input type="button" id="Put5" value="Blue (5)" accesskey="5" onclick="controller.action(5);"/>
+          <input type="button" id="Put6" value="Pink (6)" accesskey="6" onclick="controller.action(6);"/>
+          <input type="button" id="Put7" value="Black (7)" accesskey="7" onclick="controller.action(7);"/>
+        </div>
+        <div>
+          <span class="label">Foul</span>
+          <input type="button" id="Foul4" value="4 (other)" onclick="controller.action(-4);"/>
+          <input type="button" id="Foul5" value="5 (on blue)" onclick="controller.action(-5);"/>
+          <input type="button" id="Foul6" value="6 (on pink)" onclick="controller.action(-6);"/>
+          <input type="button" id="Foul7" value="7 (on black)" onclick="controller.action(-7);"/>
+        </div>
+        <div>
+          <span class="label">Other</span>
+          <input type="button" id="Missed" value="Missed (0)" accesskey="0" onclick="controller.action(0);"/>
+          <input type="button" id="GiveUp" value="Give up" onclick="controller.action(100);"/>
+        </div>
+        <hr/>
+        <div>
+          <span class="label">Options</span>
+          <input type="button" id="Restart" value="Restart session" onclick="setTimeout('controller.restart();',0);"/>
+          <input type="button" id="RestartFrame" value="Restart frame" onclick="alert('Sorry, not implemented yet');"/>
+        </div>
+        <h2><div id="dbg">&nbsp;</div>Statistics and breaks</h2>
+        <div>Red balls on table: <span id="reds">&nbsp;</span></div>
+        <h3>Frame 1</h3>
+        <ol id="breaks">
+        </ol>
+      </div><!--actions-->
+   </div><!--butbar-->
+  </div>
+  <h2>Gebruik</h2>
+  <p>Met deze pagina kan de score van <a href="http://nl.wikipedia.org/wiki/Snooker">Snooker</a> worden bijgehouden. Het idee is dat de invoer zo gemakkelijk mogelijk moet, en alleen de mogelijkheden aanbieden die op dat moment in het spel van toepassing zijn.</p>
+  <p>Als je geen zin in de muis hebt: Het putten kan ook met behulp van sneltoetsen. Control+1 doet rood (Alt+1 op windows), control+2 doet geel, etcetera. Control+0 als je geen punten hebt (nothing)</p>
+  <p>Er komt (ooit) ook nog GUI met gekleurde ballen, <a href="snooker.htm">try-out</a>.</p>
+</body>
+</html>

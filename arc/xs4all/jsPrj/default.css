@@ -1,0 +1,14 @@
+td { vertical-align: top }
+th { text-align: left }
+ul {	margin-left: 15px } 
+body, td, th { font-family: Verdana, sans-serif; font-size: 10pt; color: black }
+a,a:link,a:visited { color: Black }
+a:hover {color: Blue }
+hr { height: 1px; color: Black }
+pre.code { font-family: monospace; background-color: lightgrey; border: 1px solid black; margin: 2px 2px 2px 10px }
+/*for use in menu (index and js/oneliners.htm)*/
+.menu { border: 1px solid lightgrey; padding-bottom: 1em }
+.titel { background-color: blue; color: yellow; font-weight: bold; font-size: 10pt; padding-left: 2px}
+.item { border-bottom: 1px solid lightgrey; font-size: 10pt; padding-left: 1ex }
+.item a { text-decoration: none }
+.item a:hover { background-color: yellow; text-decoration: none }

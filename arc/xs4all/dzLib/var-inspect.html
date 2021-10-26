@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <title>Javascript variable inspection</title>
+    <link rel="stylesheet" type="text/css" href="fvlogger/logger.css" />
+    <style type="text/css">
+/* added for console */
+#fvlogger dd.erase a { font-variant: small-caps; font-weight: bold }
+/* ----------------- */
+
+h1 { font: 18px bold Verdana; text-align: center }
+h2 { font: 13px Verdana; border-bottom: 2px solid lightgrey; color: slateblue; margin: 1em 0 0 0; padding: 0; }
+pre { font-size: 13px; margin: 0; }
+div, li {
+  font-size: 13px;
+  font-family: sans-serif;
+}
+div var, li var { font-style: normal; font-weight: bold; color: blue }
+div span, li span { color: gray; font-size: 11px }
+code[title] { border-bottom: 1px dotted gray }
+ul, ol { 
+  list-style-type: none; 
+  margin: 0 0 0 4px; padding:0 0 0 8px; 
+  border-left:1px dotted gray
+}
+div.array, div.object {
+  padding-left:12px;
+  background: transparent url("fvlogger/min.gif") no-repeat top left;
+} 
+pre { display:block }
+    </style>
+    <script type="text/javascript" src="fvlogger/logger.js"></script>
+    <script type="text/javascript">
+function ensureConsole() {
+  if(!document.getElementById(FVL_LOG_ID)) {
+    var LogDiv=document.createElement('div');
+    LogDiv.id=FVL_LOG_ID;
+    LogDiv.innerHTML='<dl><dt>fvlogger</dt><dd class="all"><a href="#fvlogger" onclick="showAll();" title="show all" id="abcdef">all</a></dd><dd class="debug"><a href="#fvlogger" onclick="showDebug();" title="show debug" id="showDebug">debug</a></dd><dd class="info"><a href="#fvlogger"  onclick="showInfo();" title="show info" id="showInfo">info</a></dd><dd class="warn"><a href="#fvlogger" onclick="showWarn();" title="show warnings" id="showWarn">warn</a></dd><dd class="error"><a href="#fvlogger" onclick="showError();" title="show errors" id="showError">error</a></dd><dd class="fatal"><a href="#fvlogger" onclick="showFatal();" title="show fatals" id="showFatal">fatal</a></dd><dd class="erase"><a href="#fvlogger" onclick="eraseLog(true);" title="erase">erase</a></dd></dl>';
+    document.body.insertBefore(LogDiv,document.body.firstChild);    
+  }
+}
+
+window.onload=function InitIt() {
+  ensureConsole();
+  exampleLogs();
+}
+    </script>
+  </head>
+  <body>
+    <h1>Javascript variable inspection</h1>
+    <h2>string</h2>
+    <pre>var s='hoi';</pre>
+    <div><var>s</var> <code>'hoi'</code> <span>(string)</div>
+    <h2>number (integer)</h2>
+    <pre>var n=12;</pre>
+    <div><var>n</var> <code title="0xC">12</code> <span>(number, int)</div>
+    <h2>number (float)</h2>
+    <pre>var n=12.123;</pre>
+    <div><var>n</var> <code title="1.2123e1">12.123</code> <span>(number, float)</div>
+    <h2>boolean</h2>
+    <pre>var b=true;</pre>
+    <div><var>b</var> <code>true</code> <span>(boolean)</div>
+    <h2>undefined</h2>
+    <pre>var u;</pre>
+    <div><var>u</var> <code><em>not initialized</em></code> <span>(undefined)</div>
+    <h2>null</h2>
+    <pre>var N=null;</pre>
+    <div><var>N</var> <code>null</code> <span>(Object)</div>
+    <h2>Date</h2>
+    <pre>var dt=new Date(2005,11-1,17,23,31,45,100);</pre>
+    <div><var>dt</var> <code title="1132266705100">2005-11-17T23:31:45.100</code> <span>(Date)</div>
+    <h2>anonymous function</h2>
+    <pre>var f=function() { alert('hoi') };</pre>
+    <div><var>f</var> <code><em>anonymous</em></code> <span>(function)</div>
+    <h2>named function</h2>
+    <pre>var f=function doei() { alert('hoi') };</pre>
+    <div><var>f</var> <code>doei</code> <span>(function)</div>
+    <h2>regular expression</h2>
+    <pre>var r=/[0-9]{4} ?[a-z]{2}/i;</pre>
+    <div><var>r</var> <code>/[0-9]{4} ?[a-z]{2}/i</code> <span>(RegExp)</div>
+    <h2>array</h2>
+    <pre>var a="A,B,C".split(",");</pre>
+    <div class="array"><var>a:</var> <span>(Array)</span></div>
+    <ol>
+        <li><var>length</var> <code>3</code> <span>(number)</span>
+        <li><var>0</var> <code>"A"</code> <span>(string)</span>
+        <li><var>1</var> <code>"B"</code> <span>(string)</span>
+        <li><var>2</var> <code>"C"</code> <span>(string)</span>
+    </ol>
+    <h2>Anonymous Object</h2>
+    <pre>var o={name:'Doekman',email:'doeke@zanstra.net'};</pre>
+    <div class="object"><var>o:</var> <span>(Object)</span></div>
+    <ul>
+        <li><var>name</var> <code>"Doekman"</code> <span>(string)</span>
+        <li><var>email</var> <code>"doeke@zanstra.net"</code> <span>(string)</span>
+      </ul>
+    <h2>Named Object</h2>
+    <pre>var o=new Person('Doekman','doeke@zanstra.net');</pre>
+    <div class="object"><var>o</var> <span>(Person)</span></div>
+    <ul>
+        <li><var>name</var> <code>"Doekman"</code> <span>(string)</span>
+        <li><var>email</var> <code>"doeke@zanstra.net"</code> <span>(string)</span>
+      </ul>
+  </body>
+</html>

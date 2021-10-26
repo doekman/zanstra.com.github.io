@@ -1,0 +1,48 @@
+<html>
+  <head>
+  	<meta http-equiv="Content-Type" Content="text/html; charset=ISO-8859-1">
+    <title>Einde</title>
+    <style type="text/css">
+body {
+  background-color: black;
+  overflow: hidden;
+}
+.title {
+  color: orange; 
+  font-family: Verdana, Helvetica, sans-serif; font-size: 36pt; font-weight: bold;
+  letter-spacing: -3pt;
+  text-align: center; vertical-align: middle; 
+  cursor: default;
+}    
+.subtitle {
+  color: white;
+  font-family: Verdana, Helvetica, sans-serif; font-size: 14pt; font-weight: normal;
+  text-align: center; vertical-align: middle; 
+  cursor: default;
+}
+.subtleHelp {
+  font-family: Verdana, Helvetica, sans-serif; font-size: 10pt; font-weight: normal;
+  color: #3F3F3F;
+  position: absolute; bottom: 0px; right: 0px;
+  cursor: default;
+}
+    </style>
+    <script language="javascript">
+function setMargin()
+{
+  var nHeight=parseInt(screen.availHeight,10);
+  if(isNaN(nHeight)) nHeight=400;
+  document.body.style.marginTop=parseInt(nHeight/3,10);
+}
+function initPage()
+{
+  setMargin();
+}
+    </script>
+  </head>
+  <body onload="initPage();" onselectstart="return false" oncontextmenu="return false;">
+    <div class="title">Je hebt het internet successvol afgesloten</div>
+    <div class="subtitle">Het is nu veilig om je computer aan te laten staan...</div>
+    <div class="subtleHelp" onclick="alert('What does the suggestion say?\n\nThat\'s right: '+this.innerText)" onmouseover="this.style.backgroundColor='white';" onmouseout="this.style.backgroundColor='transparent';">Press ALT-F4 to escape</div>
+  </body>
+</html>

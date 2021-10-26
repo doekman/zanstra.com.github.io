@@ -1,0 +1,90 @@
+body { 
+  font-family: "Gill Sans",Tahoma,Geneva,Trebuchet MS,Verdana,Arial,sans-serif;
+  text-align:center;
+}
+form.body {
+  text-align: left;
+  margin:0 auto;
+  width:777px;
+}
+.text, 
+textarea {
+  font-family:monospace; 
+  width:100%;
+}
+table.layout {
+  table-layout:fixed;
+  border-collapse: collapse;
+  width:100%;
+}
+table.layout td,
+table.layout th {
+  width:50%;
+  text-align:left;
+  vertical-align:top;
+}
+fieldset,
+input.text, 
+textarea {
+  border: 1px solid #D4D4D4;
+}
+.optional { color:#C0C0C0; }
+.comment { color:gray; }
+fieldset {
+  padding:0.5em;
+  background-color:#F5F5F5
+}
+legend {
+  font-size: 13px;
+  background-color:white;
+}
+label {
+  color:slateblue;
+  font-size:12px;
+  display:block;
+  margin-top:4px;
+}
+.buttonbar {
+  margin-top:4px;
+}
+textarea {
+  overflow:auto;
+}
+.hilite {
+  border-color:slateblue ! important;
+}
+table.layout td.icon { 
+  text-align:right;
+  vertical-align:middle;
+  font:13px Helvetica, "Arial Narrow", sans-serif;
+}
+.edit {
+  font-family:"Courier New", monospace;
+}
+.happy {
+  font-size:11px;
+  font-weight:bold;
+  color:black;
+  background-color:lime;
+  padding:0 3px 1px 3px;
+}
+.bad {
+  color:white;
+  background-color:red;
+  padding:0 3px 1px 3px;
+  font-weight:bold;
+}
+.footer {
+  padding-top:1em;
+  color:gray;
+  font-size:10px;
+  text-align:center;
+}
+.footer a {
+  font-weight: bold;
+  color:gray;
+  text-decoration:none;
+}
+.footer a:hover {
+  text-decoration:underline;
+}

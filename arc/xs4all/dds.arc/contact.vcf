@@ -1,0 +1,24 @@
+BEGIN:VCARD
+VERSION:2.1
+N:Zanstra;Doeke
+FN:Doeke Zanstra
+ORG:KPN Telecom;Telecommerce Ontwikkeling
+TEL;WORK;VOICE:+31 (050) 58 83 073
+TEL;HOME;VOICE:+31 (050) 30 90 127
+TEL;CELL;VOICE:+31 (06) 234 66 808
+TEL;HOME;FAX:+31 (0842) 200 109
+ADR;WORK:;PWD1.213;Peizerweg 159;Groningen;;9727 AR;The Netherlands
+LABEL;WORK;ENCODING=QUOTED-PRINTABLE:PWD1.213=0D=0APeizerweg 159=0D=0AGroningen 9727 AR=0D=0AThe Netherlands
+ADR;HOME:;;Ged.Kattendiep 7;Groningen;;9711 PL;The Netherlands
+LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Ged.Kattendiep 7=0D=0AGroningen 9711 PL=0D=0AThe Netherlands
+X-WAB-GENDER:2
+URL:http://huizen.dds.nl/~olrik
+URL:http://www.kpn.com
+BDAY:19721114
+EMAIL;PREF;INTERNET:zanstra@hetnet.nl
+EMAIL;INTERNET:doeke@zanstra.net
+EMAIL;INTERNET:doeke@zanstra.com
+EMAIL;INTERNET:d.zanstra@kpn.com
+EMAIL;INTERNET:zanstra@hotmail.com
+REV:20010108T145141Z
+END:VCARD

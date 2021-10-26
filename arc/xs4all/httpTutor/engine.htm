@@ -1,0 +1,438 @@
+<html>
+  <head>
+    <title>HTTP Tutor</title>
+    <style type="text/css">
+p, h1 { margin-top: 2px; margin-bottom: 2px }
+td, th { font-family: Arial, sans-serif; font-size: 10pt }
+th { vertical-align: top; text-align: right; padding: 2px; font-size: 11pt }
+.helpAvail { background-color: #FFFFCC }
+a.but, a.but:link, a.but:visited {font-size: 10pt; font-weight: normal; color: blue }
+a.but:hover { color: red }
+    </style>
+    <script language="javascript" src="../js/get.js"> </script>
+    <script language="javascript" src="help.js"> </script>
+    <script language="javascript">
+function showBodyLength() {
+  var iRealLength=frmResponse.sResponse.value.length;
+  var iContentLength;
+  //find out content-length
+  with(frmResponse.sHeaders) {
+    for(var i=0; i<options.length; i++) {
+      /(Content-Length)\:[ ]*([0-9]+)$/i.exec(options[i].text);
+      if(RegExp.$1=='Content-Length') {
+        iContentLength=RegExp.$2; //parseInt(RegExp.$1);
+        break; /*for*/
+      }
+    }
+  }
+  //count number of lines
+  var iNrLines=frmResponse.sResponse.value.match(/\r/g).length+1;
+  //report
+  if(iContentLength==null) {  
+    alert('Body length: '+iRealLength);
+  }
+  else {
+    alert('Body length: '+iRealLength+'\n'
+         +'Content-Length: '+iContentLength+'\n'
+         +'Nr of lines: '+iNrLines+' ('+(iNrLines-1)+' new lines)\n\n'
+         +(iRealLength==iContentLength?'':'Difference is because of UNIX/Windows/Macintosh difference between new line (CR/CRLF/LF)'));
+  }
+}
+function showStatusHelp(sStatus) {
+  if(event.ctrlKey==false) return;
+  for(var i=0; i<aStatusHelp.length; i++) {
+    if(aStatusHelp[i].name==sStatus) {
+      openHelpPage(aStatusHelp[i].url);
+      return;
+    }
+  }
+  alert('Sorry, no help available.');
+}
+function showHeaderHelp(oSelect) {
+  if(event.ctrlKey==false) return;
+  if(oSelect.selectedIndex==-1) return;
+  //Remove header seperator and header value, if supplied
+  var sHeader=oSelect.options[oSelect.selectedIndex].text.replace(/\:.*/i,'');
+  //lookup url
+  var sURL=lookupURL(aHeaders,sHeader,false);
+  if(sURL.length==0) alert('Sorry, no help available for this header.');
+  else openHelpPage(sURL,false,'header',sHeader);
+}
+
+function showMethodHelp(oSelect) {
+  if(event.ctrlKey==false) return;
+  if(oSelect.selectedIndex==-1) return;
+  var sMethod=oSelect.options[oSelect.selectedIndex].text;
+  //lookup url
+  var sURL=lookupURL(aMethods,sMethod,false);
+  if(sURL.length==0) alert('Sorry, no help available for this method.');
+  else openHelpPage(sURL,false,'method',sMethod);
+}
+
+function openHelpPage(sURL,blnCtrlOverRide,sItem,sItemValue) {
+  var oWin;
+  if(event.ctrlKey==false&&blnCtrlOverRide==null) return;
+  if(sURL.length==0||sURL==':') {
+    alert('Sorry, no help available.');
+    return;
+  }
+  if(sURL.indexOf(sURLseperator)==-1) {
+    oWin=window.open(sURL,'httpTutorHelpPage');
+    oWin.focus();
+  }
+  else {
+    var oQS=new getParameter();
+    oQS.clearAll();
+    oQS.sItem=sItem;
+    oQS.sItemValue=sItemValue;
+    oQS.sURLList=sURL;
+    oWin=window.open('helpChoose.htm'+oQS.toString(),'httpTutorHelpPage');
+    oWin.focus();
+  }
+}
+
+function doRequest() {
+  var sBody, aHeader, sOldStatus, sURL, sHost;
+//  var xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+  //lookup Host header, for URL
+  for(var i=0; i<frmRequest.sHeaders.options.length; i++) {
+    if(frmRequest.sHeaders.options[i].text.indexOf('Host:')==0) {
+      sHost=frmRequest.sHeaders.options[i].text.replace(/Host\:( )*/,'');
+      break;
+    }
+  }
+  if(sHost==null) {
+    alert('The Host: header MUST be defined (example: www.w3.org)');
+    return;
+  }
+  sURL='http://'+sHost+frmRequest.sURL.value;
+  xmlhttp.Open(frmRequest.sMethod.options[frmRequest.sMethod.selectedIndex].text, sURL, false);
+  //loop all added headers
+  for(var i=0; i<frmRequest.sHeaders.options.length; i++) {
+    aHeader=frmRequest.sHeaders.options[i].text.split(':');
+    xmlhttp.setRequestHeader(aHeader[0],aHeader[1]);
+  }
+  sBody=frmRequest.sBody.value;
+  sOldStatus=window.status;
+  window.status='Loading requested document...';
+  xmlhttp.Send(sBody);
+  frmResponse.sStatus.value=xmlhttp.status;
+  frmResponse.sStatusLine.value=xmlhttp.statusText;
+  frmResponse.sResponse.value=xmlhttp.responseText;
+  //now the headers
+  var aResHeader=xmlhttp.getAllResponseHeaders().split('\r\n');
+  var oOption;
+  frmResponse.sHeaders.options.length=0; //clear all old options
+  for(var i=0; i<aResHeader.length; i++) {
+    if(aResHeader[i].length>0) {
+      var sHeader=aResHeader[i].split(':')[0]; //isolate header-name
+      var sURL=lookupURL(aHeaders,sHeader,false);
+      oOption=new Option(aResHeader[i],sURL);
+      if(sURL.length>0) oOption.className='helpAvail';
+      frmResponse.sHeaders.options[frmResponse.sHeaders.options.length]=oOption;
+    }
+  }
+  window.status=sOldStatus;
+//  delete xmlhttp; //release reference
+  if(idHttpResponse.scrollIntoView!=null) idHttpResponse.scrollIntoView();
+}
+
+function addHeader() {
+  with(frmRequest) {
+    var sHName=sHeaderName.options[sHeaderName.selectedIndex].text;
+    var sHValue=sHeaderName.options[sHeaderName.selectedIndex].value;
+    var sHClass=sHeaderName.options[sHeaderName.selectedIndex].className;
+    if(sHValue==':'||sHValue=='') { alert('Choose a header (or add one).'); return; }
+    var sHValue=sHeaderValue.value;
+    var oOption;
+    //check headers uniqueness
+    for(var i=0; i<sHeaders.options.length; i++) {
+      //headers are case-insensitive
+      if(sHeaders.options[i].text.split(':')[0].toLowerCase()==sHName.toLowerCase()) {
+        if(window.confirm('Header name already exists (case-insensitive).\nOverwrite new value?')) {
+          sHeaders.options[i].text=sHName+': '+sHValue; //overwrite value
+        }
+        return; 
+      }
+    }
+    //create option object, and add to select (netscape way)
+    oOption=new Option(sHName+': '+sHValue, sHName+':'+sHValue);
+    oOption.className=sHClass;
+    sHeaders.options[sHeaders.options.length]=oOption;
+  }
+}
+
+function addNewMethod() {
+  var oSelect=event.srcElement;
+  var sValue=oSelect.options[oSelect.selectedIndex].value;
+  if(sValue==':') {
+    alert('Choose a method.');
+    oSelect.selectedIndex=0;
+  }
+  else if(sValue=='') {
+    var sNewMethod=prompt('Give name of new method: ','');
+    if(sNewMethod!=null) {
+      //check method uniqueness
+      for(var i=0; i<oSelect.options.length; i++) {
+        //headers are case-sensitive
+        if(oSelect.options[i].text==sNewMethod) {
+          oSelect.selectedIndex=i; //choose existing header
+          window.alert('Method name already exists (case-sensitive).');
+          return; 
+        }
+      }
+      var oOption=new Option(sNewMethod,sNewMethod);
+      oSelect.options[oSelect.options.length]=oOption;
+      oOption.selected=true;
+    }
+    else {
+      oSelect.selectedIndex=0;
+    }
+  }
+}
+
+function addNewHeader() {
+  var oSelect=event.srcElement;
+  var sValue=oSelect.options[oSelect.selectedIndex].value;
+  if(sValue=='') {
+    var sNewHeader=prompt('Give name of new header (no colon): ','');
+    if(sNewHeader!=null) {
+      //check headers uniqueness
+      for(var i=0; i<oSelect.options.length; i++) {
+        //headers are case-insensitive
+        if(oSelect.options[i].text.toLowerCase()==sNewHeader.toLowerCase()) {
+          oSelect.selectedIndex=i; //choose existing header
+          window.alert('Header name already exists (case-insensitive).');
+          return; 
+        }
+      }
+      var oOption=new Option(sNewHeader,sNewHeader);
+      oSelect.options[oSelect.options.length]=oOption;
+      oOption.selected=true;
+    }
+    else {
+      oSelect.selectedIndex=0;
+    }
+  }
+}
+function editHeader(oSelect) {
+  var aHeader=oSelect.options[oSelect.selectedIndex].text.split(': ');
+  if(aHeader.length!=2) return;
+  for(var i=0; i<frmRequest.sHeaderName.options.length; i++) {
+    if(frmRequest.sHeaderName.options[i].text.toLowerCase()==aHeader[0].toLowerCase()) {
+      frmRequest.sHeaderName.selectedIndex=i; //select headername
+      frmRequest.sHeaderValue.value=aHeader[1];
+      break;
+    }
+  }
+
+}
+function removeFromSelect(oSelect) {
+  var iIndex=oSelect.selectedIndex;
+  if(oSelect.options.length==0) {
+    alert('There are no headers to be deleted.');
+    return
+  }
+  else if(iIndex==-1) {
+    alert('First select a header, before remove it.');
+    return;
+  }
+  oSelect.options.remove(iIndex);
+}
+function addOrReplaceOption(oSelectOption,text,value,className) {
+//als oSelectOption een select is, deze option toevoegen
+//als oSelectoption een option is, wijzigen
+  if(oSelectOption.tagName=='SELECT') {
+    //add a new option
+    var oOption=new Option(text,value);
+    if(className!=null) oOption.className=className;
+    oSelectOption.options[oSelectOption.options.length]=oOption;
+  }
+  else if(oSelectOption.tagName=='OPTION') {
+    oSelectOption.text=text;
+    oSelectOption.value=value;
+    if(className!=null) oSelectOption.className=className;
+  }
+}
+function clearResponse() {
+  with(frmResponse) {
+    sStatus.value='';
+    sStatusLine.value='';
+    sHeaders.options.length=0;
+    sResponse.value='';
+  }
+}
+var blnZoom=true;
+function toggleZoomResponse(butCaller) {
+  zoomSelect(frmResponse.sHeaders,blnZoom);
+  zoomTextarea(frmResponse.sResponse,blnZoom);
+  blnZoom=!blnZoom;
+  butCaller.value=blnZoom?'No-Scroll':'Scrollbars';
+}
+function zoomSelect(oSelect,bln) {
+  if(bln) oSelect.size=oSelect.options.length;
+  else oSelect.size=oSelect.shortSize;
+}
+function zoomTextarea(oTextarea) {
+  //count number of new-lines (doesn't count line-wraps though)
+  with(oTextarea.style) {
+    if(overflow=='visible') {
+      overflow='hidden'; 
+    }
+    else {
+      overflow='visible'; 
+    }
+  }
+}
+    </script>
+  </head>
+  <body>
+    <p>
+      Find <a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html" onclick="openHelpPage('/rfc2616.html',true); ">RFC 2616</a> here.
+      The controls with the <font class="helpAvail">yellowish background</font> are supplied with a help-function.
+      Just press <strong>Control</strong> + a <strong>mouse click</strong>, and a new browser window is opened with the RFC
+      at the right chapter...
+      <br>
+      <br>
+      I also added the HTTP extention <a href="http://www.webdav.org/">WebDAV</a>, and <a href="http://www.w3.org/TR/P3P/">P3P</a>
+      so there are some extra Methods, Headers and Status-codes,
+
+    </p>
+    <object id="xmlhttp" classid="clsid:F6D90F16-9C73-11D3-B32E-00C04F990BB4" style="height: 0px">
+      <p style="color: red"><strong>XML object failed to load</strong>.<br>
+      Check your security settings (allow ActiveX), or download the latest version 
+      of MSXML (2.0 needed for this application) from 
+      <a href="www.microsoft.com/xml/">microsoft</a><img src="../img/iconOffSite.png">
+    </object>
+    <form name="frmRequest">
+    <p>
+      <table cellspacing="0" width="100%" border="0">
+        <tr>
+          <td colspan="3">
+            <h1>HTTP Request</h1>
+          </td>
+        </tr>
+        <tr>
+          <th nowrap>Request-Line</th>
+<!--METHOD--------------------------------------------------------------------->
+          <td>
+            <select name="sMethod" style="width: 4cm; " onchange="addNewMethod();"
+             onclick="showMethodHelp(this);">
+              <option value=":">--CHOOSE--</option>
+              <option value="">==Custom Method</option>
+<script language="javascript">
+for(var i=0; i<aMethods.length; i++) 
+  document.writeln(
+    '<option value="'+aMethods[i].url+'"'+
+    (aMethods[i].name=='GET'?' selected':'')+
+    (aMethods[i].url.length>0?' class="helpAvail"':'')+
+    '>'+aMethods[i].name+'</option>');
+</script>
+            </select>
+          </td>
+<!--URL------------------------------------------------------------------------>
+          <td width="100%">
+            <input type="text" name="sURL" value="/" style="width: 85%">
+            HTTP/1.1
+          </td>
+        </tr>
+        <tr style="background-color: lightgrey">
+          <th nowrap><a href="javascript: void addHeader();" class="but">Add header</a></th>
+          <td>
+<!--NEW HEADER NAME------------------------------------------------------------>
+            <select name="sHeaderName" style="width: 4cm" onchange="addNewHeader();"
+             onclick="showHeaderHelp(this);">
+              <option value=":">--CHOOSE--</option>
+              <option value="">==Custom Header</option>
+<script language="javascript">
+for(var i=0; i<aHeaders.length; i++) 
+  document.writeln(
+    '<option value="'+aHeaders[i].url+'"'+
+    (aHeaders[i].url.length>=0?' class="helpAvail"':'')+
+    '>'+
+    aHeaders[i].name+'</option>');
+</script>
+            </select>
+          </td>
+          <td>
+<!--NEW HEADER VALUE----------------------------------------------------------->
+            <input type="text" name="sHeaderValue" value="www.doekman.dz" style="width: 100%">
+          </td>
+        </tr>
+        <tr>
+          <th nowrap>
+            Headerlist
+            <br>
+            <a href="javascript: removeFromSelect(frmRequest.sHeaders);" class="but">Del header</a>
+          </th>
+          <td colspan="2" width="100%">
+<!--DEFINED HEADERS (NAME AND VALUE)------------------------------------------->
+            <select name="sHeaders" style="width: 100%" size="5" ondblclick="editHeader(this);"
+             onclick="showHeaderHelp(this);">
+              <option class="helpAvail">Host: www.microsoft.com</option>
+              <option class="helpAvail">Accept: text/*</option>
+              <option class="helpAvail">Accept-Language: nl, en, de</option>
+              <option class="helpAvail">User-Agent: httpTutor/1.0 <script>document.write(navigator.userAgent)</script></option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>Body</th>
+<!--REQUEST BODY--------------------------------------------------------------->
+          <td colspan="2">
+            <textarea id="idBody" name="sBody" style="width: 100%" rows="6"></textarea>
+          </td>
+        </tr>
+        <tr style="background-color: lightgrey">
+          <th>Action</th>
+          <td colspan="2">
+            <input type="button" value="Request" onclick="doRequest();">
+          </td>
+        </tr>
+    </form>
+        <tr>
+          <td colspan="3">
+            <h1 id="idHttpResponse">HTTP Response</h1>
+          </td>
+        </tr>
+    <form name="frmResponse">
+        <tr>
+          <th>Status</th>
+<!--RESPONSE STATUS (NUMBER)--------------------------------------------------->
+          <td>
+            <input type="text" name="sStatus" style="width: 4cm" class="helpAvail" onclick="showStatusHelp(this.value);">
+          </td>
+<!--RESPONSE STATUS (DESCRIPTION)---------------------------------------------->
+          <td width="100%">
+            <input type="text" name="sStatusLine" style="width: 100%">
+          </td>
+        </tr>
+        <tr>
+          <th>Headers</th>
+<!--RESPONSE HEADERS----------------------------------------------------------->
+          <td colspan="2">
+            <select name="sHeaders" size="4" shortSize="4" style="width: 100%"
+             onclick="showHeaderHelp(this);">
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>Body</th>
+<!--RESPONSE BODY-------------------------------------------------------------->
+          <td colspan="2">
+            <textarea name="sResponse" rows="12" style="width: 100%"> </textarea>
+          </td>
+        </tr>
+        <tr style="background-color: lightgrey">
+          <th>Action</th>
+          <td colspan="2">
+            <input type="button" value="body length" onclick="showBodyLength();">
+            <input type="button" value="Clear" onclick="clearResponse();">
+            <input type="button" value="No-Scroll" onclick="toggleZoomResponse(this);">
+          </td>
+        </tr>
+      </table>
+    </p>
+    </form>
+  </body>
+</html>

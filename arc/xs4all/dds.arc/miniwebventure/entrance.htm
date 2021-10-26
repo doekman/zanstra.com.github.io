@@ -1,0 +1,33 @@
+<HTML>
+<SCRIPT>
+<!--- Hide script from old browsers.
+function openDoor() {
+  bgc=document.bgColor
+  document.bgColor="666666"
+  a=prompt("You are dialing the number (020) 699 22 51. The voice response asks you to enter a four digit code",0000)
+  if(a=="1382") 
+    window.open("outside.htm", "main")
+  else {
+    window.status="Alarm is switched OFF"
+    alert("This was not the right code. The alarm is switched off")
+  }
+  document.bgColor=bgc
+}
+// End the hiding here. -->
+</SCRIPT>
+
+<NOSCRIPT>
+You need to support Java script. Get yourself a <b>browser</b> (NetScape navigator 2.0+ or Internet Explorer 3.0+)
+</noscript>
+
+<FONT FACE="Arial">
+<H1><CENTER>Entrance</center></h1>
+You are feeling misserable. You broke your leg. Furthermore, you broke
+both your colar bone (it never happens, that you break both of them, but 
+you just proved, it's possible).<br>
+Hay, you can see the sky outside. You knew there was hope... There's a
+<a href="javascript:openDoor()" onMouseOver="window.status='Go outside'">door</a> leading outside. There's also a stairway
+leading <a href="go_up.htm">upwards</a>.
+<HR>
+</FONT>
+</HTML>

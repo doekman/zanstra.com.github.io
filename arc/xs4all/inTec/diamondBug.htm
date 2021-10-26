@@ -1,0 +1,103 @@
+<html>
+<head>
+	<title>inTec</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+.subHeader {
+	background-color: lightgrey;
+	color: white
+}
+.lijst { 
+	border-bottom: 1px solid silvergrey
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="htmlEntities.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    &nbsp;<!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			&nbsp;<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1 title="Internet Technologies">Diamond symbol is missing in some MS fonts</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+<p>
+	This page demonstrates the diamond symbol (HTML Entity &amp;diam;) is missing from some fonts.
+	I took the most used fonts, plus the generic CSS fonts.
+	Other HTML entities (<a href="http://www.w3.org/TR/html4/sgml/entities.html">w3c</a>, <a href="http://msdn.microsoft.com/workshop/author/dhtml/reference/charsets/charset2.asp">MS</a>)
+	can be looked at the extended page (see link below).
+</p>
+<blockquote>
+	Under Windows XP, with Character Map application, the fonts Arial, Times New Roman and Courier
+	do include the diamond character, under Unicode 2666. Verdana and Comic Sans don't have the character.
+</blockquote>
+<script>
+var aFonts=['Verdana','Tahoma','Arial','Times New Roman','Courier New','Comic Sans MS','sans-serif','serif','monospace','cursive','fantasy'];
+
+if(location.search.indexOf('extended')==-1)
+{
+	document.writeln('<p>Show <a href="?extended=true">extended</a> html-entity-test-page (this can take some seconds to render).</p>');
+	document.writeln('<ul>');
+	for(var i in aFonts)
+	{
+		document.writeln('<li style="font-family:'+aFonts[i]+'">'+aFonts[i]+': &diams; &spades; &clubs; &hearts;</li>');
+	}
+	document.writeln('</ul>');
+}
+else
+{
+	document.writeln('<p>Show <a href="?">simple</a> version of this page.');
+	document.writeln('Hold mouse-cursor above character, for a font-tooltip.</p>');
+	document.writeln('<table style="border-collapse:collapse; border:1px solid lightgrey"><tr>');
+	document.writeln('<th style="vertical-align: bottom">Ent.</th>');
+	for(var i in aFonts)
+	{
+		document.writeln('<th style="vertical-align: bottom; line-height: 0.8em" title="'+aFonts[i]+'">'+vertical(aFonts[i])+'</th>');
+	}
+	document.writeln('<th style="vertical-align: bottom">Description</th>');
+	document.writeln('</tr>');
+
+	for(var i in aHTMLEntities)
+	{
+		var oi=aHTMLEntities[i];
+		document.writeln('<tr><th class="lijst subHeader" style="color: gray" colspan="'+(aFonts.length+2)+'">'+oi.sTitle+'</th></tr>');
+		for(var j in oi.aList)
+		{
+			var oj=oi.aList[j];
+			document.writeln('<tr><td class="lijst" title="named: &amp;'+oj[0]+'; or numeric: &amp;'+oj[1]+';">'+oj[0]+'</td>');
+			for(var k in aFonts)
+			{
+				document.writeln('<td class="lijst" style="font-family:'+aFonts[k]+'" title="'+aFonts[k]+'">&'+oj[0]+';</td>');
+			}
+			document.writeln('<td class="lijst">'+oj[2]+'</td></tr>');//description
+		}
+	}
+	document.writeln('</table>');
+}
+
+function vertical(s)
+{
+	return s.replace(/(.)/g,'$1<br>');
+}
+
+</script>
+	<div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Home of Doekman" title="Stuur een email">Doeke Zanstra</a>, 
+    2001. Feel free to alter this specific-page (to test your own fonts, for example).
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

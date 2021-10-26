@@ -1,0 +1,452 @@
+225
+de 43
+got 3
+crew 4
+heeft 3
+natuurlijk 4
+zaken 2
+te 8
+bespreken 1
+die 7
+via 1
+het 20
+internet 1
+verstuurd 1
+moeten 2
+worden 7
+aangezien 2
+ze 3
+elkaar 2
+over 1
+algemeen 2
+niet 9
+irl 1
+kennen 1
+deze 4
+zijn 3
+voor 8
+gebruikers 2
+bedoeld 1
+onder 1
+users 1
+genoeg 1
+e 1
+mail 1
+boxen 1
+kunnen 3
+kraken 1
+hebben 5
+mod 2
+s 3
+van 10
+p 3
+w 3
+acm 2
+chem 2
+wasigh 3
+een 16
+coderingssysteem 1
+gemaakt 3
+lees 2
+geleend 1
+en 15
+daarvoor 1
+mooi 1
+encryptie 1
+decriptie 1
+programma 5
+geschreven 1
+maar 3
+er 7
+is 7
+ook 4
+veel 1
+op 6
+aanwezig 1
+in 7
+staat 2
+zo 3
+n 6
+zelf 2
+schrijven 2
+want 1
+mensen 1
+hun 2
+kwaliteiten 1
+ander 1
+vlak 1
+liggen 1
+overclocken 1
+enzo 1
+omdat 1
+druk 1
+zat 1
+met 6
+modereren 1
+mogen 1
+jullie 2
+crewleden 1
+helpen 1
+houdt 1
+julle 1
+rustig 1
+geeft 1
+mods 3
+kans 1
+om 3
+modden 1
+zorgt 1
+dat 5
+rest 1
+hoofd 1
+hoeft 1
+breken 1
+codering 1
+volgende 2
+methode 1
+bedacht 1
+misschien 1
+zwak 1
+algoritme 1
+dit 2
+al 2
+heel 1
+wat 5
+elke 2
+letter 1
+cijfer 5
+gepakt 1
+manier 2
+meerdere 1
+letters 1
+bij 5
+horen 2
+tabel 1
+gevormd 1
+kan 6
+wordt 3
+geen 3
+onderscheid 1
+tussen 3
+hoofdletters 2
+uit 2
+bijvoorbeeld 3
+cijfercombinatie 5
+woord 7
+vasggg 1
+waarbij 1
+laatste 1
+bekend 1
+kijken 1
+welk 1
+moet 3
+ingebouwde 1
+library 4
+welke 1
+woorden 6
+tekst 1
+komen 1
+prioriteit 3
+als 4
+combinatie 4
+twee 1
+namelijk 1
+mee 7
+neo 3
+hogere 1
+dan 3
+weergeven 1
+gelijke 1
+geldt 1
+volgorde 1
+alfabet 1
+waarschijnlijkheid 3
+word 1
+bepaald 1
+door 2
+som 1
+waarschijnlijkheden 2
+beginnen 1
+meedoen 3
+meemaken 2
+libary 1
+voorkomen 2
+komt 2
+gelijk 1
+aan 1
+opgeteld 1
+gebruiker 2
+gedeeltes 1
+typen 4
+voorkomt 1
+krijgen 2
+doen 1
+invoer 1
+maken 1
+zodat 1
+makkelijk 1
+berichten 1
+intypen 1
+daarbij 1
+cijfers 2
+best 1
+passende 1
+scherm 3
+stdin 1
+stdout 1
+input 1
+bestaat 1
+geheel 3
+getal 4
+aantal 2
+ligt 2
+inclusief 2
+daarin 1
+volgen 1
+maximaal 1
+karakters 2
+daarachter 1
+spatie 1
+aangeeft 2
+waarschijnlijkheidsgetal 1
+na 2
+regels 1
+weer 1
+uitgevoerd 2
+dient 1
+bevat 1
+max 1
+beindigd 1
+nul 1
+elk 1
+ingevoerde 1
+gegeven 1
+verschijnen 1
+gevonden 1
+onmogelijk 1
+225
+220
+3570
+16280
+322270
+51777643440
+914250
+720
+1276624250
+2320
+8310
+3270
+357265270
+8267777620
+5527250
+8562250
+1153293250
+920
+2441160
+58260
+143252250
+53270
+3640
+4255250
+22920
+93450
+85560
+32167342670
+12252420
+552260
+772670
+3255230
+20
+51340
+158250
+4755250
+4614250
+3211250
+5520
+70
+8150
+60
+80
+1150
+13250
+8173330
+2250
+15226353779772250
+32511470
+42270
+32422520
+250
+211685560
+55530
+2516967320
+2216367320
+6653615510
+32713628250
+51160
+260
+370
+5540
+82240
+560
+115829330
+350
+771170
+950
+50
+92420
+7136348250
+81570
+5257250
+3750
+481437237250
+152260
+84140
+4333250
+582614514250
+25950
+552170
+26740
+9170
+5270
+5522626250
+553250
+4744320
+1628422250
+3246250
+357270
+474420
+6777330
+322270
+55270
+41570
+550
+5522250
+956370
+2170
+62770
+355220
+352270
+1624250
+152263530
+854325220
+52735220
+12211370
+5377133250
+98140
+1435637520
+2370
+140
+32240
+8170
+24420
+4277260
+1342260
+3261470
+5153260
+522622620
+42772670
+1340
+356250
+711240
+32856520
+4150
+856270
+32250
+552267132320
+7777250
+3552242772670
+7370
+1348556122420
+13422615513517320
+855620
+8173330
+81161340
+41177720
+1242520
+4344250
+82440
+55270
+35321578220
+43161690
+824420
+85562250
+724770
+455250
+66356372370
+1470
+15513517320
+78220
+515243440
+5220
+5250
+3532620
+2150
+8226328250
+32434420
+324270
+854356220
+14211270
+8116713345434432320
+85620
+12611420
+25560
+7550
+81167133454344322250
+123355250
+52225250
+522514250
+4311690
+8556455250
+45570
+3243440
+1150
+563272420
+3216734260
+3222247270
+796250
+855645570
+46343250
+25250
+3585260
+514250
+952170
+5144243440
+1263137250
+35796250
+21161340
+13422670
+12770
+617725220
+7132650
+772350
+7725770
+356770
+12771170
+3232240
+327140
+1157140
+43370
+3514773220
+2116350
+8543250
+518351140
+4161472670
+21161137260
+7617320
+115322270
+8116713345434432327327140
+510
+6232470
+82260
+73732852620
+232570
+128170
+5180
+123523320
+5740
+2440
+35328526220
+32328250
+826713345250
+328552250
+55553243440

@@ -1,0 +1,204 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>The Javascript Man</title>
+	<meta name="Generator" content="EditPlus2">
+	<meta name="Author" content="D Zanstra">
+	<meta name="Keywords" content="javascript">
+	<meta name="Description" content="">
+	<link rel="stylesheet" type="text/css" href="iframe.css">
+	<style type="text/css">
+		TABLE.mainTable {
+			height: 100%;
+		}
+		TR {
+			padding: 0px;
+			border-width: 0px;
+		}
+		TD {
+			vertical-align: top;
+			border-width: 0px;
+		}
+		IFRAME {
+			width: 100%;
+			height: 100%
+		}
+		H1, #prjName {
+			font-weight: bold;
+			font-size: 18pt;
+			text-align: center;
+		}
+		
+		#blackLeft {
+			width: 50px;
+		}
+		H1, .prjBar, .menuItem, #prjName {
+			background-color: #0000aa;
+			margin: 12px 0px 3px 0px;
+		}
+		.prjBar {
+			width: 10px;
+		}
+		.prjContent {
+			width: 100px;
+		}
+		.contentBar {
+			width: 600px;
+		}
+		.menuBegin {
+			width: 250px
+		}
+		.menuIn {
+			width: 10px
+		}
+		.MenuEnd {
+			width: 10px
+		}
+		.menuItem {
+			width: 60px;
+			height: 60px;
+			text-align: center;
+			vertical-align: middle;
+		}
+		.iborder {
+			width: 10px
+		}
+		.itd {
+			width: 580px;
+			height: 450px
+		}
+		.prjNameClass {
+			float: middle;
+		}
+	</style>
+	<script type="text/javascript" language=javascript>
+		var aTitle = {
+			'empty':'not defined',
+			'home':'Home of the JavaScript Man',
+			'saveForm':'Save a form to a cookie',
+			'postTool':'Create a HTTP-request with a POST body',
+			'gw-js':'GW-JavaScript (those good old days)',
+			'validate':'Validate postal codes'
+		};
+		var aMenu   = 
+		{	'home': new Array (
+				{URL:'home.htm',menuText:'index'},
+				{URL:'contact.htm',menuText:'contact'}
+			),
+			'empty': new Array (
+				{URL:'empty.htm',menuText:'empty'}
+			),
+			'saveForm':	new Array (
+				{URL:'saveForm/index.htm',menuText:'intro'},
+				{URL:'saveForm/example.htm',menuText:'example'}
+			),
+			'postTool': new Array (
+				{URL:'postTool/index.htm',menuText:'intro'},
+				{URL:'postTool/postTool.htm',menuText:'example'},
+				{URL:'postTool/dullPostTool.htm',menuText:'dull<br>example'}
+			),
+			'gw-js': new Array (
+				{URL:'gw-javascript.htm',menuText:'index'}
+			),
+			'validate': new Array (
+				{URL:'validating.htm',menuText:'index'}
+			)
+		}
+		function jsManError(msg,url,ln)
+		{	with(document.all.errorWin)
+			{	innerHTML=""+ln+": <strong>"+msg+"</strong> ("+url+")<br>"+innerHTML;
+			}
+		}
+		function jsManInit()
+		{	window.onerror=jsManError;
+			doMenu('home');
+		}
+	</script>
+</head>
+
+<body onload="jsManInit()">
+	<script type="text/javascript" language=javascript>
+		function doMenu(strItem) {
+			if(aTitle[strItem]=="undefined")
+			{	alert("Hey, project or menu item doesn't seem to exist. Either me or you made a mistake. Sorry for that.");
+				return;
+			}
+			prjName.innerText=" "+aTitle[strItem]+" ";
+			for(var i=0; i<5; i++)
+				eval("mnu"+i).innerHTML = "&nbsp;";
+			for(var i=0; i<aMenu[strItem].length; i++)
+				eval("mnu"+i).innerHTML = "<A HREF='"+aMenu[strItem][i].URL+"' target='contents'>"+aMenu[strItem][i].menuText+"</a>";
+			contents.open(aMenu[strItem][0].URL,'_self','',true);
+		}
+		function doHand()
+		{	event.toElement.style.cursor='hand';
+		}
+		function toggleDisplay(obj) 
+		{	with(obj.style)
+				display= (display.indexOf('none')!=-1)?'inline':'none';
+		}
+	</script>
+<table class="mainTable" cellspacing="0px" cellpadding="0px">
+	<tr>
+		<td id="blackLeft">&nbsp;</td>
+		<td class="prjBar">&nbsp;</td>
+		<td class="prjContent">
+			<br>
+			<h1 onclick='toggleDisplay(projectBranch)' onmouseover=doHand()>Projects</h1>
+			<span id=projectBranch>
+				&nbsp;<a href="javascript:doMenu('saveForm')">saveForm</a><br>
+				&nbsp;<a href="javascript:doMenu('postTool')">postTool</a><br>
+			</span>
+			<h1 onclick='toggleDisplay(looseBranch)' onmouseover=doHand()>Loose</h1>
+			<span id=looseBranch>
+				&nbsp;<a href="javascript:doMenu('empty')">DON'Ts</a><br>
+				&nbsp;<a href="javascript:doMenu('empty')">&iquest;manual?</a><br>
+				&nbsp;<a href="javascript:doMenu('gw-js')">GW-Javascript</a><br>
+				&nbsp;<a href="javascript:doMenu('validate')">Postcode</a><br>
+			</span>
+			<h1 onclick='toggleDisplay(infoBranch)' onmouseover=doHand()>Info</h1>
+			<span id=infoBranch>
+				&nbsp;<a href="javascript:doMenu('home')">home</a><br>
+			</span>
+			<h1>&nbsp;</h1>
+		</td>
+		<td class="prjBar">&nbsp;</td>
+		<td class=contentBar>
+			<br>
+			<p align=right class="prjNameClass">
+				<span id="prjName">&nbsp;Projectname&nbsp;</span>
+			</p>
+			<table cellspacing="0px" cellpadding="0px">
+				<tr>
+					<td class=iborder>&nbsp;</td>
+					<td class=itd>
+						<iframe name=contents noresize scrolling=auto src="empty.htm"></iframe>
+					</td>
+					<td class=iborder>&nbsp;</td>
+				</tr>
+			</table>
+			<br>
+			<table cellspacing="0px" cellpadding="0px">
+				<tr>
+					<td class=menuBegin>&nbsp</td>
+					<td class=menuItem id=mnu0>&nbsp;</td>
+					<td class=menuIn>&nbsp</td>
+					<td class=menuItem id=mnu1>&nbsp;</td>
+					<td class=menuIn>&nbsp</td>
+					<td class=menuItem id=mnu2>&nbsp; </td>
+					<td class=menuIn>&nbsp</td>
+					<td class=menuItem id=mnu3>&nbsp;</td>
+					<td class=menuIn>&nbsp</td>
+					<td class=menuItem id=mnu4>&nbsp;</td>
+					<td class=menuIn>&nbsp</td>
+				</tr>
+				<tr>
+					<td colspan=11><span id=errorWin></span></td>
+				</tr>
+			</table>
+		</td>
+		<td class="prjBar">&nbsp;</td>
+	</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<html>
+<head>
+	<title>Home of Doekman</title>
+  <meta http-equiv="Referer" content="http://www.xs4all.nl/~zanstra/contact.htm"/>
+  <link rel="stylesheet" href="default.css">
+	<style type="text/css">
+.help {
+  cursor: help;
+}
+.helpText {
+  border: 1px solid black;
+  background-color: lightyellow;
+  display: none;
+  position: absolute;
+  padding: 2px;
+  width: 200px;
+  font-family: sans-serif;
+  font-size: 9pt;
+}
+label.mailFormField { 
+  cursor: hand;
+  font-style: italic;
+  line-height: 22px;
+}
+input.inputText {
+  position: absolute;
+  left: 250px;
+  width: 300px;
+  border: 1px solid gray;
+}
+textarea.inputMemo {
+  position: absolute;
+  left: 250px;
+  width: 300px;
+  height: 100px;
+  border: 1px solid gray;
+}
+input.inputSubmit {
+  position: absolute;
+  left: 250px;
+  top: 390px;
+  width: 50px;
+}
+form {
+  height: 200px
+}
+  </style>
+  <script language="javascript" src="js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+function checkForHelp() {
+  if(event==null) return;
+  if(event.srcElement==null) return;
+  var o=event.srcElement;
+  var p=document.getElementById('helpWindow');
+  if(o.className.search(/\bhelp\b/i)!=-1) {
+    p.style.pixelLeft=event.x;
+    p.style.pixelTop=event.y+16; //+hoogte van de mouse-pointer
+    p.innerHTML=o.helptext;
+    p.style.display='block';
+  }
+  else {
+    p.style.display='none';
+  }
+}
+  </script>
+</head>
+<body onclick="checkForHelp();">
+<table cellpadding="0" border="0" width="100%"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="img/vCard32.png" border="0"><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			contact.me<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>Contact Doekman</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		Hier wat informatie, hoe je me kunt bereiken.
+	</p>
+  <table>
+    <tr>
+      <th width="40">Naam</th>
+      <td>Doeke Zanstra</td>
+    </tr>
+     <tr>
+      <th>Stuur bericht</th>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <script language="javascript">
+window.attachEvent('onload',function () 
+  { 
+    document.forms.frm.sNaam.focus(); 
+    if(location.search.indexOf('bedankt=true')!=-1) 
+    { 
+      alert('Uw bericht is verzonden.');
+      location.href='?';
+    }
+  } 
+);
+function checkForm()
+{
+  var frm=document.forms.frm;
+  var aReq=['from','body'];
+  for(var i=0; i<aReq.length; i++)
+  {
+    var fld=frm[aReq[i]];
+    if(fld.value.length==0)
+    {
+      alert('Email en vraag MOETEN ingevuld worden');
+      fld.focus();
+      return false;
+    }
+  }
+  return true;
+}
+        </script>
+        <form class="mailFormField" onsubmit="return checkForm();" 
+         name="frm" method="post" action="http://www.xs4all.nl/cgi-bin/mail-a-form">
+          <label for="idNaam" class="mailFormField">Uw naam</label>
+          <input type="text" name="sNaam" id="idNaam" value="" class="inputText" />
+          <br />
+          <label for="idEmail" class="mailFormField">Uw email-adres</label>
+          <input type="text" name="from" id="idEmail" value="" class="inputText" />
+          <br />
+          <label for="idSubject" class="mailFormField">Onderwerp</label>
+          <input type="text" name="subject" id="idSubject" value="Vraag vanaf contact.htm" class="inputText" />
+          <br />
+          <label for="idBody" class="mailFormField">Uw vraag</label>
+          <textarea id="idBody" name="body" class="inputMemo"></textarea>
+          <br />
+          <input type="submit" value="OK" class="inputSubmit" />
+          <input type="hidden" name="to" value="zanstra@xs4all.nl"/>
+          <input type="hidden" name="nextpage" value="/~zanstra/contact.htm?bedankt=true"/>
+          </div>
+        </form>
+      </td>
+    </tr>
+  </table>
+        <strong>Waar ligt Groningen:</strong>
+<script language="javascript">
+var strOpenImage;
+function show(o) {
+  if(typeof strOpenImage=='string') {
+    document.all[strOpenImage].style.display='none';
+    strOpenImage=null;
+  }
+  if(o.value.length>0) {
+    strOpenImage=o.value;
+    document.all[strOpenImage].style.display='inline';
+  }
+}
+</script>
+<!--input type="radio" checked name="rdoMap" onclick="show(this);" value="" id="howTo">
+  <label for="howTo">Groningen</label-->
+<input type="radio" name="rdoMap" onclick="show(this);" value="imgGNRegion2" id="gnregion2" disabled>
+  <label for="gnregion2">Regio</label>
+<input type="radio" name="rdoMap" onclick="show(this);" value="imgGNRegion" id="gnregion" disabled>
+  <label for="gnregion">Regio Int'</label>
+<input type="radio" name="rdoMap" onclick="show(this);" value="imgGN" id="gn" disabled>
+  <label for="gn">Wereld</label>
+<input type="radio" name="rdoMap" onclick="show(this);" value="imgGNSatIdx" id="gnsatidx" disabled>
+  <label for="gnsatidx">Sat index</label>
+<input type="radio" name="rdoMap" onclick="show(this);" value="imgGNSat" id="gnsat" disabled>
+  <label for="gnsat">Sat</label>
+      <br>
+
+      <div style="text-align: center">
+        <img src="img/gnRegion2.gif" style="display: none" id="imgGNRegion2" onload="gnregion2.disabled=false;">
+        <img src="img/gnRegion.png" style="display: none" id="imgGNRegion" onload="gnregion.disabled=false;">
+        <img src="img/gn.jpg" style="display: none" id="imgGN" onload="gn.disabled=false;">
+        <img src="img/gnSatIdx.jpg" style="display: none" id="imgGNSatIdx" onload="gnsatidx.disabled=false;">
+        <img src="img/gnSat.jpg" style="display: none" id="imgGNSat" onload="gnsat.disabled=false;">
+      </div>
+</td></tr></table><!--end columns-->
+<div class="helpText" id="helpWindow" onmouseout="this.style.display='none';">helpjes</div>
+</body>
+</html>

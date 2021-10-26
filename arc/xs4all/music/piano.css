@@ -1,0 +1,76 @@
+DIV.title
+{
+    font-family: Tahoma, sans-serif;
+    font-size: 24pt;
+    font-weight: bold;
+    text-align: center
+}
+TD
+{
+    font-family: Tahoma, sans-serif;
+    font-size: 10pt;
+    font-weight: bold;
+    padding-left: 10px;
+    vertical-align: top
+}
+SPAN
+{
+    border: gray 1px solid;
+    position: relative;
+    text-align: center;
+    vertical-align: top;
+		font-weight: bold;
+}
+.whiteKey
+{
+    background-color: white;
+    color: white;
+    height: 110px; /*160*/
+    padding-top: 90px; /*140px;*/
+    width: 24px;
+    z-index: 10;
+    cursor: arrow;
+}
+.blackKey
+{
+    background-color: black;
+    color: black;
+    height: 73px; /*90px;*/
+    padding-top: 53px; /*70px;*/
+    width: 10px; /*12px;*/
+    z-index: 20
+    cursor: arrow;
+}
+#divKeyboard
+{
+    width: 200%;
+    cursor: arrow;
+}
+.column0
+{
+    width: 200px
+}
+.column1
+{
+    width: 75px
+}
+.column2
+{
+    width: 175px
+}
+.column3 
+{
+	width: 150px;
+}
+.updown
+{
+    padding-left: 2px;
+    text-align: left;
+    width: 95px
+}
+#toonladder, #afstanden
+{
+    border: gray 1px solid;
+		font: 10pt "Courier New", monospace;
+    width: 200px
+}

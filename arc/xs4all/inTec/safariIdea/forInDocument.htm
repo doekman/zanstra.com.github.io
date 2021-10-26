@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title> Document.selectedStylesheetSet property access </title>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+Function.prototype.toStringRunnable=function()
+{
+  return this.toString().replace(/function (.*)\(/,'function <input type="button" value="$1" onclick="$1();" />(');
+}
+function showCode(f,comment)
+{ 
+  if(comment) document.write('<h3 class="code">'+comment+'</h3>');
+  document.write('<pre>'+f.toStringRunnable()+'</pre>');
+}
+function test1()
+{
+  if(document.implementation&&document.implementation.createDocument)
+  {
+    var xmlDoc=document.implementation.createDocument('','',null);
+    var a=[];
+    for(var i in xmlDoc)
+    {
+      a[a.length]=i; 
+    }
+    alert(a.join(' | '));
+  }
+}
+function test2()
+{
+  if(document.implementation&&document.implementation.createDocument)
+  {
+    var xmlDoc=document.implementation.createDocument('','',null);
+    var a=[];
+    for(var i in xmlDoc)
+    {
+      var itm=xmlDoc[i];
+    }
+  }
+}
+function test3()
+{
+  if(document.implementation&&document.implementation.createDocument)
+  {
+    var xmlDoc=document.implementation.createDocument('','',null);
+    var a=[];
+    for(var i in xmlDoc)
+    {
+      if(!confirm('Going to access property ['+i+']. Press Cancel to stop the loop.'))
+        break;
+      var itm=xmlDoc[i];
+    }
+  }
+}
+function test4()
+{
+  if(document.implementation&&document.implementation.createDocument)
+  {
+    var xmlDoc=document.implementation.createDocument('','',null);
+    var itm=xmlDoc.selectedStylesheetSet;
+  }
+}
+    </script>
+  </head>
+  <body>
+    <h1> Safari testcase | Document.selectedStylesheetSet property access </h1>
+    <p>
+      When creating an empty <code>Document</code> object,
+      Safari crashes on the <code>selectedStylesheetSet</code>
+      property. You only need to run the 4th test-script, to
+      reproduce the behaviour.
+    </p>
+    <form onsubmit="return false;">
+      <script>
+showCode(test1,'OK. This script work in Safari 1.0 (v85.5)');
+showCode(test2,'CRASH: This script should crash Safari 1.0 (v85.5).');
+showCode(test3,'CRASH: Test if Safari crashes on specific property access.');
+showCode(test4,'CRASH: Test if Safari crashes on selectedStylesheetSet-property access.');
+      </script>
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

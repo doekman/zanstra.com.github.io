@@ -1,0 +1,887 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Culinaire Zwerftocht app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="Content/bootstrap.min.css" rel="stylesheet" media="all" />
+  <link href="Content/custom.css" rel="stylesheet" media="all" />
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Culinaire Zwerftocht</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+        </ul>
+        <p class="navbar-text" id="current-tocht-name"></p>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="inhoud">
+      <div id="top-alerts"></div>
+      <div id="tochten"></div>
+    </div>
+
+  </div><!-- /.container -->
+
+  <!-- Modal: export  -->
+  <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form onsubmit="return false;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="exportModalLabel">Data import/export</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="exportModal_dataDump">Data dump</label>
+              <input type="hidden" id="exportModal_dataDumpId" value="">
+              <textarea id="exportModal_dataDump" rows="11" class="form-control"></textarea>
+              <span class="help-block">
+                Gebruik het klemboard (copy/paste) om data te bewaren of opnieuw in te laden.
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="exportModal_importButton">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="Scripts/jquery-1.9.1.js"></script>
+  <script src="Scripts/bootstrap.js"></script>
+  <!-- script src="Scripts/handlebars.js"></!--script -->
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.js"></script>
+  
+  <script src="Scripts/marked.js"></script>
+  <!-- custom scripts -->
+  <script src="js/utilities.js"></script>
+  <script src="js/handlebarHelpers.js"></script>
+  <script src="js/docdb.js"></script>
+  <script src="js/models.js"></script>
+  <script>
+    /// <reference path="/Scripts/jquery-1.9.1.intellisense.js" />
+    /// <reference path="/Scripts/handlebars.js" />
+    /// <reference path="js/docdb.js" />
+    /// <reference path="js/utilities.js" />
+    /// <reference path="js/models.js" />
+    /// <reference path="js/handlebarHelpers.js" />        
+    var view = {
+      cache: {},
+      handlePartial: function ($elements) {
+        var partials = $elements.data("partials");
+        if (partials) {
+          var partialList = partials.split(/\s*,\s*/);
+          for (var i = 0; i < partialList.length; i++) {
+            var partial = split2(partialList[i], ":"),
+                $partial = $(partial.right),
+                source = $partial.html();
+            Handlebars.registerPartial(partial.left, source);
+            this.handlePartial($partial);
+          }
+        }
+      },
+      render: function (templateSelector, containerSelector, data) {
+        var template;
+        this.handlePartial($(templateSelector));
+        
+        if (templateSelector in this.cache) {
+          template = this.cache[templateSelector];
+        }
+        else {
+          var source = $(templateSelector).html();
+          template = Handlebars.compile(source);
+          this.cache[templateSelector] = template;
+        }
+        if (containerSelector) {
+          var container = $(containerSelector);
+          container.html(template(data));
+
+          //--| HTML5 Compatibility
+          $('[autofocus]', container).focus();
+
+          return container;
+        }
+        else {
+          // return HTML string
+          return template(data);
+        }
+      }
+    };
+
+    var controller = {
+      initialize: function () {
+        ddb.init("Zwerftocht");
+      },
+      alert: function(context, message) {
+        if (arguments.length == 0) {
+          $("#top-alerts").html("");
+          return;
+        }
+        var data = { context: context, message: message };
+        view.render('#top-alert-template', '#top-alerts', data);
+      },
+      clearAlert: function(message) { return this.alert(); },
+      successAlert: function(message) { return this.alert("success", message); },
+      infoAlert: function(message) { return this.alert("info", message); },
+      warningAlert: function(message) { return this.alert("warning", message); },
+      dangerAlert: function(message) { return this.alert("danger", message); },
+      mainForm: function () {
+        var self = this;
+        var data = {
+          defaultType: ddb.defaultType(),
+          entries: ddb.list().sort(function (a, b) { return b.id - a.id; })
+        };
+        var container = view.render("#tochten-template", "#tochten", data);
+        self.updateMenubar();
+        $(".cmd_delete", container).click(function (e) {
+          e.preventDefault();
+          if (confirm("Weet je zeker dat deze data weg kan?")) {
+            var entry = { id: +$(this).data("id") };
+            ddb.remove(entry);
+            self.mainForm();
+          }
+        });
+        $('#exportModal').on('shown.bs.modal', function (e) {
+          var id = $(e.relatedTarget).data("id")
+          ,   doc = ddb.openDoc(id)
+          ,   json = JSON.stringify(doc)
+          ;
+          $("#exportModal_dataDumpId").val(id);
+          $("#exportModal_dataDump").val(json).select();
+        });
+        $('#exportModal_importButton').click(function (e) {
+          try {
+            var id = $("#exportModal_dataDumpId").val()
+            ,   json = $("#exportModal_dataDump").val()
+            ,   newDoc = JSON.parse(json)
+            ;
+            var oldDoc = ddb.openDoc(id);
+            ddb.saveDoc(newDoc);
+            if (oldDoc.name != newDoc.name) {
+              ddb.rename(newDoc.name)
+            }
+          }
+          catch(ex) {
+            alert("Er is een fout opgetreden:\n\n" + ex);
+            console.dir(ex);
+          }
+          $('#exportModal').modal('hide');
+          self.mainForm();
+        });
+        $(".cmd_mail", container).click(function(e){
+          var id = +$(this).data("id")
+          ,   doc = ddb.openDoc(id)
+          ,   schaar = "\n----8<" + new Array(60).join('-') + '\n'
+          ,   subject = "Export data van culinaire zwerftocht: " + doc.name
+          ,   body = "Export van de data:\n" + schaar + JSON.stringify(doc) + schaar
+          ;
+          window.open("mailto:?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body), "_self");
+        });
+        $(".cmd_add", container).click(function (e) {
+          e.preventDefault();
+          var name = $("#tocht_naam", container).val2();
+          if (name) {
+            ddb.save(name);
+            $("#tocht_naam", container).val("");
+            self.mainForm();
+          }
+        });
+        $(".cmd_open", container).click(function (e) {
+          e.preventDefault();
+          var id = $(this).data("id");
+          var name = $(this).data("name");
+          var data = ddb.openDoc(id);
+          var model = initTochtModel(data, { name: name });
+          ddb.saveDoc(model.data);
+          self.updateMenubar({ name: name });
+          self.initialForm(true);
+        });
+      },
+
+      updateMenubar: function (data) {
+        $("#current-tocht-name").html(data && data.name || "");
+      },
+      
+      initCounter: function(model) {
+        $("#restaurants-tab .badge").tooltip({ html: true });
+        $("#uitgifte-tab .badge").tooltip({ html: true });
+        this.updateCounters(model);
+      },
+      
+      updateCounters: function(model) {
+        var nrSeats = model.Restaurants.nrSeats()
+        , nrIssuedCourses = model.Restaurants.nrIssuedCourses(0)
+        , nrPersons = model.Groups.nrPersons()
+        , groupsCanHaveEntries = model.Groups.canHaveEntries();
+        ;
+        $("#restaurants-tab .badge").html( nrSeats - nrIssuedCourses);
+        $("#uitgifte-tab .badge").html(nrPersons);
+        $("#uitgifte-tab")[groupsCanHaveEntries ? 'show' : 'hide']();
+      },
+      
+      initialForm: function (initial) {
+        var self = this;
+        var model = initTochtModel(ddb.currentDoc());
+        var data = model.Tocht.getData();
+        if (initial) {
+          var container = view.render("#tocht-tab-template", "#tochten", data);
+          var tabber = function (f) {
+            return function (e) {
+              e.preventDefault();
+              self.clearAlert();
+              $(this).tab('show');
+              f(e);
+            }
+          };
+          $("#tocht-tab", container).click(tabber(function (e) { self.initialForm(); }));
+          $("#restaurants-tab", container).click(tabber(function (e) { self.restaurantForm(); }));
+          $("#uitgifte-tab", container).click(tabber(function (e) { self.uitgifteForm(); }));
+          $("#over-tab", container).click(tabber(function (e) { self.overForm(); }));
+          self.initCounter(model);
+        }
+        else {
+          var container = view.render("#tocht-template", "#tab-content", data);
+        }
+        $("#tocht_name", container).change(function (e) {
+          var oldName = model.data.name, newName = $(this).val();
+          if (ddb.exists(newName)) {
+            $(this).val(oldName).focus();
+            self.warningAlert("De nieuwe naam (" + newName + ") bestaat al, kies een andere.");
+            return;
+          }
+          ddb.rename(newName);
+          model.data.name = $(this).val();
+          ddb.saveDoc();
+          this.updateMenubar({ name: newName });
+        });
+        $("#tocht_description", container).change(function (e) {
+          model.data.description = $(this).val();
+          ddb.saveDoc();
+        });
+        $("#tocht_has_afterParty", container).change(function (e) {
+          var val = $(this).val2();
+          if (!val) $('#tocht_afterPartyBar').val('')
+          model.data.afterPartyBar = val ? $('#tocht_afterPartyBar').val2() : null;
+          ddb.saveDoc();
+          if (val) $('#tocht_afterPartyBar').focus();
+        });
+        $("#tocht_afterPartyBar", container).keypress(function (e) {
+          var val = $(this).val2();
+          $('#tocht_has_afterParty').get(0).checked = !!val;
+        }).change(function (e) {
+          var val = $(this).val2();
+          model.data.afterPartyBar = val || null;
+          ddb.saveDoc();
+        });
+        $("#print_test_ticket", container).click(function (e) {
+          self.printTicket();
+        });
+        $("#sluit_tocht", container).click(function (e) {
+          self.mainForm();
+        });
+        
+      },
+
+      printTicket: function(id, hitCtrlP) {
+        var model = initTochtModel(ddb.currentDoc());
+        var ticketData = model.Groups.getPrintTicketData(id);
+        var html = view.render("#tickets-page-template", null, ticketData);
+        var popup = window.open("about:blank", "_blank");
+        popup.document.write(html);
+        setTimeout(function() {
+          if (hitCtrlP) {
+            var result = popup.print();
+          }
+          //popup.close();
+        }, 0);
+      },
+
+      restaurantForm: function () {
+        var self = this,
+            model = initTochtModel(ddb.currentDoc()),
+            nrSeats = model.Restaurants.nrSeats(),
+            nrIssuedCourses = model.Restaurants.nrIssuedCourses(0),
+            data = {
+          "entries": model.Restaurants.sort(),
+          "nrSeats": nrSeats,
+          "nrAvailableSeats": nrSeats - nrIssuedCourses,
+          "default": model.Restaurant.defaultItem()
+        };
+        var container = view.render("#restaurants-template", "#tab-content", data);
+        self.updateCounters(model);
+
+        $(".cmd_delete", container).click(function (e) {
+          e.preventDefault();
+          if (confirm("Weet je zeker dat dit restaurant weg kan?")) {
+            var id = $(this).data("id");
+            model.Restaurants.removeById(id);
+            ddb.saveDoc();
+            self.restaurantForm();
+          }
+        });
+        $(".cmd_add", container).click(function (e) {
+          e.preventDefault();
+          var name = $("#restaurant_name\\$", container).val2();
+          if (name) {
+            var newRestaurant = model.Restaurants.getDefaultEntry(),
+                errorMessage;
+            newRestaurant.name = name;
+            newRestaurant.nrSeats = $("#restaurant_nrSeats\\$", container).val2() || newRestaurant.nrSeats;
+            newRestaurant.vegetarian = $("#restaurant_vegetarian\\$", container).val2();
+            if (errorMessage = model.Restaurants.validate(newRestaurant)) {
+              self.warningAlert(errorMessage);
+            }
+            else {
+              ddb.saveDoc();
+              self.restaurantForm();
+              self.clearAlert();
+            }
+          }
+          else {
+            self.warningAlert("Geef tenminste een naam op.");
+          }
+        });
+        $("input", container).change(function (e) {
+          var element = $(this),
+              id = element.data('id'),
+              name = element.attr("name"),
+              restaurant = model.Restaurants.findById(id),
+              errorMessage;
+          if (id && restaurant) {
+            switch (name) {
+              case 'restaurant_name':
+                restaurant.name = element.val2();
+                break;
+              case 'restaurant_nrSeats':
+                restaurant.nrSeats = element.val2();
+                break;
+              case 'restaurant_vegetarian':
+                restaurant.vegetarian = element.val2();
+                break;
+              default:
+                console.warn("Unknown name '%s' when updating data", name);
+                return;
+            }
+            if (errorMessage = model.Restaurants.validate(restaurant)) {
+              self.warningAlert(errorMessage);
+              self.restaurantForm();
+            }
+            else {
+              ddb.saveDoc();
+              self.restaurantForm();
+            }
+          }
+        });
+      },
+
+      uitgifteForm: function (id) {
+        var self = this
+        ,   model = initTochtModel(ddb.currentDoc())
+        ,   groups = model.Groups
+        ,   groupRecord = groups.getDefaultEntry()
+        ;
+        if (id) {
+            // use this function, because the data get's augmented
+            var array = groups.getGroups(function (entry) { return entry.id == id; });
+            if (array.length > 0) groupRecord = array[0];
+        }
+        var showGroupEdit = !!groupRecord.id
+        ,   maxGroupSize = model.Groups.maxGroupSize()
+        ;
+        var data = {
+          group: groupRecord, 
+          groups: groups.getGroups(),
+          restaurants: model.Restaurants.getStats(),
+          nrGroups: model.data.groups.length,
+          nrPersons: groups.nrPersons(),
+          maxGroupSize: maxGroupSize,
+          showGroupEdit: showGroupEdit,
+          soldOut: maxGroupSize == 0 && !showGroupEdit,
+          showNewGroup: !showGroupEdit && maxGroupSize > 0
+        };
+        var container = view.render("#uitgifte-template", "#tab-content", data);
+        self.updateCounters(model);
+        $("*[title]", container).tooltip({ html: true });
+        
+        // New group
+        $("#cmd_register", container).click(function (e) {
+          var group = model.Groups.getDefaultEntry(),
+              errorMessage;
+          group.name = $("#new_group_name").val2();
+          group.nrPersons = $("#new_group_nrPersons").val2();
+          group.vegetarian = $("#new_group_vegetarian").val2();
+          
+          if (errorMessage = model.Groups.addEntry(group)) {
+            $('#new_group_name').focus();
+            self.warningAlert(errorMessage);
+          }
+          else {
+            ddb.saveDoc();
+            var hitCtrlP = !(e.ctrlKey || e.altKey || e.shiftKey);
+            self.printTicket(group.id, hitCtrlP);
+            self.uitgifteForm();
+            self.clearAlert();
+          }
+        });
+          // Update group (update via onchange)
+        $("#group_name", container).change(function (e) {
+            var key = $("#group_id").val2(),
+                group = model.Groups.findEntry(key),
+                errorMessage;
+            group.name = $(this).val2();
+            if (errorMessage=model.Groups.validate(group)) {
+              $('#new_group_name').focus();
+              self.warningAlert(errorMessage);
+            } 
+            else 
+              group.rev++;
+              ddb.saveDoc();
+              self.uitgifteForm(key);
+              self.clearAlert();
+            
+        });
+        $("#group_nrPersons", container).change(function (e) {
+            var key = $("#group_id").val2(),
+                group = model.Groups.findEntry(key),
+                newNrPersons = +$(this).val2(),
+                errorMessage;
+            if (errorMessage = model.Groups.changeNrPersons(group, newNrPersons)) {
+              self.warningAlert(errorMessage);
+            }
+            else {
+              group.rev++;
+              ddb.saveDoc();
+            }
+            self.uitgifteForm(key);
+        });
+        $("#group_vegetarian", container).click(function (e) {
+            var key = $("#group_id").val2();
+            var group = model.Groups.findEntry(key);
+            group.vegetarian = $(this).val2();
+            //TODO: check als er bij vegetarische optie geen mogelijkheden meer zijn (of is dit té edge case...)
+            model.Groups.reIssueRestaurants(key);
+            group.rev++;
+            ddb.saveDoc();
+            self.uitgifteForm(key);
+        });
+        $("#cmd_delete", container).click(function (e) {
+            var key = +$("#group_id").val2();
+            var item = model.Groups.findEntry(key);
+            if (confirm("Groep " + item.name + " verwijderen?")) {
+              model.Groups.removeEntry({id: key});
+              ddb.saveDoc();
+              self.uitgifteForm();
+              self.infoAlert("Groep '" + item.name + "' is verwijderd.");
+            }
+        });
+        $("#cmd_roulette", container).click(function (e) {
+            var key = $("#group_id").val2()
+            ,   group = model.Groups.reIssueRestaurants(key)
+            ;
+            if (group) {
+              group.rev++;
+              ddb.saveDoc();
+              self.uitgifteForm(key);
+            }
+            else {
+              self.warningAlert("Er ging iets mis met het opnieuw kiezen van restaurants...");
+            }
+        });
+        $(".cmd_edit", container).click(function (e) {
+            e.preventDefault();
+            var key = $(e.target).data("key");
+            if (key) {
+                self.uitgifteForm(key);
+            }
+        });
+        $("#cmd_close", container).click(function (e) {
+            e.preventDefault();
+            var key = $("#group_id").val2();
+            var hitCtrlP = !(e.ctrlKey || e.altKey || e.shiftKey);
+            self.printTicket(key, hitCtrlP);
+            self.uitgifteForm();
+            self.clearAlert();
+        });
+        $("#cmd_reset", container).click(function (e) {
+            var a = getRandomInt(0, 9)
+            ,   b = getRandomInt(0, 9);
+          if (prompt(format("Om alle groepen te verwijderen, en restaurant reserveringen  op 0 te stellen, hoeveel is:\n\n%1 + %2", a, b), "0") == (a+b)) {
+            model.Groups.resetGroups();
+            ddb.saveDoc();
+            self.uitgifteForm();
+          }
+        });
+      },
+
+      overForm: function () {
+        var model = initTochtModel(ddb.currentDoc());
+        var data = model.Logs.getLines();
+        data.app = {versie:"2.02", jaar:"2014-2015", auteur: "D. Zanstra" };
+        var container = view.render("#over-template", "#tab-content", data);
+      }
+    };
+
+    $(function () {
+      controller.initialize();
+      controller.mainForm();
+    });
+  </script>
+
+  <script type="text/template" id="tochten-template">
+
+    <h1>Culinaire zwerftocht</h1>
+    <p>Kies een tocht uit, of maak een nieuwe aan.</p>
+
+    <table class="table table-condensed table-hover">
+      <thead>
+        <tr>
+          <th>Naam</th>
+          <th>type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each entries}}
+        <tr>
+          <td>
+            <a href="#/zwerftocht/{{id}}" data-id="{{id}}" data-name="{{name}}"
+               class="cmd_open" title="id: {{id}}">{{name}}</a>
+          </td>
+          <td>{{type}}</td>
+          <td>
+            <button type="button" class="btn btn-danger btn-xs cmd_delete" data-id="{{id}}"><span class="glyphicon glyphicon-remove"></span> Verwijderen</button>
+            <button type="button" class="btn btn-default btn-xs cmd_import_export" data-id="{{id}}" title="Import/export dialoog"  data-toggle="modal" data-target="#exportModal"><span class="glyphicon glyphicon-transfer"></span> Transfer</button>
+            <button type="button" class="btn btn-default btn-xs cmd_mail" data-id="{{id}}" title="Export naar e-mail"><span class="glyphicon glyphicon-envelope"></span></button>
+          </td>
+        </tr>
+        {{/each}}
+        <tr>
+          <td>
+            <label class="sr-only" for="tocht_naam">Tocht naam</label>
+            <input type="text" class="form-control" placeholder="Tocht naam" id="tocht_naam" required autofocus>
+          </td>
+          <td><div class="non-form-group">{{defaultType}}</div></td>
+          <td>
+            <div class="non-form-group">
+              <button class="btn btn-primary btn-xs cmd_add" type="submit" id="tocht_add"><span class="glyphicon glyphicon-plus"></span> Toevoegen</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </script>
+
+  <script type="text/template" id="top-alert-template">
+    <div class="alert alert-{{ context }} alert-dismissible" role="alert" id="top-alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      {{ message }}
+    </div>
+  </script>
+  
+  <script type="text/template" id="tocht-tab-template" data-partials="initial:#tocht-template">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#" id="tocht-tab">Tocht</a></li>
+      <li><a href="#" id="restaurants-tab">Restaurants <span class="badge" title="Aantal beschikbare plaatsen"></span></a></li>
+      <li><a href="#" id="uitgifte-tab">Coupon uitgifte <span class="badge" title="Aantal geregistreerde personen"></span></a></li>
+      <li><a href="#" id="over-tab">Over</a></li>
+    </ul>
+
+    <div id="tab-content" style="margin-top:2em">
+      {{> initial}}
+    </div>
+  </script>
+
+  <script type="text/template" id="tocht-template">
+    <p>
+      Er zijn {{nrRestaurants}} restaurants met {{nrSeats}} plekken,
+      en {{nrGroups}} groepen met in totaal {{nrPersons}} personen.
+    </p>
+    <form class="form-horizontal" role="form" onsubmit="return false;">
+      <div class="form-group">
+        <label for="tocht_name" class="col-sm-2 control-label">Naam tocht</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="tocht_name" placeholder="Naam tocht" value="{{name}}" autofocus>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tocht_description" class="col-sm-2 control-label">Omschrijving</label>
+        <div class="col-sm-10">
+          <textarea class="form-control" rows="11" id="tocht_description">{{description}}</textarea>
+          <span class="help-block">
+            Omschrijving van de tocht. Deze wordt op de coupon afgedrukt. 
+            Opmaak met <a href="http://daringfireball.net/projects/markdown/basics" target="_blank">Markdown</a>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="tocht_name" class="col-sm-2 control-label">Borrel</label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <input type="checkbox" id="tocht_has_afterParty" {{attr afterPartyBar 'checked' }}>
+            </span>
+            <input type="text" class="form-control" id="tocht_afterPartyBar" placeholder="Naam borrel plek"
+                   value="{{afterPartyBar}}">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2"></label>
+        <div class="col-sm-10">
+          <button type="button" class="btn btn-default" id="print_test_ticket">Print test coupon</button>
+          <button type="button" class="btn btn-link" id="sluit_tocht">Sluit tocht</button>
+        </div>
+      </div>
+
+  </script>
+
+  <script type="text/template" id="restaurants-template" data-partials="row:#restaurant-row-template">
+
+    <p>Er zijn nu {{entries.length}} restaurants met {{nrSeats}} plaatsen, waarvan {{nrAvailableSeats}} beschikbaar.</p>
+    <table class="table table-condensed table-hover">
+      <thead>
+        <tr>
+          <th class="col-md-4">Naam</th>
+          <th class="col-md-2">Aantal plaatsen</th>
+          <th class="col-md-2" title="Voorgerecht | Hoofdgerecht | Nagerecht">Aantal plaatsingen</th>
+          <th class="col-md-2">Mogelijkheden</th>
+          <th class="col-md-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each entries}}
+        {{> row}}
+        {{/each}}
+      </tbody>
+      <tfoot>
+        {{#with default}}
+        {{> row}}
+        {{/with}}
+      </tfoot>
+    </table>
+  </script>
+
+  <script type="text/template" id="restaurant-row-template">
+    <tr>
+      <td class="form-group">
+        <label class="sr-only" for="restaurant_name${{id}}">Naam restaurant</label>
+        <input type="text" class="form-control" id="restaurant_name${{id}}" name="restaurant_name" value="{{name}}" data-id="{{id}}"
+               placeholder="Naam restaurant" required autocomplete="off">
+      </td>
+
+      <td class="form-group">
+        <label class="sr-only" for="restaurant_nrSeats">Aantal plaatsen</label>
+        <input type="number" class="form-control" id="restaurant_nrSeats${{id}}" name="restaurant_nrSeats" data-id="{{id}}" value="{{nrSeats}}"
+               placeholder="Aantal" autocomplete="off">
+      </td>
+      <td>
+        <div class="non-form-group">{{join nrIssuedCourses}}</div>
+      </td>
+      <td>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" id="restaurant_vegetarian${{id}}" name="restaurant_vegetarian" data-id="{{id}}"
+                   {{attr vegetarian 'checked' }}>
+            Vegetarisch
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="non-form-group">
+          {{#if id}}
+          <button type="button" class="btn btn-danger btn-xs cmd_delete" {{attr hasCourses "disabled"}} data-id="{{id}}"><span class="glyphicon glyphicon-remove"></span> Verwijderen</button>
+          {{else}}
+          <button type="submit" class="btn btn-primary btn-xs cmd_add"><span class="glyphicon glyphicon-plus"></span> Toevoegen</button>
+          {{/if}}
+        </div>
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/template" id="uitgifte-template">
+      <div class="{{nattr soldOut 'hide'}}">
+          <h3>Groepen</h3>
+          <p>We zijn uitverkocht! Alle plaatsen zijn vergeven.</p>
+      </div>
+      
+      <form class="form-inline {{nattr showNewGroup 'hide'}}" role="form" id="newGroupForm" onsubmit="return false;">
+          <h3>Nieuwe groep</h3>
+
+          <div class="form-group">
+              <label class="sr-only" for="new_group_name">Groep naam</label>
+              <input type="text" class="form-control" id="new_group_name" placeholder="Groep naam"
+                     value="{{group.name}}" style="width:300px" autofocus>
+          </div>
+          <div class="form-group">
+              <label class="sr-only" for="new_group_nrPersons">Aantal personen</label>
+              <input type="number" min="1" max="{{maxGroupSize}}" class="form-control" id="new_group_nrPersons"
+                     placeholder="Aantal personen" value="{{group.nrPersons}}" style="width:100px">
+          </div>
+          <div class="checkbox">
+              <label>
+                  <input type="checkbox" id="new_group_vegetarian" {{attr group.vegetarian 'checked' }}> Vegetarisch
+              </label>
+          </div>
+          <div style="margin-top:1em">
+              <button type="submit" class="btn btn-default btn-xs" id="cmd_register" title="Registreer en print voucher">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                  Registreren
+              </button>
+          </div>
+      </form>
+
+      <form class="form-inline {{nattr showGroupEdit 'hide'}}" role="form" id="editGroupForm" onsubmit="return false;">
+          <h3>Groep bewerken</h3>
+
+          <div>
+              <div class="form-group">
+                  <label class="sr-only" for="group_name">Groep naam</label>
+                  <input type="hidden" id="group_id" value="{{group.id}}">
+                  <input type="text" class="form-control" id="group_name" placeholder="Groep naam"
+                         value="{{group.name}}" style="width:300px" autofocus>
+              </div>
+              <div class="form-group">
+                  <label class="sr-only" for="group_nrPersons">Aantal personen</label>
+                  <input type="number" min="1" max="6" class="form-control" id="group_nrPersons"
+                         placeholder="Aantal personen" value="{{group.nrPersons}}" style="width:100px">
+              </div>
+              <div class="checkbox">
+                  <label>
+                      <input type="checkbox" id="group_vegetarian" {{attr group.vegetarian 'checked' }}> Vegetarisch
+                  </label>
+              </div>
+          </div>
+          <div>
+              <ul style="margin-top:1em">
+                  {{#each group.restaurants}}<li>{{ name }}</li>
+                  {{/each}}
+              </ul>
+          </div>
+          <div style="margin-top:1em">
+              <button type="submit" class="btn btn-danger btn-xs" id="cmd_delete"><span class="glyphicon glyphicon-remove"></span> Verwijderen</button>
+              <button type="submit" class="btn btn-default btn-xs" id="cmd_roulette">
+                  <span class="glyphicon glyphicon-refresh"></span>
+                  Andere restaurants
+              </button>
+            <button type="submit" class="btn btn-link" id="cmd_close" title="Print en sluit voucher">
+                Afronden
+            </button>
+        </div>
+      </form>
+
+    <hr>
+    
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Uitgegeven coupons</h4>
+        <p>Er zijn {{nrGroups}} groepen met {{nrPersons}} mensen in totaal.</p>
+          <ul>
+              {{#each groups}}
+              <li title="{{voud nrPersons 'persoon' 'personen'}}{{#if vegetarian}}, vegetarisch{{/if}} &lt;span class=&quot;note&quot;&gt;(id:{{id}}.{{rev}})&lt;/span&gt;
+{{#each restaurants}}▻ {{name}}
+{{/each}}" data-toggle="tooltip" data-placement="left">
+                  <strong data-key="{{id}}" class="btn-link cmd_edit">{{name}}</strong>
+                  ({{nrPersons}})
+              </li>
+              {{/each}}
+          </ul>
+        <button type="reset" class="btn btn-link" id="cmd_reset">
+          <span class="glyphicon glyphicon-remove"></span>
+          Groepen weggooien
+        </button>
+      </div>
+      
+      <div class="col-md-6">
+        <h4>Restaurant statistieken</h4>
+        <p>Maximale groeps grootte: {{maxGroupSize}}</p>
+        {{#each restaurants}}
+        <div class="stat" title="{{name}} ({{nrSeats}} plaatsen)
+{{#each stats}}▻ {{course}}: {{voud nr 'plaatsing' 'plaatsingen'}} &lt;span class=&quot;note&quot;&gt;({{floor pctFilled}}%)&lt;/span&gt;
+{{/each}}" data-toggle="tooltip" data-placement="left">
+          <h6 style="margin-bottom:2px">{{name}}</h6>
+          {{#each stats}}
+          <div class="progress grouped" style="width:{{floor pctRelative}}%">
+            <div class="progress-bar {{clr}}" role="progressbar" aria-valuenow="{{floor pctFilled}}" aria-valuemin="0" aria-valuemax="100" style="width:{{pctFilled}}%">
+              <span class="sr-only">{{PCT}}% Complete (success)</span>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+  </script>
+
+  <script type="text/template" id="tickets-page-template" data-partials="tickets:#tickets-template">
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Culinaire Zwerftocht coupons</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="Content/bootstrap.min.css" rel="stylesheet" />
+        <link href="Content/custom.css" rel="stylesheet" media="all" />
+      </head>
+      <body class="eco">
+        {{> tickets this}}
+      </body>
+    </html>
+</script>
+
+  <script type="text/template" id="tickets-template">
+    {{#each tickets}}
+    <div class="row tickets">
+      {{#each restaurants}}
+      <div class="col-xs-{{../gridWidth}} ticket">
+        <h3>{{name}}</h3>
+        <p>
+          <strong>{{label}}</strong><br>
+          <em>Groep</em>: {{../group.name}}<br>
+          <em>Aantal personen</em>: {{../group.nrPersons}}
+        </p>
+        <div class="footer">
+          Coupon voor culinaire zwerftocht {{../../tocht.name}}, volgnummer {{../group.id}}.{{../group.rev}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    <div class="tocht-description">
+      {{markdown ../tocht.description}}
+    </div>
+    {{/each}}
+  </script>
+
+  <script type="text/template" id="over-template">
+    <p>
+      Dit is versie {{ app.versie }} van de Culinaire Zwerftocht app, gemaakt in {{ app.jaar }} door {{ app.auteur }}.
+      Er is ook een <a href="http://zanstra.com/my/Zwerftocht/arc/">archief van oude versies</a>.
+    </p>
+    <h4>Logs</h4>
+    <p>Alle transacties, met de nieuwste bovenaan. [is dit compleet? En werkelijk handig en nodig?]</p>
+    <ul class="logs">
+      {{#each logs}}
+        <li><strong>{{id}}</strong>: {{line}} <span class="note" title="{{date}}">({{fmtdate date}})</span></li>
+      {{/each}}
+    </ul>
+  </script>
+</body>
+</html>

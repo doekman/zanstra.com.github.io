@@ -1,0 +1,227 @@
+<html>
+<head>
+	<title>Javascript: </title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+input {font-size: 10pt } /*for ns6.1*/
+.code { font-family: monospace }
+.pct { color: gray }
+	</style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+var arr=[
+  'break','else','new','var','case','finally','return','void','catch','for',
+  'switch','while','continue','function','this','with','default','if','throw',
+  'delete','in','try','do','instanceof','typeof'
+];
+var str, obj;
+
+function arrSearch1(s) {
+  for(var i=0; i<arr.length; i++) {
+    if(arr[i]==s) return true;
+  }
+  return false;
+}
+function arrSearch2(s) {
+  for(var i in arr) {
+    if(arr[i]==s) return true;
+  }
+  return false;
+}
+function objSearch1(s) {
+  return obj[s]!=null;
+}
+
+function objSearch2(s) {
+  return typeof obj[s]!='undefined';
+}
+
+function objSearch3(s) {
+  return obj[s]==true;
+}
+
+function strSearch1(s) {
+  return str.indexOf(s)>=0;
+}
+
+function strSearch2(s) {
+  return str.lastIndexOf(s)>=0;
+}
+
+function randomWord(sAlphabet,nMinLen,nMaxLen) {
+  var nLen, sResult='';
+
+  nLen=parseInt((nMaxLen-nMinLen)*Math.random(),10)+nMinLen;
+  for(var i=0; i<nLen; i++) {
+    sResult+=sAlphabet.substr(parseInt(sAlphabet.length*Math.random(),10),1);
+  }
+  return sResult;
+}
+
+var arrSearch, nRepeat;
+function createSearchSet() {
+  nRepeat=parseInt(document.getElementById('herhaling').value,10);
+  arrSearch=new Array(nRepeat);
+  for(var i=0; i<nRepeat; i++) {
+    if(Math.random()>=0.9) {
+      //Search string can be found
+      arrSearch[i]=arr[parseInt(arr.length*Math.random(),10)];
+    }
+    else {
+      //Search string can't be found (or at least, random
+      arrSearch[i]=randomWord('abcdefghijklmnopqrstuvwxyz',3,8);
+    }
+  }
+  ID('btnRunAll').disabled=false;
+}
+function zoek(fnZoek) {
+  var dtBegin, dtEnd, blnFound;;
+  dtBegin=new Date();
+  for(var i=0; i<arrSearch.length; i++) 
+  {
+    blnFound=fnZoek(arrSearch[i]);
+  }
+  dtEnd=new Date();
+  return (dtEnd.valueOf()-dtBegin.valueOf());
+}
+
+function runAll() {
+  var s=[], n100procent;
+  n100procent=zoek(arrSearch1);
+  s[0]=ID('idArrSearch1').value='100%';
+  s[s.length]=ID('idArrSearch2').value=parseInt(zoek(arrSearch2)*100/n100procent,10)+'%';
+  s[s.length]=ID('idObjSearch1').value=parseInt(zoek(objSearch1)*100/n100procent,10)+'%';
+  s[s.length]=ID('idObjSearch2').value=parseInt(zoek(objSearch2)*100/n100procent,10)+'%';
+  s[s.length]=ID('idStrSearch1').value=parseInt(zoek(strSearch1)*100/n100procent,10)+'%';
+  s[s.length]=ID('idStrSearch2').value=parseInt(zoek(strSearch2)*100/n100procent,10)+'%';
+  ID('totals').value='<td>'+s.join('</td><td>')+'</td>';
+}
+function ID(s) {
+  if(document.getElementById==null) 
+    return document.all[s];
+  else
+    return document.getElementById(s);
+}
+function pageInit() {
+//--| initialize the other list-types with same data as arr
+  obj=new Object();
+  str=arr.join(',');
+  for(var i=0; i<arr.length; i++) {
+    obj[arr[i]]=true;
+  }
+}
+  </script>
+</head>
+<body onload="pageInit()">
+<table cellpadding="0" border="0"><tr><td><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    speedTest.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+  &nbsp;
+</td><td><!--column 3a-->  
+	<h1>Snelheidstest voor het zoeken binnen een lijst</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+    Voor een aantal zaken wilde ik binnen javascript kijken of een waarde
+    in een lijst voorkomt. En aangezien dit erg vaak gebeurd, wilde ik eens
+    testen wat het snelst was. Ik heb drie gegevensstructuren getest:
+	</p>
+  <ul>
+    <li>Array</li>
+    <li>String</li>
+    <li>Object</li>
+  </ul>
+  <p>
+    Het uitgangspunt is een array met strings. Deze wordt omgezet naar
+    een string en naar een object. Om alle verschillende tests dezelfde uitgangspositie
+    te geven, wordt er een <em>test-set</em> samengesteld. 50% van de te zoeken 
+    strings komen in de lijst voor; 50% strings komen niet voor. De strings die
+    niet in de lijst voorkomen, worden random samengesteld, met als woordlengte 3 tot 8
+    tekens uit een alfabet van letters.
+  </p>
+  <h2>De Test</h2>
+  <div>
+    <form>
+      <label for="herhaling">Herhaling</label>
+      <input type="text" id="herhaling" value="25000" />
+      <input type="button" onclick="createSearchSet()" value="Create Search Set" />
+      <input type="button" onclick="runAll()" id="btnRunAll" value="Run All" disabled="disabled" />
+      <br />
+      <table cellspacing="0">
+        <tr>
+          <th>&nbsp;</th>
+          <th colspan="2">Array-search</th>
+        </tr>
+        <tr>
+          <th>arr1</th>
+          <td class="code">for(var i=0; i&lt;array.length; i++) if(array[i]==s)</td>
+          <td><input type="button" value="not ran" id="idArrSearch1" onclick="this.value=zoek(arrSearch1);" /></td>
+        </tr>
+        <tr>
+          <th>arr2</th>
+          <td class="code">for(var i in array) if(array[i]==s)</td>
+          <td><input type="button" value="not ran" id="idArrSearch2" onclick="this.value=zoek(arrSearch2);" /></td>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <th colspan="2">Object-search</th>
+        </tr>
+        <tr>
+          <th>obj1</th>
+          <td class="code">if(object[s]==null)</td>
+          <td><input type="button" value="not ran" id="idObjSearch1" onclick="this.value=zoek(objSearch1);" /></td>
+        </tr>
+        <tr>
+          <th>obj2</th>
+          <td class="code">if(typeof object[s]!='undefined')</td>
+          <td><input type="button" value="not ran" id="idObjSearch2" onclick="this.value=zoek(objSearch2);" /></td>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <th colspan="2">String-search</th>
+        </tr>
+        <tr>
+          <th>str1</th>
+          <td class="code">if(str.indexOf(s)!=-1)</td>
+          <td><input type="button" value="not ran" id="idStrSearch1" onclick="this.value=zoek(strSearch1);" /></td>
+        </tr>
+        <tr>
+          <th>str2</th>
+          <td class="code">if(str.lastIndexOf(s)!=-1)</td>
+          <td><input type="button" value="not ran" id="idStrSearch2" onclick="this.value=zoek(strSearch2);" /></td>
+        </tr>
+      </table>
+      <h2>Testwaarden (arr1 resultaat is 100%)</h2>
+      <table border="1">
+        <tr>
+          <th>&nbsp;</th>
+          <td>arr1</td>
+          <td>arr2</td>
+          <td>obj1</td>
+          <td>obj2</td>
+          <td>str1</td>
+          <td>str2</td>
+        </tr><tr>         
+          <th>ie5.0a</th><td>100<span class="pct">%</span></td><td>740<span class="pct">%</span></td><td>38<span class="pct">%</span></td><td>63<span class="pct">%</span></td><td>42<span class="pct">%</span></td><td>41<span class="pct">%</span></td>
+        </tr><tr>
+          <th>ie6</th><td>100<span class="pct">%</span></td><td>950<span class="pct">%</span></td><td>43<span class="pct">%</span></td><td>79<span class="pct">%</span></td><td>45<span class="pct">%</span></td><td>46<span class="pct">%</span></td>          
+        </tr><tr>
+          <th>ns6.1</th><td>100<span class="pct">%</span></td><td>276<span class="pct">%</span></td><td>23<span class="pct">%</span></td><td>12<span class="pct">%</span></td><td>40<span class="pct">%</span></td><td>28<span class="pct">%</span></td>
+        </tr>
+      </table>
+      <input type="text" id="totals" />
+    </form>
+  </div>
+  <div class="footer">Doeke Zanstra, 2001, <a href="../index.htm">index</a></div>
+</td></tr></table><!--end columns--></body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="iframe.css">
+	<style type="text/css">
+PRE.javascript
+{	border-width: 2px
+;	border-style: dashed
+;	border-color: yellow
+;	font-family: 'Courier New',Courier,fixed
+;	font-size: 9pt
+;	color: white
+;	background-color: black
+}
+	</style>
+	<script language="JavaScript">
+var rePostcode=new RegExp("[1-9][0-9]{3}[a-z]{2}","i");
+function validate(str) {
+if(typeof(""+str)=="string") {
+	if(str.match(rePostcode)==str)
+		alert('postcode voldoet');
+	else
+		alert('FOUTE postcode');
+	var res="";
+//	res+="String.match: "+str.match( rePostcode )+"\n";
+//	res+="String.search: "+str.search( rePostcode )+"\n";
+//	res+="RegExp.test: "+rePostcode.test(str)+"\n";
+//	alert(res);
+} else {
+	alert('foutje, geen string');
+}
+}
+	</script>
+</head>
+
+<body>
+<p>Een Nederlandse postcode heeft het formaat: nNNNXX, 
+waarbij n is 1 t/m 9 en N is 0 t/m 9 en X is A t/m Z
+(het getal van de postcode moet groter of gelijk aan 1000 zijn, m.a.w. niet met een 0 beginnen).<br>
+Er wordt geen onderscheid tussen hoofd en kleine letters gemaakt.
+</p>
+<PRE class="javascript">
+function validatePostalCode(strPostalCode) {
+  var rePostcode=new <strong>RegExp("[1-9][0-9]{3}[a-z]{2}","i")</strong>;
+  if(typeof(""+strPostalCode)=="string") {
+    if(str.<strong>match(rePostcode)==str</strong>)
+      alert('postcode voldoet');
+    else
+      alert('FOUTE postcode');
+}
+</PRE>
+<form name=frmDing>
+Postcode: 
+<input type="text" name=inpPostcode>
+<input type="button" value="valideer" onclick='validate(frmDing.inpPostcode.value)'>
+</form>
+</body>
+</html>

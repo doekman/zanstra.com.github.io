@@ -1,0 +1,131 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+.dialog {
+  border: 3px solid blue;
+  padding: 5px 5px 5px 5px;
+  font-family: Arial, sans-serif;
+  position: absolute;
+  display: none;
+  background-color: #ffffcc;
+}
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function pageInit() {
+}
+var oAddrCtrl;
+function addr(bln)
+{
+  if(bln)
+  {
+    //save address
+    var chk=document.forms.emails.email;
+    var a=new Array();
+    for(var i=0; i<chk.length; i++)
+    {
+      if(chk[i].checked) a.push(chk[i].value);
+    }
+    oAddrCtrl.value=a.join(',');
+  }
+  //hide addresslist
+  var o=document.getElementById('addressList');
+  o.style.display='none';
+  //enable main form
+  document.getElementById('main').disabled=false;
+}
+function getAddress(oCtrl) {
+  //disable main form
+  document.getElementById('main').disabled=true;
+  //show dialog
+  var o=document.getElementById('addressList');
+  o.style.pixelLeft=300;
+  o.style.pixelTop=100;
+  o.style.display='block';
+  //save control
+  oAddrCtrl=oCtrl;
+}
+  </script>
+</head>
+<body onload="pageInit();">
+
+<div id="main">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Dialog
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+  <h2 style="margin-top: 0em">New email</h2>
+  <form name="email">
+    <div>
+      <label style="width: 65px"><a href="javascript: getAddress(document.forms.email.from);">From</a>: </label><input type="text" name="from" style="width: 400px" />
+    </div>
+    <div>
+      <label style="width: 65px"><a href="javascript: getAddress(document.forms.email.to);">To</a>: </label><input type="text" name="to" style="width: 400px" /> 
+    </div>
+    <div>
+      <label style="width: 65px">Subject: </label><input type="text" name="subject" style="width: 400px" /> 
+    </div>
+    <hr style="width: 465px; text-align: left"/>
+    <div>
+      <textarea style="width: 465px" rows="20"></textarea>
+    </div>
+    <hr/>
+  </form>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Stuur een email">Doeke Zanstra</a>, 2001. 
+    Code is free to use and provided as-is, mention source (me). Don't blame me if anything goes wrong ;-)
+   </div>
+</td></tr></table><!--end columns-->
+</div><!--end div-main-->
+<div id="addressList" class="dialog" style="height:200px; width: 200px">
+  <div style="overflow: auto; height: 175px">
+    <form name="emails">
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+      <input type="checkbox" name="email" value="d.zanstra@kpn.com"/> Doeke Zanstra<br/>
+    </form>
+  </div>
+  <hr/>
+  <input type="button" name="ok" value="OK" onclick="addr(true);"/> 
+  <input type="button" name="ok" value="Cancel" onclick="addr(false);"/> 
+
+</div>
+</body>
+</html>

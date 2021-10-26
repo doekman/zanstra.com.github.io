@@ -1,0 +1,193 @@
+<html>
+<head>
+  <link rel="stylesheet" href="../default.css">
+  <style type="text/css">
+.menu, .menutitle {
+  padding: 2px 2px 2px 4px; 
+}
+.menu { 
+  position: absolute;
+  left: 113px;
+  width: 550px;
+  visibility: hidden;
+  background-color: #cccccc;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+#menu1 { top: 76px }
+#menu2 { top: 96px }
+#menu3 { top: 116px }
+#menu4 { top: 136px }
+.menutitle { 
+  width: 100px; 
+  font-weight: bold; 
+  cursor: default
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+</head>
+<body>
+<script language="javascript">
+var whichDom='', styleObj='', currentStyleObj='';
+
+if (document.layers)  {
+  whichDom = '["'
+  styleObj = '"]'
+  currentStyleObj = '"]'
+} else if (document.all)  {
+  whichDom = ".all."
+  styleObj = ".style"
+  currentStyleObj = '.currentStyle'
+} else {
+  whichDom = '.getElementById("'
+  styleObj = '").style'
+  currentStyleObj = '").currentStyle'
+}
+
+function setObject(obj) { //get style object 
+var theObj
+ if (typeof obj == "string")
+  theObj = eval("document" + whichDom + obj + styleObj)
+ else
+  theObj = obj
+ return theObj
+}
+
+function getObject(obj) {//get currentStyle object
+var theObj
+ if (typeof obj == "string")
+  theObj = eval("document" + whichDom + obj + styleObj)
+ else
+  theObj = obj
+ return theObj
+}
+
+</script>
+<script language="javascript">
+// the NS code doesn't really work, because of:
+// onmouseover/onmouseout: only supported on layer/link
+// needs some work still
+var strMenuOpenId;
+function showMenu(strId) {
+  var oTitle,oItem;
+  if(typeof strMenuOpenId=='string') { //hide previous menu when open
+    hideMenuReal(strMenuOpenId);
+    strMenuOpenId=null;
+    cancelHideMenu(); //cancel a running hideMenu timeout.
+  }
+  setObject(strId).visibility='visible';
+  setObject(strId+'title').color='Blue';
+  setObject(strId+'title').backgroundColor='#cccccc'; //Opera doesn't swallow this one (.color works)
+  strMenuOpenId=strId;
+}
+function hideMenuReal(strId) {
+  setObject(strId).visibility='hidden';
+  setObject(strId+'title').color='Black';
+  setObject(strId+'title').backgroundColor='transparent';
+}
+function hideMenu(strId) {
+  timeoutID=window.setTimeout('hideMenuReal("'+strId+'")',750);
+}
+function cancelHideMenu() {
+  if(typeof timeoutID=='number') {
+    window.clearTimeout(timeoutID);
+    timeoutID=null;
+  }
+}
+</script>
+<table cellpadding="0" border="0"><tr><td><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>
+  <div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    hysteresis.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->
+  <h1>Hysteresis</h1>
+</td></tr><tr><td><!--column 1b-->
+  <div style="border: 1px solid black; background-color: #eeeeee; width: 100%">
+    <div onmouseover="showMenu('menu1');" onmouseout="hideMenu('menu1');">
+      <div id="menu1title" class="menutitle">Kranten</div>
+      <div id="menu1" class="menu">
+          <a href="http://www.nrc.nl/">NRC Handelsblad</a>
+        | <a href="http://www.volkskrant.nl/">Volkskrant</a>
+        | <a href="http://www.telegraaf.nl/">Telegraaf</a>
+        | <a href="http://www.parool.nl/">Parool</a>
+        | <a href="http://www.ad.nl/">Algemeen Dagblad</a>
+        | <a href="http://www.trouw.nl/">Trouw</a>
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu2');" onmouseout="hideMenu('menu2');">
+      <div id="menu2title" class="menutitle">Nieuws sites</div>
+      <div id="menu2" class="menu">
+          <a href="http://www.tweakers.net/">Tweakers NET</a>
+        | <a href="http://www.t-mail.nl/voorpagina.php">T-Mail</a>
+        | <a href="http://www.nu.nl/">nu.nl</a>
+        | <a href="http://www.webwereld.nl/">Web-wereld</a>
+        | <a href="http://www.internetnieuws.nl/">Internet Nieuws</a>
+        
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu3')" onmouseout="hideMenu('menu3');">
+      <div id="menu3title" class="menutitle">ISP Portals</div>
+      <div id="menu3" class="menu">
+          <a href="http://www.hetnet.nl/default.htm">Het Net</a>
+        | <a href="http://www.planet.nl/">Planet</a>
+        | <a href="http://www.xs4all.nl/">XS4ALL</a>
+        | <a href="http://www.tmfweb.nl/">TMF Web</a>
+        | <a href="http://www.wanadoo.nl/">Wannado</a>
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu4')" onmouseout="hideMenu('menu4');">
+      <div id="menu4title" class="menutitle">Messaging</div>
+      <div id="menu4" class="menu">
+          <a href="http://www.xoip.nl/">XOIP</a>
+        | <a href="http://www.message4u.nl/">Message4U</a>
+        | <a href="http://hotmail.com/">Hotmail</a>
+        | <a href="http://mail.yahoo.com">Yahoo</a>
+        | <a href="http://www.operamail.com">Opera Mail</a>
+        | <a href="http://netmail.hetnet.nl/">Het Net</a>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--menu-->
+  <script language="javascript">writeMenu();</script>
+  <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->
+  <p>
+    Is het je nooit eens opgevallen dat menu's op web-pagina's (hoe mooi ze
+    er vaak uit ook zien) een beetje irritant werken? Zo gauw je de cursor er
+    af haalt, is het menu verdwenen.
+  </p>
+  <p>
+    Het sleutelwoord hiervoor is <strong>hysteresis</strong>.
+    Als de cursor het menu verlaat, dan duurt het even voordat het menu verdwenen is.
+    Hierdoor hoef je minder nauwkeurig met de muis te werken.
+  </p>
+  <p>
+    Op deze pagina heb ik een demo-implementatie hiervan gemaakt. 
+    Deze demo heeft alleen een "verberg-hysteresis" (het duurt even voordat het menu
+    verdwenen is). Je zou ook een "toon-hysteresis" kunnen maken 
+		(<a href="hysteresis1.htm">zie voorbeeld</a>): het duurt
+    dan even voordat het menu verschijnt, zodat de pagina minder <em>zenuwachtig</em>
+    wordt.
+  </p>
+  <p> 
+    Voor meer (theoretische) informatie over hysteresis, verwijs ik naar een (engelstalig)
+    verhaal op <a href="http://www.mackido.com/Interface/hysteresis.html">Mackido</a>.
+  </p>  
+  <p>
+    Waarom is dit zo'n raar menu? Kijk maar eens op <a href="http://www.nrc.nl/">
+    NRC Handelsblad</a>.
+  </p>
+  <div class="footer">Doeke Zanstra 2001, Sorry, IE/Opera only, version 1.0, 
+  <a href="../index.htm">index</a></div>
+</td></tr></table><!--end columns-->
+</body>
+</html>

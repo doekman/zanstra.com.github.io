@@ -1,0 +1,139 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 1em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+textarea {
+  overflow: scroll
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/listReplace.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+var aUBBCache;
+function pageInit() {
+  pre2div('preSampleCode','divSampleCode');
+
+  aUBBCache=initTokenCache(aUBBTokens);
+  ID('parse').focus();
+}
+
+function testListReplace() {
+  ID('outputDiv').innerHTML=ID('txtOutput').value=listReplace(ID('txtInput').value,aUBBCache,ID('dbg').checked); 
+;
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    listReplace
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+    When replacing a number of different strings in a string, consecutive calls to <code>String.replace()</code> is not really efficient. This function solves this problem. It makes use of associative arrays.
+    This is my first attempt to make an UBB parser, which is used in web-forums.
+    <br><br>
+    <em>Download</em>:
+    <a href="../js/listReplace.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/listReplace.js" title="IE propriety mode">view-source</a>.
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code><b>win32</b>: ie5..ie6, ns6.1</code>, <code><b>OS X</b>: ie5.1</code>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode"> 
+//Use this form to replace just one string
+s=listReplace(s,initTokenCache(aHTMLTokens));
+
+//Or if more than one string needs to be taken care of
+var aTokenCache=initTokenCache(aUBBTokens);
+s1=listReplace(s1,aTokenCache);
+s2=listReplace(s2,aTokenCache);</pre>
+  <h2>
+    Live Demo
+  </h2>
+
+    <form name="frm">
+      <table width="100%">
+        <tr>
+          <td width="50%">
+            <b>input</b><br>
+            <textarea id="txtInput" rows="5" style="width: 100%">
+[u]Testing[/u] it [b]a bit[/b] [i]never[/i] [br]
+[b][u]ever [i]hurt[/u] anyone[/i][/b] :-) 
+([code]in code[/code])
+            </textarea>
+          </td>
+          <td width="50%">
+            <b>output (text)</b><br>
+            <textarea id="txtOutput" rows="5" style="width: 100%">
+            </textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>control</b><br>
+            <input type="checkbox" id="dbg" id="dbg">
+            <label for="dbg">Debug</label>
+            <input type="button" id="parse" value="Replace" onclick="testListReplace();">
+          </td>
+          <td>
+            <b>output (html)</b>
+            <div style="width: 100%; height: 100px; border: 1px solid black; vertical-align: top" id="outputDiv">
+              &nbsp;
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <strong>The listReplace uses the following dictionary in this example:</strong>
+            <br>
+            <code>
+              <script language="javascript">
+var aHTMLCache=initTokenCache(aHTMLTokens);
+for(var i=0; i<aUBBTokens.length; i++) {
+  document.writeln(aUBBTokens[i][0]+' &rarr; '+listReplace(aUBBTokens[i][1],aHTMLCache)+'<br>');
+}
+              </script>
+            </code>
+           </td>
+        </tr>
+      </table>
+    </form>
+  
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

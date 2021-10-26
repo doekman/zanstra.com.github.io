@@ -1,0 +1,433 @@
+<html>
+<head>
+	<title>dzLib: Integrated Pruts Environment</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+#mainTable {
+	display: block
+}
+#zoomTable {
+	display: none;
+}
+#code {
+  width:100%;
+  height:300px;
+  font-family:monospace;
+  border:1px solid black;
+  padding: 3px;
+  margin: 0px;
+}
+#console {
+  width:100%;
+  height:100px;
+  font-family:monospace;
+  overflow:auto;
+  border:1px solid black;
+}
+button.spacer {
+  margin-left:10px;
+}
+span.comment,
+#comment1,
+#comment2
+{ 
+  color:gray
+}
+.bnf { color:gray }
+.code { color:darkblue }
+.fn { color: blue; font-weight:bold }
+.liner { 
+  margin: 0px 0px 5px 0px; 
+  padding: 3px 10px 3px 10px; 
+  border:1px solid black; 
+  position: relative;
+  top:-2px;
+  background-color: lightgrey;
+  color: black;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 9pt;
+}
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+.noop {
+	color: gray;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/cookie.js"> </script>
+	<script language="javascript" src="../js/toSource.js"> </script>
+	<script language="javascript" src="../js/x/crunch.js"> </script>
+	<script language="javascript" src="../js/x/jslint.js"> </script>
+  <script language="javascript">
+function MoveNode(node,newParent) {
+	var parent=node.parentNode;
+	node=parent.removeChild(node);
+	newParent.appendChild(node);
+}
+function MoveNode2(node,newParent) {
+	var parent=node.parentNode;
+	node=parent.removeChild(node);
+	newParent.insertBefore(node,newParent.firstChild);
+}
+function DoZoom()
+{
+	var m=ID('mainTable');
+	var z=ID('zoomTable');
+	var code=ID('code'); 
+	var linerDiv=ID('liner');
+	var consoleDiv=ID('console');
+	code.style.height='100%';
+	MoveNode(code, z.rows[0].cells[0]);
+	MoveNode(linerDiv, z.rows[1].cells[0]);
+	consoleDiv.style.height='150px';
+	MoveNode(consoleDiv, z.rows[2].cells[0]);
+	m.style.display='none';
+	try {
+		z.style.display='table';
+	}
+	catch(ex) {
+		//ie
+		z.style.display='block';
+	}
+	var zb=ID('zoomButton');
+	zb.value='restore';
+	zb.onclick=UnZoom;
+}
+function UnZoom()
+{
+	var m=ID('mainTable');
+	var z=ID('zoomTable');
+	var code=ID('code'); 
+	var codeDiv=ID('codeDiv'); 
+	var linerDiv=ID('liner');
+	var consoleDiv=ID('console');
+	consoleDiv.style.height='';
+	MoveNode2(consoleDiv, codeDiv);
+	MoveNode2(linerDiv, codeDiv);
+	code.style.height='';
+	MoveNode2(code, codeDiv);
+	m.style.display='';
+	z.style.display='';
+	var zb=ID('zoomButton');
+	zb.value='zoom';
+	zb.onclick=DoZoom;
+}
+
+function obj2str(o) { var s='';for(var i in o) { s+=i+': '+o[i]+'\n'; } return s;}
+var eInfo=0, eWarning=1, eError=2, eSystem=3, eMAX=eSystem;
+var Console=
+{
+  print:function(s,n) 
+  { 
+    var aColor=['Black','Blue','Red','#336600'];
+    var aTitle=['Information','Warning','Error','System'];
+    var o=document.createElement('span');
+    if(!n) n=eInfo; n=parseInt(n,10); if(isNaN(n)||n<0||n>eMAX) n=eInfo; 
+    o.style.color=aColor[n];
+    o.title=aTitle[n];
+    if(typeof s=='object')
+    {
+      s='{ '+obj2str(s).replace(/\n/g,', ')+' }';
+    }
+    o.appendChild(document.createTextNode(s));
+		var c=ID('console')
+    var x=c.appendChild(o);
+		c.appendChild(document.createElement('br'));
+		if(x.scrollIntoView) x.scrollIntoView(false);
+    return this;
+  },
+  cls:function() 
+  { 
+    removeTree(ID('console'));
+  },
+  _ready:function()
+  {
+    Console.print('Javascript ready...',eSystem);
+  }
+}
+function removeTree(o)
+{
+  if(!o.childNodes||o.childNodes.length==0) return;
+  for(var i=o.childNodes.length-1; i>=0; i--)
+  {
+    var p=o.childNodes[i];
+    if(p.childNodes&&p.childNodes.length>0)
+    {
+      removeTree(p);
+    }
+    o.removeChild(p);
+  }
+}
+
+function Run()
+{
+  try {
+	  var sCode=ID('code').value;
+    eval(sCode);
+  }
+  catch(ex) {
+    Console.print('A run-time error occurred',eError);
+    Console.print('-Number: '+(ex.number&0xFFFF)+(ex.name?' ('+ex.name+')':''),eWarning);
+    Console.print('-Description: '+ex.description,eWarning);
+  }
+  finally
+  {
+    Console._ready();
+  }
+}
+function GetIndentString() {
+	var s=String(new Function('var i'));
+	var i=s.indexOf('{')+1, j=s.indexOf('var i');
+	while(s.charAt(i)=='\n') i++; //skip trailing lines
+	return s.substring(i,j);
+}
+function PrettyPrint(code) 
+{
+	var s=String(new Function(code));
+	var i=s.indexOf('{')+1, j=s.lastIndexOf('}');
+	while({'\n':true,' ':true}[s.charAt(i)]) i++; //skip trailing lines
+	s=s.substring(i,j).split('\n'+GetIndentString()).join('\n');
+	var nav=navigator.userAgent;
+	if(nav.indexOf('Opera ')>0 || nav.indexOf('Safari/')>0 || nav.indexOf('Gecko/')>0) {
+		Console.print('-Pretty Print applied.');
+	}
+	else {
+		Console.print('-Pretty Print works best in FireFox and Safari, a bit in Opera, and doesn\'t work in IE.');
+	}
+	return s;
+}
+function Crunch(code)
+{
+	var i,j,k,s;
+	try {
+		i=code.length;
+		s=crunch(code);
+		j=s.length;
+		if(i>0) k=Math.round((i-j)/i*100);
+		else k='?';
+		Console.print(['-Crunched from ',i,' to ',j,' bytes (saved ',k,'%)'].join(''));
+		return s;
+	}
+	catch(ex) {
+    Console.print('-Error: '+ex,eWarning);
+	}
+}
+function JslintCode(code,strict)
+{
+  jslint.laxLineEnd = !strict
+  jslint(code);
+  ID('console').innerHTML+=jslint.report(); 
+	return;
+}
+
+function HtmlEncode(code) {
+	return code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function HtmlDecode(code) {
+	return code.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+}
+function UriEncode(code) {
+	if(encodeURIComponent) {
+		return encodeURIComponent(code);
+	}
+	else {
+		Console.print('-Browser doesn\'t know method encodeURIComponent',eWarning);
+	}
+}
+function UriDecode(code) {
+	if(decodeURIComponent) {
+		return decodeURIComponent(code);
+	}
+	else {
+		Console.print('-Browser doesn\'t know method decodeURIComponent',eWarning);
+	}
+}
+function ToBookmarklet(code) {
+	var i=code.indexOf('javascript:');
+	var j=code.lastIndexOf('void');
+	if(i==0) code=code.substr('javascript:'.length);
+	if(j==-1) {
+		if(code.charAt(code.length-1)==';') code+='void 0';
+		else code+=';void 0';
+	}
+	code=crunch(code);
+	return 'javascript:'+UriEncode(code);
+}
+function ToHtmlBookmarklet(code) {
+	code=ToBookmarklet(code);
+	return HtmlEncode(code);
+}
+function DoAction(e,dit)
+{
+	try {
+	  var res,Code=ID('code'),code=Code.value;
+		switch(dit.options[dit.selectedIndex].value) {
+		case 'pp':          res=PrettyPrint(code); break;
+		case 'crunch': 	    res=Crunch(code); break;
+		case 'lint':        JslintCode(code,false); break;
+		case 'lint-strict': JslintCode(code,true); break;
+		//
+		case 'html-enc':    res=HtmlEncode(code); break;
+		case 'html-dec':    res=HtmlDecode(code); break;
+		case 'uri-enc':     res=UriEncode(code); break;
+		case 'uri-dec':     res=UriDecode(code); break;
+		case '2bookm':      res=ToBookmarklet(code); break;
+		case '2bookmh':     res=ToHtmlBookmarklet(code); break;
+		//
+		case 'credits':     PrintCredits(); break;
+		case 'engine':      WriteEngineVersion(); break;
+		case 'cls':         Console.cls(); break;
+		}
+		if(res) { 
+			Code.value=res;
+			Code.select();
+		}
+		dit.selectedIndex=0;
+	}
+	catch(ex) {
+    Console.print('-Error: '+ex,eWarning);
+	}
+}
+
+function codeKeyPress(e)
+{
+	if(!e) e=window.event;
+	var ch=e.keyCode?e.keyCode:e.which;
+  if(ch==13&&e.ctrlKey) 
+  {
+    Run();
+    return false;
+  }
+}
+
+function GetScriptEngineInfo(){
+  return "Running Microsoft's "+ScriptEngine()+" version "+ScriptEngineMajorVersion()+"."+ScriptEngineMinorVersion()+"."+ScriptEngineBuildVersion();
+}
+function WriteEngineVersion()
+{
+	if(typeof ScriptEngine!='undefined') {
+		//IE
+		Console.print(GetScriptEngineInfo(),eInfo);
+		if(parseFloat(ScriptEngineMajorVersion()+'.'+ScriptEngineMinorVersion())<5.6) {
+			Console.print('Gee, your javascript engine really needs upgrading...',eWarning);
+		}
+	}
+	else {
+		Console.print('-Command not available (Script engine version is IE only)',eInfo);
+	}
+}
+function PrintCredits()
+{
+	Console.print('Credits:');
+	Console.print('-Run and Pretty Print by myself, http://www.xs4all.nl/~zanstra/dzLib.ipe.htm');
+	Console.print('-Js Lint by Douglas Crockford, http://www.crockford.com/',eInfo);
+	Console.print('-Cruncher by Mike Hall, http://www.brainjar.com/js/crunch/ ',eInfo);
+}
+function ID(s) { return document.getElementById(s); }
+function pageInit() {
+  ID('code').onkeyup=codeKeyPress;
+  ID('code').focus();
+  Console._ready();
+	if(typeof ScriptEngine!='undefined') {
+		WriteEngineVersion();
+	}
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table id="zoomTable" cellspacing="0" width="100%" height="100%">
+	<tr><td height="70%" width="100%"></td></tr>
+	<tr><td></td></tr>
+	<tr><td></td></tr>
+</table>
+<table id="mainTable" cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			IPE.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Integrated <acronym title="Fumble">Pruts</acronym> Environment
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+    <div><label for="code">Code:</label></div>
+    <div id="codeDiv"><textarea id="code"></textarea></div>
+    <div class="liner" id="liner">
+      <input type="button" onclick="Run(event);" value="run"/>
+			<select onchange="DoAction(event,this);return false;">
+				<option class="noop" value="">Choose action</option>
+				<option value="pp">&nbsp;&nbsp;Pretty Print</option>
+				<option value="crunch">&nbsp;&nbsp;Crunch</option>
+				<option value="lint">&nbsp;&nbsp;js lint</option>
+				<option value="lint-strict">&nbsp;&nbsp;js lint (strict line-ends)</option>
+				<option class="noop" disabled value="">---------</option>
+				<option value="credits">&nbsp;&nbsp;Credits</option>
+				<option value="engine">&nbsp;&nbsp;JS Engine (ie)</option>
+				<option value="cls">&nbsp;&nbsp;Clear console</option>
+			</select>
+			<select onchange="DoAction(event,this);return false;">
+				<option class="noop" value="">Bookmarklet tools</option>
+				<option value="2bookm">&nbsp;&nbsp;To bookmarklet</option>
+				<option value="2bookmh">&nbsp;&nbsp;To HTML bookmarklet</option>
+				<option class="noop" disabled value="">---------</option>
+				<option value="html-enc">&nbsp;&nbsp;HTML Encode</option>
+				<option value="html-dec">&nbsp;&nbsp;HTML Dencode</option>
+				<option value="uri-enc">&nbsp;&nbsp;URI Encode comp.</option>
+				<option value="uri-dec">&nbsp;&nbsp;URI Decode comp.</option>
+			</select>
+			<input type="button" id="zoomButton" onclick="DoZoom();" value="zoom">
+    </div>
+    <div id="console" style=""></div>
+    <h2>Lib's you can use</h2>
+    <div>
+      <strong>Console</strong> (static) -
+      <span class="code">
+        Console.<span class="fn">print</span>(sText,nType:<span class="bnf">[</span>eInfo<span class="bnf">|</span>eWarning<span class="bnf">|</span>eError<span class="bnf">]</span>); Console.<span class="fn" onclick="Console.cls();" style="cursor:hand;cursor:pointer">cls</span>();
+      </span>
+    </div> 
+    <div>
+      <strong><a href="cookie.htm">cookie.js</a></strong> - 
+      <span class="code">
+        sValue=<span class="fn">getCookie</span>(sName), 
+        <span class="fn">setCookie</span>(sName,sValue,<span class="bnf">[</span>dExpire<span class="bnf">]</span>),
+        dExpire=<span class="fn">getExpireDate</span>(sInterval:<span class="bnf">(</span>'h'<span class="bnf">|</span>'d'<span class="bnf">|</span>'w'<span class="bnf">|</span>'m'<span class="bnf">|</span>'y'<span class="bnf">)</span>,nNumber)
+      </span>
+    </div>
+    <div>
+      <strong><a href="toSource.htm">toSource.js</a></strong> (beta/old) -
+      <span class="code">
+        <span class="fn">toJsText</span>(vVariable);
+      </span>
+    </div>
+    <h2>Explanation</h2>
+    <div>
+      <strong>prefixes</strong> - s:string, n:number, b:boolean, f:function, v:variant/any-type, a:Array, r:RegExp, d:Date, o:Object
+    </div>
+    <div>
+      <strong>BNF</strong> - <span class="bnf">[]</span> optional, <span class="bnf">()</span> grouping, <span class="bnf">|</span> choice
+    </div>
+  </p>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</table>
+</html>

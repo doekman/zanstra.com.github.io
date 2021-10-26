@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title> Safari testcase | window.setTimeout </title>
+    <style type="text/css">
+textarea {
+  width:100%
+}
+    </style>
+    <script type="text/javascript">
+function log(s) { document.getElementById('log').value+=s+'\n'; }
+function timedOutF() { log('timed out function'); }
+function timeoutFunction() {
+  window.setTimeout(timedOutF,1000);
+}
+function timedOutS() { log('timed out string'); }
+function timeoutString() {
+  window.setTimeout('timedOutS()',1000);
+}
+function intervalledF() { log('intervalled out function'); }
+function intervalFunction() {
+  window.setInterval(intervalledF,1000);
+}
+function intervalledS() { log('intervalled out string'); }
+function intervalString() {
+  window.setInterval('intervalledS()',1000);
+}
+
+    </script>
+  </head>
+  <body>
+    <h1> Safari testcase | window.setTimeout </h1>
+    <form onsubmit="return false;">
+      <p>
+        <input type="button" onclick="timeoutFunction();" value="setTimeout(function,1000)"/>
+        Doesn't work in Safari
+        <br/>
+        <input type="button" onclick="timeoutString();" value="setTimeout('function()',1000)"/>
+        <br/>
+        <input type="button" onclick="intervalFunction();" value="setInterval(function,1000)"/>
+        Doesn't work in Safari
+        <br/>
+        <input type="button" onclick="intervalString();" value="setInterval('function()',1000)"/>
+      </p>
+      <p>
+        <label for="log">Logger</label>
+        <br/>
+        <textarea id="log" rows="10"></textarea>
+      </p>  
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

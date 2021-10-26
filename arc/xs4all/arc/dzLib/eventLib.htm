@@ -1,0 +1,129 @@
+<html>
+<head>
+	<title>dzLib: event-lib</title>
+  <link rel="stylesheet" type="text/css" href="../../default.css" />
+  <link rel="stylesheet" type="text/css" href="../default.css" />
+	<style type="text/css">
+.note {
+  color:blue;
+  background-color:yellow;
+  font-style:italic;
+  font-weight:bold;
+  border-left:5px solid blue;
+  border-right:5px solid blue;
+  padding:1px 5px 1px 5px;
+
+}
+  </style>
+  <script language="javascript" src="../../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="events.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    eventLib
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <p>
+    Because the <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/">DOM Level 2 Events 
+    specification</a> (i.e. <code><em>object</em>.addEventListener</code>) is not implemented on the
+    majority of browsers, this library is in developement. It uses the inline event-model 
+    (which is supported by virtually all browsers), and tries to unify event behaviour and properties.
+  </p>
+  <h2>eventLib</h2>
+	<p>
+		<em>Description</em>:<br>
+    This library will supply you with event-chaining (adding more than one function to an event), 
+    maintaining cancel default action functionality (cancel an onsubmit of a form-element).
+    This all works in combination with the declarative use of events.
+    <br><br>
+    <em>Download</em>:
+    <a href="events.js" title="Right mouse-click, and choose Save as..">code</a> (js-file)
+    <span class="note">beta</span>
+    <br>
+    <em>Primary target</em>: <code>ie5+/Win, ie5+/Mac, Mozilla</code> 
+    <br>
+    <em>Secundary target</em>: <code>IE4/Win, Opera, Konquerer, iCab, OmniWeb</code> 
+    <br>
+    <em>Tested on</em>: <code>in beta</code>
+    <br>
+    <em>Resources</em>:
+      <a href="event/event-to.htm">Design document</a>,
+      <a href="event/test.htm">Test page</a>,
+      <a href="event/events.xml">Help file (xml)</a>,
+	</p>
+  <h2>Comparisation table</h2>
+  <table style="width:100%">
+    <tr>
+      <th>Option</th>
+      <th>EventLib</th> 
+      <th title="Only features common to most browsers">inline-<br>model*</th> 
+      <th>DOM 2 <br>Events</th> 
+      <th title="&lt;script for=&quot;window&quot; event=&quot;doIt&quot;&gt;
+Introduced in IE3/Win,IE4/Mac">script,<br>for,event*</th> 
+      <th>attachEvent</th>
+    </tr>
+    <tr>
+      <th> event-chaining </th>
+      <td> YES </td> <td> no </td> <td> YES </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <th> Remove events </th>
+      <td> YES </td> 
+      <td> no </td> <td> YES </td> <td> no </td> <TD> YES </TD>
+    </tr>
+    <tr>
+      <th> default cancelation </th>
+      <td> YES </td> <td> YES </td> <td> YES </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <th> event capturing </th>
+      <td> no </td> <td> no </td> <td> YES </td> <td> no </td> <td> no </td>
+    </tr>
+    <tr>
+      <th> event bubbling </th>
+      <td> YES </td> <td> no </td> <td> YES </td> <td title="Feature introduced in IE4"> no* </td>  <td> YES </td>
+    </tr>
+    <tr>
+      <th> this as event owner </th>
+      <td> YES </td> <td> YES </td> <td> YES </td> <td> YES </td> <td> no </td>
+    </tr>
+    <tr>
+      <th> clear event properties </th>
+      <td> YES </td> <td> no </td> <td> YES </td> <td title="event-object introduced in IE4"> no* </td> <td> YES </td>
+    </tr>
+    <tr>
+      <th> Works on most browsers </th>
+      <td> YES </td> <td> YES </td> <td title="Mozilla only"> no* </td> <td title="IE3+/Win, IE4/Mac,Unix 
+I can hardly call most browsers."> no* </td> <td title="IE5+/Win,Unix only..."> no* </td>
+    </tr>
+    <tr>
+      <th> Available </th>
+      <td> in beta </td> <td> YES </td> <td> YES </td> <td> YES </td>  <td> YES </td>
+    </tr>
+  </table>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

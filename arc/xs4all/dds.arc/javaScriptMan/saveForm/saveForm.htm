@@ -1,0 +1,204 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title> New Document </title>
+	<link rel="stylesheet" type="text/css" href="../iframe.css">
+	<SCRIPT type="text/javascript" src="cookie.js"></SCRIPT>
+	<SCRIPT type="text/javascript">
+		var splitChar="&"; //this is a const
+		var objForm;
+
+function saveFormToCookie()
+		{	var arrForm = new Array(); //0=filename odd=tagname even=value or index (with select)
+			var toSave;
+			var allElements = new Array("INPUT","SELECT","TEXTAREA");
+			var cookieName, fileDescription;
+			var arrIndex;
+			if(objForm.tagName.toUpperCase()!="FORM")
+				return null;
+
+			arrIndex=0;
+			fileDescription=prompt("Give a name to this form-content",getFileDescription() );
+			if(fileDescription==null) //if cancel
+				return;
+			arrForm[arrIndex++]=escape(fileDescription);
+			
+			for(var ele in allElements)
+			{	toSave=objForm.all.tags(allElements[ele]); //collection of all "ele" elements
+				for(var j=0; j<toSave.length; j++)
+				{	iterElement=toSave.item(j);				//object of found element
+					var inputType=iterElement.type.toLowerCase();
+					var inputTag=iterElement.tagName.toUpperCase();
+//for reading purposes, input.radio and input.checkbox, are acting the same
+					if(inputTag=="INPUT" && inputType=="radio") 
+					{	if(iterElement.checked)
+						{	arrForm[arrIndex++] = escape(iterElement.name);
+							arrForm[arrIndex++] = escape(iterElement.value);
+						}
+					}
+					else
+					if(inputTag=="INPUT" && inputType=="checkbox") 
+					{	arrForm[arrIndex++] = escape(iterElement.name);
+						arrForm[arrIndex++] = escape(iterElement.checked);
+					}
+					else	
+					if((inputTag=="INPUT" 
+							&& (inputType=="hidden"||inputType=="password"||inputType=="text"))
+					||	(inputTag=="TEXTAREA"))
+					{	arrForm[arrIndex++] = escape(iterElement.name);
+						arrForm[arrIndex++] = escape(iterElement.value);
+					}
+					else
+					if(inputTag=="SELECT")
+					{	for(var i=0; i<iterElement.length; i++)
+						{	arrForm[arrIndex++] = escape(iterElement.name);
+							arrForm[arrIndex++] = escape( (iterElement[i].selected?"1":"0") + i); /*checked + array index*/
+						}
+					}
+					//don't save tag==input && type in (button, image, reset, submit, file)
+					//type==file is a strange story. IE5 is able to read the value attribute, but not write it.
+					//don't save tag in (isindex,keygen)
+				}
+			}
+			setFileDescription(unescape(arrForm[0]));
+			cookieName=getFileName();
+			var dtExpire = new Date();
+			dtExpire.setFullYear( dtExpire.getFullYear()+1 ); //expire within a year
+//			alert(arrForm.join(splitChar));
+			setCookie(cookieName, arrForm.join(splitChar), dtExpire);
+		}
+
+function loadCookieToForm(interactive)
+		{	var cookieName=getFileName();
+			var cookieValue=getCookie(cookieName);
+			if(objForm.tagName.toUpperCase()!="FORM")
+				return null;
+//			alert(cookieValue);
+			if(cookieValue==null)
+			{	if(interactive==null)
+				{	setFileDescription(null);
+					alert("Sorry, no data stored under this position");
+				}
+				return;
+			}
+			var arrForm = cookieValue.split(splitChar);
+			setFileDescription(unescape(arrForm[0]));
+
+			for(var j=1; j<arrForm.length; j+=2)
+			{	var objElement = eval( objForm[ unescape(arrForm[j]) ] );
+				if(objElement.tagName=="INPUT")
+				{	if(objElement.type=="checkbox")
+					{	objElement.checked=eval( unescape(arrForm[j+1]) );  /*true or false*/
+					}
+					else
+					{	objElement.value = unescape(arrForm[j+1]);
+					}
+				} 
+				else
+				if(objElement.tagName=="TEXTAREA")
+				{	objElement.value = unescape(arrForm[j+1]);
+				}
+				else
+				if(objElement.tagName=="SELECT")
+				{	var str=unescape(arrForm[j+1]);
+					objElement[str.substr(1)].selected=str.substr(0,1)=="1"?true:false;
+				}
+				else
+				if(objElement.length>=1) //is array-able
+				{	if(objElement[0].tagName=="INPUT" && objElement[0].type=="radio")
+					{	var radioValue=unescape(arrForm[j+1]);
+						for(k=0; k<objElement.length; k++) //lookup the index of radiobutton with value radioValue
+							if(objElement[k].value==radioValue)
+								objElement[k].checked=true;
+					}
+				}						
+			}
+		}
+
+		function delCookie()
+		{	var cookieName=getFileName();
+			var dtNow=new Date();
+			setCookie(cookieName,"",dtNow);
+			setFileDescription(null);
+		}
+
+		//functions for 'file system'
+		//Filename is the selected select-option.value and is used as cookie-name
+		//FileDescription is the innerText of this selected select-option
+function getFileName() //is cookiename
+		{	return loadSaveForm.nm_cookie.options[loadSaveForm.nm_cookie.selectedIndex].value;
+		}
+
+function setFileDescription(description, i) //set text in selected option
+		{	with(loadSaveForm.nm_cookie.options[(i==null?loadSaveForm.nm_cookie.selectedIndex:i)])
+			{	innerText = ""+(1+index)+(description==null?" (empty)":"-"+description);
+			}
+		}
+function getFileDescription(i)
+		{	var st=loadSaveForm.nm_cookie.options[(i==null?loadSaveForm.nm_cookie.selectedIndex:i)].innerText
+			return st.substr(1,1)==" "?"":st.substr(2);
+		}
+
+		//for all select.option, load the cookies, if available
+function initCookieLoadList()
+		{	var cookieValue, arrForm;
+			//get all the fileDescriptions from the cookies
+			for(i=0; i<loadSaveForm.nm_cookie.options.length; i++)
+			{	cookieValue=getCookie(loadSaveForm.nm_cookie.options[i].value);	
+				if(cookieValue==null)
+				{	setFileDescription(null,i);
+				} else
+				{	arrForm=cookieValue.split(splitChar);
+					setFileDescription(unescape(arrForm[0]), i );
+				}
+			}
+			//select the first entry in the checkbox en load it
+			loadSaveForm.nm_cookie.options.selectedIndex=0;
+			loadCookieToForm(true); //handles id_option1
+		}
+
+		//constructor of these routines
+function saveFormInit(objFormToSave)
+		{	objForm=objFormToSave;
+			initCookieLoadList();
+		}
+		//infoscreen
+function infoSaveForm()
+{	if(confirm("saveForm 2.0\n\nCopyright 1999-2000 by Doeke Zanstra\nThis code is free to use and alter. Enjoy.\n\nClick on OK to:\nhttp://go.to/JavascriptMan"))
+		window.open("http://go.to/JavascriptMan?project=saveForm","_new");
+}
+	</script>
+	<style type="text/css">
+		SELECT, INPUT {
+			height: 23px;
+			font: 10pt Arial
+		}
+		BODY {
+			background-color: #000055;
+		}
+	</style>
+</head>
+
+<body>
+<TABLE style="margin:  0px">
+	<FORM name="loadSaveForm">
+		<TR>
+			<TD>
+				&nbsp;&nbsp;<A HREF="javascript:infoSaveForm()" TITLE="Click for info box">saveForm</a>
+				<SELECT name="nm_cookie" style="width:150px">
+					<OPTION name="nm_option1" value="postFormSave1" selected></OPTION>
+					<OPTION name="nn_option2" value="postFormSave2"></OPTION>
+					<OPTION name="nm_option3" value="postFormSave3"></OPTION>
+					<OPTION name="nm_option4" value="postFormSave4"></OPTION>
+					<OPTION name="nm_option5" value="postFormSave5"></OPTION>
+				</SELECT>
+				&nbsp;
+				<INPUT type="button" value="Load" name=buttonLoad onclick="loadCookieToForm()">
+				<INPUT type="button" value="Del" name=buttonDel onclick="delCookie()">
+				<INPUT type="button" value="Save..." name=buttonSave onclick="saveFormToCookie()">
+			</TD>
+		</TR>
+	</FORM>
+</TABLE>
+</body>
+</html>

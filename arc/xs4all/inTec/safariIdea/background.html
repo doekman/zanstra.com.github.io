@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>untitled</title>
+	<style>
+a:link { background: yellow;}
+a:hover { background: no-repeat;}	
+	</style>
+</head>
+<body>
+  <h1>background</h1>
+  <p id="test">Setting and resetting the background color via javascript on the background shorthand property</p>
+  <form onsubmit="return false;">
+    <input type="button" value="background='yellow';" onclick="document.getElementById('test').style.background='yellow';">
+    <input type="button" value="background='';" onclick="document.getElementById('test').style.background='';">
+  </form>
+  <h2>css test</h2>
+  <p>Hover over <a href="#">this link</a>.
+    <style>
+    body { background: red }
+    p { background: yellow }
+    </style>
+    <script>
+    window.onload=function() {
+      var a=document.getElementsByTagName("P");
+      for(var i=0; i<a.length; i++) {
+        var element=a[i];
+        element.onmouseover=function() { this.style.background='green'; };
+        element.onmouseout=function() { this.style.background='inherit'; };
+      }
+    }
+    </script>
+</body>
+</html>

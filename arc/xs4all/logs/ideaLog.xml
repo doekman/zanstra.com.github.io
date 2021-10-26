@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../xsl/webLog.xsl"?>
+<log title="Ideas weblog" xml:lang="en">
+  <topics>
+    <topic created="2005-11-16" id="JsLog">
+      <title>Logging</title>
+      <p>Create a client-side javascript logging library, somewhat like <a href="http://alistapart.com/articles/jslogging">this one</a>, but I'm missing:</p>
+      <ul>
+        <li><del>Listeners: I want to connect to Mozilla's <a href="http://kb.mozillazine.org/JavaScript_Console">JavaScript Console</a>, <a href="http://developer.apple.com/internet/safari/faq.html#anchor14">Safari's counterpart</a> or even to a server (for example via <a href="http://json-rpc.org/">JSON-RPC</a>).</del> I changed my mind: not because you can, you have to do this. What would be the advantage of this anyways...</li>
+        <li>Variabel inspection: this one is really important, otherwise you'll end up writing <code>info("Node #"+i+"'s class is:"+nodes[i].getClass());</code> instead of <code>info("Node #"+i+"'s class is:"+nodes[i].getClass());</code>. See my <a href="../dzLib/var-inspect.html">work in progress</a>.</li>
+        <li>It has to work seamlessly: default nothing is shown; when pressing the hotkey (ctrl+\) the console is shown (it should get inserted by the code). When shown, it needs an collapse/expand behaviour: when collapsed, a small block-element handler should stay visible (just like the show/hide thing in wiki's). This behaviour must be persisted by cookies.</li>
+        <li>The filter-mechanism of fvlogger should be altered to match the FireFox javascript console behaviour: when pressing <code>warn</code>, also <code>error</code> and <code>fatal</code> entries need to be displayed (logging-levels). Also: there's no need for a <code>debug</code> entry. Further: the [erase] link needs to be distinguished from the filter-actions.</li>
+      </ul>
+    </topic>
+    <topic created="2005-11-01" id="FireFoxJavascriptConsoleIECSSDeclarations">
+      <title>FireFox: mark IE CSS declarations in Javascript-console</title>
+      <p>Create an <a href="http://developer.mozilla.org/en/docs/Building_an_Extension">extension</a> to mark dropped CSS declarations in the Javascript-console as IE-extensions. This would benefit FireFox as an development "platform".</p>
+    </topic>
+    <topic created="2005-10-26" id="HtmlFormFlashPersistence">
+      <title>Client-side persistence via Flash</title>
+      <p>Investigate if it's possible to persist client-side (HTML) form data in Flash. I got this idea because in the settings of the Flash player it's possible to adjust the size some local storage. After some documentation browsing I discovered persisting data in Flash is done by creating (getting) an object which seems to be persisted automatically. The code is <code>SharedObject.GetLocal("name")</code>.</p>
+      <p>The thing to do now is create a movie (without UI) that communicates with HTML to persist the form-data by means of the <code>onchange</code> event of the form/controls or <code>setInterval</code>.</p>
+    </topic>
+    <topic created="2005-10-22" id="GmailPlusISync">
+      <title>gmail iSync plugin</title>
+      <p>
+        It would be really nice if my address book on my Mac got synchronized with
+        my GMail address book. It shouldn't be that difficult. I found some documentation.
+        There is some kind of <a href="http://johnvey.com/features/gmailapi/">GMail API</a>,
+        although it only retrieves address book entries at the moment. And at Apple is seems
+        you can do something with iSync with their <a href="http://developer.apple.com/documentation/Cocoa/Conceptual/SyncServices/index.html">Sync Services</a>.
+      </p>
+      <p>
+        Anyways, I probably won't find time to implement this. If you do, please notify me. And while we're busy, also look into <a href="http://mozbackup.jasnapaka.com/index.html">MozBackup</a> to backup Mozilla related data with iSync.
+      </p>
+    </topic>
+    <topic created="2005-10-22" id="WikiFlowCharts">
+      <title>Wiki Flow Charts</title>
+      <p>
+        Another application the world is waiting for ;-) is flow charting for Wiki's.
+        I think the usage of flow charts would enrich Wiki's enormously. Basically, a flow chart
+        consists of shapes (rectangles, circles) with text, connected by lines. Imagine the
+        following "markup":
+      </p>
+      <code>[shapes]
+usr:User:elipse:style(left:20px;top:20px)
+web:Web server:rectangle:style(left:20px;top:120px)
+db:Database:circle:style(left:20px;top:220px)
+
+[lines]
+usr:web:style(end-arrow:normal)
+web:db:style(end-arrow:normal)</code>
+      <p>It wouldn't be that difficult to convert this to graphics, for example with <a href="http://www.mozilla.org/projects/svg/">SVG</a> (or VML if you must), 
+      or even draw it on <a href="http://weblogs.mozillazine.org/hyatt/archives/2004_07.html#005913">the canvas</a>.</p>
+      <p>Of course, before it's real usable to normal people, a lot of work has to be done. Maybe a wysiwyg editor needs to be made, but I just couldn't believe nothing exists yet. I might implement something...</p>
+      <p>Resources: <a href="http://developer.mozilla.org/en/docs/SVG_In_HTML_Introduction">SVG in HTML introduction</a>.
+      </p>
+      <p>I found <a href="http://wiki.splitbrain.org/wiki:tips:svg_support">a hint</a> of somebody wanting flow chars in their wiki's.</p>
+    </topic>
+		<topic created="2003-08-07" id="RegEXP_NET" comments="closed">
+			<title>RegExp.NET</title>
+			<p>
+				One of the problems with regular expressions is that it's cryptic. 
+				Another problem is (at least in javascript) you can't have sub-expressions. The 
+				idea is to use one token per line, and use words for them and use 
+				comments. This is actually not new, I've seen this somewhere (please 
+				email me the URL if you know it). 
+			</p>
+			<p>
+				The actual idea is to integrate this 
+				with the .NET framework; create a regular expression language and a 
+				compiler. This code can for simplicity be compiled to C# and .NET 
+				framework regular expressions.			
+			</p>
+		</topic>
+		<topic created="2003-08-07" id="xPath_JS">
+			<title>XPath.js</title>
+			<p>
+				XPath implementation in javascript, so the MS selectNodes method of the 
+				DOMDocument class can be used on HTML documents as well (and 
+				cross-browser idem dito).
+			</p>
+		</topic>
+		<topic created="2003-03-18">
+			<title>Deploy tool</title>
+			<p>
+				A tool for copying the development website to a test-server or whatever server,
+				only copying the changed files, according to the configuration for that
+				server, copy using either SMB (network), FTP or WebDAV (HTTP), let javascript files
+				be processed with an <a href="http://www.saltstorm.net/depo/esc/">cruncher</a>,
+				configuration-files be configured, all determined by a deploy-file.
+			</p>
+			<p>
+				Yes, that would be very nice (I personally <b>always</b> forget somehow to
+				upload some files...).
+			</p>
+		</topic>
+		<topic created="2003-03-16">
+			<title>IIS and Rendezvous</title>
+			<p>
+				Wouldn't it be great to have an option to advertise webserver and 
+				virtual directories through 
+				<a href="http://developer.apple.com/macosx/rendezvous/index.html">Rendezvous</a>.
+				For virtual directories, the Application Name could be used as Rendezvous-name.
+			</p>
+		</topic>
+		<topic created="2003-03-16">
+			<title>About this web-log</title>
+			<p>	
+				This web-log is meant for keeping track of my ideas. Because I have so many ideas,
+				I can't implement them all. I now try to organize them, and keep prioritizing them.
+				This log still needs mechanisms like last-updated, categories and some others, but this
+				will do for now.
+			</p>
+		</topic>
+  </topics>
+</log>

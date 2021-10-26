@@ -1,0 +1,9 @@
+@echo off
+msxsl jsLog.xml -pi -t -o jsLog.htm -v -u 4.0 -xw
+rem msxsl jsLog-2004.xml -pi -t -o jsLog-2004.htm -v -u 4.0 -xw
+msxsl ideaLog.xml -pi -t -o ideaLog.htm -v -u 4.0 -xw
+msxsl jsmLib.xml -pi -t -o jsmLib.htm -v -u 4.0 -xw
+msxsl jsmLib.xml ../xsl/jsmLib_lib.xsl -t -o jsmLib.js -v -u 4.0 -xw
+cscript //nologo selectSingleTextNode.js jsLog.xml latestJSLog "/log/topics/topic[position()=1]/title/text()" > latest.js
+cscript //nologo selectSingleTextNode.js ideaLog.xml latestIdea "/log/topics/topic[position()=1]/title/text()" >> latest.js
+pause

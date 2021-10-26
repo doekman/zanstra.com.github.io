@@ -1,0 +1,150 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="default.css">
+    <style type="text/css">
+hr { border: 1px solid black; height: 1px }
+img { border: 0px }
+body { margin: 0px; padding: 0px; background-color: #F0F0F0; overflow-x: visible; overflow-y: scroll }
+h1 { text-align: center; margin: 0px;  }
+.mvTitle { cursor: hand }
+.calendars {
+}
+ul { margin: 5px; padding: 5px; list-style-position: inside }
+p { padding-left: 5px }
+
+.tab { 
+  border: 1px solid black;
+  padding: 0px 5px 0px 5px;
+  margin: 0px 0px 0px 0px;
+  background-color: silver }
+td.tabSel {
+  border-bottom-width: 0px;
+	background-color: transparent
+}
+.tabSep { 
+  width: 10px;
+  border-bottom: 1px solid black;
+}
+
+a.sel { /*color: red*/ }
+td a { text-decoration: none; font-weight: bold; font-family: Verdana, sans-serif; font-size: 10pt; color: blue }
+
+</style>
+    <script language="javascript" src="../js/get.js"> </script>
+    <script language="javascript" src="../js/cal.js"> </script>
+    <script language="javascript">
+var oQS=new getParameter();
+var nYear;
+
+if(oQS.jaar==null) nYear=new Date().getFullYear();
+else nYear=parseInt(oQS.jaar,10);
+
+function strFixed(s,nPos) {
+  s=String(s);
+  while(s.length<nPos--) s='0'+s;
+  return s;
+}
+function hide(bln)
+{
+  parent.toggleNavShow(
+    bln,
+    document.all.idVerticalTab,
+    document.all.idHorizontalTab,
+    document.all.idNRCIndex,
+    document.all.idTitle
+  );
+}
+
+    </script>
+  </head>
+  <body>
+    <h1 id="idTitle">NRC Index</h1>
+    <div id="idVerticalTab" style="display: none">
+      <div><a href="javascript: void hide(true);"><img src="show.bmp" alt="show" title="Toon NRC Index" width="17" height="48"></a></div>
+    </div>
+    <div id="idHorizontalTab">
+      <script language="javascript">
+        document.writeln('<table border="0" cellspacing="0"><tr>');
+        document.write('<td class="tabSep">&nbsp;</td>');
+        if(nYear==2001) 
+        {
+          document.write('<td class="tab tabSel"><a href="javascript: void hide(false);" title="Verberg index" class="sel">2001</a></td>');
+          document.write('<td class="tabSep">&nbsp;</td>');
+          document.write('<td class="tab"><a href="?jaar=2002" title="Toon 2002 index">2002</a></td>');
+        }
+        else if(nYear==2002)
+        {
+          document.write('<td class="tab"><a href="?jaar=2001" title="Toon 2002 index">2001</a></td>');
+          document.write('<td class="tabSep">&nbsp;</td>');
+          document.write('<td class="tab tabSel"><a href="javascript: void hide(false);" title="Verberg index" class="sel">2002</a></td>');
+        }
+        document.write('<td style="width:100%" class="tabSep">&nbsp;</td></tr>');
+				document.write('</table>');
+        </script>
+    </div>
+    <div id="idNRCIndex">
+        <div class="calendars">
+        <script language="javascript" src="issue.js"> </script>
+        <script language="javascript">
+	var i, nCurrentMonth, oMV; 
+	//--| Skip previous years
+	i=0;
+	while( getISOYear(aIssues[i]) < nYear)
+	{
+		i++;
+	}
+	//--| print current year
+	while(i<aIssues.length&&getISOYear(aIssues[i])==nYear)
+	{
+		if(nCurrentMonth==null||nCurrentMonth!=getISOMonth(aIssues[i]))
+		{
+			if(oMV!=null) document.writeln(oMV.toHTML(true));
+			nCurrentMonth=getISOMonth(aIssues[i]);
+			oMV=new MonthView(nYear,nCurrentMonth,true);
+		}
+		oMV.setAnchor(getISODate(aIssues[i]),'nrc'+aIssues[i]+'.htm','target="data"');
+		i++;
+	}
+	//--| write the last month
+	document.writeln(oMV.toHTML(false));
+		
+
+function toISOdate(dt) 
+{
+  return String(dt.getFullYear()+strFixed(dt.getMonth()+1,2)+strFixed(dt.getDate(),2));
+}
+function getISOYear(sDT)
+{
+	return parseInt(sDT.substr(0,4),10);
+}
+function getISOMonth(sDT)
+{
+	return parseInt(sDT.substr(4,2),10)-1;
+}
+function getISODate(sDT)
+{
+	return parseInt(sDT.substr(6,2),10);
+}
+        </script>
+      </div>
+      <ul>
+        <li>
+          <a href="data.htm" target="data">Inleiding</a></li>
+        <li>
+          <a href="../inTec/htmlMail.htm" target="data">Tool</a>
+          </li>
+        <li>
+          <a href="bijtjes.xml" target="data" 
+          style="color: red"
+          title="Alle bijtjes in XML formaat. Verwerkt door javascript en reguliere expressies. De XSLT transformatie komt nog een keertje">
+          Bijtjes-index</a> (<a href="bijtjes.htm" target="data" title="xml schijnt in IE5 niet te werken">html</a>)
+          <hr></li>
+        <li>
+          <a href="../index.htm" target="_top">Home of Doekman</a></li>
+      </ul>
+      <p>
+        <small>Er wordt gestreefd naar een wekelijkse update op maandag.</small>
+      </p>
+    </div>
+  </body>
+</html>

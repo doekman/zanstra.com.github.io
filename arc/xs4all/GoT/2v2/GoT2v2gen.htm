@@ -1,0 +1,33 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> New Document </title>
+<meta name="Generator" content="EditPlus">
+<meta name="Author" content="">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+</head>
+
+<body>
+<script>
+function go(bln) {
+  var t=document.getElementById('ding');
+  var a=t.value.split('\r\n');
+  var o={};
+  var s='';
+  for(var i=0; i<a.length; i++) {
+    if(o[a[i]]==null) o[a[i]]=1;
+    else o[a[i]]++;
+  }
+  for(var i in o) {
+    s+=i+(bln?' '+o[i]:'')+'\r\n';
+  }
+  t.value=s;
+}
+</script>
+<textarea id="ding" style="width: 100%; height: 20em">
+</textarea>
+<button onclick="go(true);">go</button>
+<button onclick="go(false);">gone</button>
+</body>
+</html>

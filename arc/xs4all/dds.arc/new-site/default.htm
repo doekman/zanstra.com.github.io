@@ -1,0 +1,68 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title> Zanstra NET </title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta name="Author" content="Doeke Zanstra">
+	<link rel="stylesheet" type="text/css" id="mainSheet">
+	<script type="text/javascript" src="cookie.js"></script>
+</head>
+<body onload="initKoekje()">
+<h1>Zanstra NET</h1>
+<p>
+	Dit is een test om dynamisch style-sheets (CSS) te laden. Je kunt nu kiezen uit twee.
+	Standaard wordt de eerste geladen. Als je een andere kiest wordt dit in een <em>koekje</em>
+	opgeslagen, zodat je de volgende keer niet opnieuw hoeft te laden.
+</p>
+<p>
+	Het werkt als volgt: je zet het volgende in de &lt;head&gt; sectie van je html:
+</p>
+<pre>
+&lt;link rel="stylesheet" type="text/css" href="default.css" id="mainSheet"&gt;
+&lt;script type="text/javascript" src="cookie.js"&gt;
+&lt;/script&gt;
+</pre>
+<p>
+	Dit zorgt er voor dat je een <em>default</em> style sheet hebt, en dat deze via de
+	<strong>id-tag</strong> bereikbaar is via scripting. 
+	De script-regel zorgt ervoor dat we gemakkelijk met koekjes om kunnen gaan (je hebt
+	dus ook het bestand cookie.js nodig).
+</p>
+<p>
+	<label>Choose your style-sheet</label>
+	<select name="selStyle" onchange="loadStyle()" rows=2>
+		<option value="">None</option>
+		<option value="default.css">Default</option>
+		<option value="cool.css">Very Cool</option>
+	</select>
+</p>
+<p>
+	Go to <a href="javascript: history.back();" target="_top">home</a>.
+</p>
+<script style="text/javascript" language="javascript"> 	var strKoekje="cssTest"; //identifier of the cookie 
+
+	function selectOption(strFN) {
+		for(var i=0; i<selStyle.length; i++)
+			if(selStyle[i].value==strFN) {
+				selStyle.selectedIndex=i;
+				break;
+			}
+	}
+	function initKoekje() {
+		var str=getCookie(strKoekje);
+		if(typeof str=="string") 
+			mainSheet.href=str;
+		else
+			mainSheet.href=selStyle.value;
+		selectOption(mainSheet.href);
+	}
+	function loadStyle() {
+		var strCSSfn=selStyle.value; //Stylesheet File Name
+		if(strCSSfn!="-") {
+			mainSheet.href=strCSSfn;
+			setCookie(strKoekje,strCSSfn);
+		}
+	}
+</script>
+</body>
+</html>

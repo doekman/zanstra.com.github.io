@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>Menu test</title>
+    <style type="text/css">
+#menu {
+  height: 1.5em;
+  padding:0;
+}
+#menu li {
+  list-style-type:none;
+  display: inline;
+  border:1px solid slateblue;
+  position:absolute;
+  margin:0; padding: 3px 4px 0px 4px;
+  background:#eeeeee;
+  font-family: Helvetica, Arial, sans-serif;
+}
+#menu li:hover {
+  z-index:10;
+  border:1px solid red;
+  background:yellow;
+}
+#menu li a { 
+  white-space: nowrap; 
+  text-decoration:none; 
+  color:slateblue;
+}
+    </style>
+    <script type="text/javascript">
+function dbg(s) { document.getElementById('dbg').innerHTML+='<br>'+s;}
+window.onload=window.onresize=function() {
+  var menu=document.getElementById('menu');
+  var w=menu.offsetWidth+1;
+  var li=menu.getElementsByTagName('li');
+  var dw=0;
+  for(var i=0; i<li.length; i++) {
+    dw+=li[i].clientWidth;
+  }
+  for(var i=1; i<li.length; i++) {
+    var prev=li[i-1], cur=li[i];
+    cur.style.left=(prev.clientWidth+prev.offsetLeft-((dw-w)/(li.length-1)))+'px';
+  }
+  
+}    
+    </script>
+  </head>
+  <body>
+    <ul id="menu">
+      <li><a href="#">Kranten</a></li>
+      <li><a href="#">Technews</a></li>
+      <li><a href="#">Blogs</a></li>
+      <li><a href="#">Dingdong</a></li>
+      <li><a href="#">Appelscha</a></li>
+      <li><a href="#">Yes sir</a></li>
+      <li><a href="#">This is a real long list</a></li>
+      <li><a href="#">Zooi</a></li>
+    </ul>
+    <div id="dbg">
+    </div>
+    <h1>Horizontale menu's</h1>
+    <p>Het probleem van horizontale menu's in combinatie met Content Management Systemen is dat het op een gegeven moment niet past (horizontaal scrollen is evil, tenzij je <a href="http://homepage.mac.com/asagoo/tofu/">Tofu</a> gebruikt). Je kunt gebruikers uiteraard wel waarschuwen (horizontale menu's blijven toch visueel aantrekkelijk), maar je kunt er vergif op innemen dat het menu op een gegeven moment niet meer past. En dan is je layout ernstig verminkt...</p>
+    <p> Hierboven een javascriptje die probeert dit euvel te verhelpen. Probeer het scherm te resizen, zodat de menu items eigenlijk niet meer passen. Ze schuiven over elkaar heen, maar blijven enigszins herkenbaar. Met de mouse-over komt de volledige tekst naar voren.</p>
+  </body>
+</html>

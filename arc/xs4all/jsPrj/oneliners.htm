@@ -1,0 +1,62 @@
+<html>
+<head>
+	<title>One-liners</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function countdown() 
+{
+  var o=document.getElementById('timer');
+  var v=parseInt(o.innerHTML,10)-1;
+  o.innerHTML=v;
+  if(v>0) window.setTimeout('countdown();',1000);
+  else location.href='../logs/oneLiners.htm';
+}
+function pageInit() {
+  window.setTimeout('countdown();',1000);
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			one-liners.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    301 Moved Permanently
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+    The one-liners are now located at <a href="http://www.xs4all.nl/~zanstra/logs/jsLog.htm">/~zanstra/logs/oneLiners.htm</a>.
+  </p>
+  <p>
+    You will be automatically forwarded in <strong id="timer">5</strong> seconds*...
+  </p>
+  <div class="footer">
+    *) When javascript turned on, and using a decent browser,
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Stuur een email">Doeke Zanstra</a>, 2003. 
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

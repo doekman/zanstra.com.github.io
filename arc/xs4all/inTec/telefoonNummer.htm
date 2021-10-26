@@ -1,0 +1,172 @@
+<html lang="nl" xml:lang="nl">
+<head>
+	<title>inTec</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+pre {
+  border: 1px solid lightgrey;
+  background-color: #E0E0E0;
+  margin: 0 0 0.5em 0;
+  padding: 4px;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    &nbsp;<!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			&nbsp;<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1 title="Internet Technologies">OS X.iii adresboek telefoonnummers</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		In het adresboek van Mac OS X 10.3 (X.iii) kun je telefoonnummers netjes laten
+    opmaken. Maar er wordt geen onderscheid gemaakt tussen 4 en 5 cijferige kengetallen.
+    Deze tip is afgeleid van mijn <a href="../dzLib/telNr.htm">javascript TelNr library</a>. Deze uitleg is ook beschikbaar <a href="phoneNumber.htm" hreflan="en">in het Engels</a>.
+	</p>
+  <ol>
+    <li>
+      Sluit het adresboek (Address Book) programma af
+    </li>
+    <li>
+      Zoek het bestand <code>~/Library/Preferences/com.apple.AddressBook.plist</code> op
+      (het ~ teken, of tilde, staat voor je home-directory).
+    </li>
+    <li>
+      Maak er een reservekopie van, en open het origineel met bijvoorbeeld TextEdit (mocht het bestand onleesbaar zijn, open het dan eerst met Property Editor [installeer daarvoor Developer Tools] en bewaar vanuit dat programma dan als XML Property List).
+    </li>
+    <li>
+      Zoek de volgende XML tags op (de tags direct na het key-attribuut zal anders zijn):
+<pre>&lt;key&gt;ABPhoneFormat-Enabled&lt;/key&gt;
+&lt;true/&gt;
+&lt;key&gt;ABPhoneFormat-PhoneFormatter&lt;/key&gt;
+&lt;array&gt;
+  ...
+&lt;/array&gt;</pre>
+    </li>
+    <li>
+      Vervang dit door de volgende XML ():
+<pre>&lt;key&gt;ABPhoneFormat-Enabled&lt;/key&gt;
+&lt;true/&gt;
+&lt;key&gt;ABPhoneFormat-PhoneFormatter&lt;/key&gt;
+&lt;array&gt;
+  &lt;!--Nederlandse telefoonnummers--&gt;
+  &lt;!--3 cijferige kengetallen--&gt;
+ &lt;string&gt;(010) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(013) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(015) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(020) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(023) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(024) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(026) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(030) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(033) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(035) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(036) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(038) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(040) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(043) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(045) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(046) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(050) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(053) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(055) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(058) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(070) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(071) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(072) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(073) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(074) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(075) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(076) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(077) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(078) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(079) ## ## ###&lt;/string&gt;
+  &lt;!--mobiele nummers--&gt;
+ &lt;string&gt;(06) ### ## ###&lt;/string&gt;
+ &lt;!--3 cijferige kengetallen met +31 vooraf--&gt;
+ &lt;string&gt;(+31-10) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-13) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-15) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-20) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-23) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-24) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-26) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-30) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-33) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-35) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-36) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-38) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-40) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-43) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-45) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-46) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-50) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-53) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-55) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-58) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-70) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-71) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-72) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-73) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-74) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-75) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-76) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-77) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-78) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-79) ## ## ###&lt;/string&gt;
+ &lt;!--mobiele nummers--&gt;
+ &lt;string&gt;(+31 6) ### ## ###&lt;/string&gt;
+ &lt;!--otherwise assume 4-digit area code with +31 prefix--&gt;
+ &lt;string&gt;(+31 ###) ### ###&lt;/string&gt;
+  &lt;!--anders waarschijnlijk 4 cijferig kengetal--&gt;
+ &lt;string&gt;(0###) ### ###&lt;/string&gt;
+&lt;/array&gt;</pre>
+    </li>
+    <li>
+      Bewaar het bestand en open het adresboekprogramma.
+    </li>
+  </ol>
+  <p>
+    Je kunt dit bestand natuurlijk naar je eigen smaak inrichten.
+    Internationale nummers (+3150#####) zijn wellicht handig.
+    Het hekje teken (#) staat voor een getal. De rest wordt 
+    letterlijk geïnterpreteerd. 
+  </p>
+  <p>
+    Kom niet klagen dat de groepering van de cijfers verkeerd is. KPN volgt meestal z'n eigen norm niet. En verder, het staat je vrij om de groepering maar eigen inzicht te wijzigen.</p>
+  <p>
+    <img src="../img/AddressBookPrefs.png" style="width:359px;height:388px; float:right" alt="Scherm afdruk adresboek voorkeuren"/> Kleine wijzigingen kun je ook
+    vanuit het adresboek doen (sorry, ik heb alleen een Engelstalige
+    versie van OS X, zie schermafdruk hier rechts): Kies <code>Preferences</code>
+    uit het Address Book menu, dan de Phone optie, en klik op het
+    pijltje naar beneden rechts van de Formats dropdown list.
+  </p>
+  <p>
+    Het adresboek van 10.2 (Jaguar) en eerdere versies heeft helaas geen format-functie.
+  </p>
+  <p>
+    Het mooiste is natuurlijk dat je met behulp van een programma
+    dit kunt instellen, omdat handmatig wijzigen veel werk is.
+    Helaas, dit programmatje schrijven is voor mij ook te veel werk ;-)
+  </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Addressbook TelNr" title="Stuur een email">Doeke Zanstra</a>, 
+    2003, Content is licensed under a <a href= "http://creativecommons.org/licenses/by/1.0/"> Creative Commons License </a>. (Some rights reserved).
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

@@ -1,0 +1,209 @@
+<html>
+<head>
+	<title>dzLib: event Lib LT</title>
+  <link rel="stylesheet" type="text/css" href="../../default.css" />
+  <link rel="stylesheet" type="text/css" href="../default.css" />
+	<style type="text/css">
+.note {
+  color:blue;
+  background-color:yellow;
+  font-style:italic;
+  font-weight:bold;
+  border-left:5px solid blue;
+  border-right:5px solid blue;
+  padding:1px 5px 1px 5px;
+
+}
+  </style>
+  <script language="javascript" src="../../js/menu.js"> </script>
+  <script language="javascript" src="../mindex.js"> </script>
+  <script language="javascript" src="../../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="../events.js"> </script>
+  <script language="javascript">
+function selectValue(element)
+{
+  var o=ID(element).options;
+  for(var i=0; i<o.length; i++)
+  {
+    if(o[i].selected==true) return o[i].value;
+  }
+  return null;
+}
+
+function pageInit() 
+{
+  hiLiteJS('highlite-js-syntax');
+  updateBullets.call(ID('selLink'));
+}
+  </script>
+</head>
+<body onload="pageInit()">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    EventLib
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <h2>Test Tool</h2>
+  <p>
+    The following anchors point to the main-page of this site.
+  </p>
+  <ul>
+    <li>
+      <a id="a1" href="../../index.htm">Link one</a> - 
+      contains no onclick event
+    </li>
+    <li> 
+      <a id="a2" href="../../index.htm" onclick="alert('Link two,\nCancel navigation.'); return false;">Link two</a> - 
+      contains an onclick event which cancels navigation
+    </li>
+    <li> 
+      <a id="a3" href="../../index.htm" onclick="alert('Link three,\nReturns true.'); return true;">Link three</a> - 
+      contains an onclick event which returns true (and doesn't cancel navigation)
+    </li>
+    <li> 
+      <a id="a4" href="../../index.htm" onclick="alert('Link four,\nReturns undefined.');">Link four</a> - 
+      contains an onclick event which returns undefined (implicit)
+    </li>
+  </ul>
+  <p>
+    Select an <code>option</code> in the <code>select</code> (they reflect the links above). 
+  </p>
+  <form>
+    <select size="4" id="selLink" lastValue="a1"
+     onchange="updateBullets.call(this);"
+     style="float:left; margin-right:10px;">
+      <option value="a1" selected>Link one</option>
+      <option value="a2">Link two</option>
+      <option value="a3">Link three</option>
+      <option value="a4">Link four</option>
+    </select>
+    <a href="#testTool" 
+     onclick="alert(ID(selectValue('selLink')).onclick);return false;">show onclick-code</a>
+    <br>
+    acceptCopyright:
+    <a href="#testTool" 
+     onclick="eventLib.addEventListener(ID(selectValue('selLink')),'onclick',acceptCopyright);return false;">addEventListener</a>,
+    <a href="#testTool" 
+     onclick="eventLib.removeEventListener(ID(selectValue('selLink')),'onclick',acceptCopyright);return false;">removeEventListener</a>
+    <br>
+    switchUnderline:
+    <a href="#testTool" 
+     onclick="eventLib.addEventListener(ID(selectValue('selLink')),'onclick',switchUnderline);return false;">addEventListener</a>,
+    <a href="#testTool" 
+     onclick="eventLib.removeEventListener(ID(selectValue('selLink')),'onclick',switchUnderline);return false;">removeEventListener</a>
+    <br>
+    showEventObject:
+    <a href="#testTool" 
+     onclick="eventLib.addEventListener(ID(selectValue('selLink')),'onclick',showEventObject);return false;">addEventListener</a>,
+    <a href="#testTool" 
+     onclick="eventLib.removeEventListener(ID(selectValue('selLink')),'onclick',showEventObject);return false;">removeEventListener</a>
+  </form>
+  <pre class="highlite-js-syntax"> 
+//Test for cancel default action. Answer OK returns false,
+//Cancel should cancel navigation.
+function acceptCopyright()
+{
+  return window.confirm('Do you accept the copyright?');
+}
+//This function sbouldn't interfere with the default action
+//but will also test the this-functionality, by
+//toggling the text-decoration
+function switchUnderline()
+{
+  if(this.currentStyle.textDecoration=='underline')
+  {
+    this.style.textDecoration='overline';
+    this.style.color='Red';
+  }
+  else
+  {
+    this.style.textDecoration='underline';
+    this.style.color='';
+  }
+}
+function showEventObject(e)
+{
+  var s='dzLib Event object:\n-----------------\n';
+  for(var i in e) 
+    s+=i+':'+nice(e[i])+'\n';
+  alert(s);
+}
+</pre>
+  <script language="javascript">
+function updateBullets()
+{
+  with(ID(this.lastValue).parentElement.style)
+  {
+    listStyleType='';
+    backgroundColor='';
+  }
+  with(ID(this.value).parentElement.style)
+  {
+    listStyleType='disc';
+    backgroundColor='yellow';
+  }
+  this.lastValue=this.value;
+}
+
+//Test for cancel default action. Answer OK returns false,
+//Cancel should cancel navigation.
+function acceptCopyright()
+{
+  return window.confirm('Do you accept the copyright?');
+}
+//This function sbouldn't interfere with the default action
+//but will also test the this-functionality, by
+//toggling the text-decoration
+function switchUnderline()
+{
+  if(this.currentStyle.textDecoration=='underline')
+  {
+    this.style.textDecoration='overline';
+    this.style.color='Red';
+  }
+  else
+  {
+    this.style.textDecoration='underline';
+    this.style.color='';
+  }
+}
+function showEventObject(e)
+{
+  var s='dzLib Event object:\n-----------------\n';
+  for(var i in e) 
+    s+=i+':'+nice(e[i])+'\n';
+  alert(s);
+}
+function nice(x)
+{
+  if(typeof x=='function')
+    return '[function '+x.getName()+']';
+  else if(typeof x=='object')
+  {
+    if(x.nodeName) return '[object '+x.nodeName+']';
+    else return x;
+  }
+  else
+    return x;
+}
+  </script>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=events" title="Stuur een email">Doeke Zanstra</a>, 2001-2002. 
+    Code is free to use and provided as-is, mention source (me). Don't blame me if anything goes wrong ;-)
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

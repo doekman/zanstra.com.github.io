@@ -1,0 +1,111 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="iframe.css">
+	<style type="text/css">
+		.even 
+		{	background-color: #000044;
+		}
+		.theTitle
+		{	position: relative
+		}
+	</style>
+	<script language=javascript type="text/javascript">
+function fxOne(o) {
+	this.i=0;
+	this.obj=o;
+	this.param=[
+		{dx:50, dy:0, delay:50},
+		{dx:50, dy:0, delay:50},
+		{dx:50, dy:0, delay:50},
+		{dx:-50,dy:0, delay:50},
+		{dx:-50,dy:0, delay:50},
+		{dx:-50,dy:0, delay:0}
+	];
+	return this;
+}
+var ofx;
+function doTransition() {
+	if(ofx.i>=ofx.param.length)
+		return;
+	ofx.obj.style.pixelLeft+=ofx.param[ofx.i].dx;
+	ofx.obj.style.pixelTop+=ofx.param[ofx.i].dy;
+	window.setTimeout(doTransition, ofx.param[ofx.i++].delay);
+}
+function fx(o) {
+	ofx=new fxOne(o);
+	window.setTimeout(doTransition,500);
+}
+	</script>
+	<script language=javascript type="text/javascript" src="lib.js"></SCRIPT>
+</head>
+
+<body>
+	<h1 id="theTitle" onclick="fx(theTitle)" class=theTitle>jsTools</h1>
+	<hr size=1 style="border-color: #0000ff">
+	Objectbrowser: <input type=text name=objectString value="document" onkeypress='if(event.keyCode==13) okAnchor.click();'>
+	&nbsp;
+	<a href="#" name=okAnchor onclick="doBrowse(objectString.value)">OK</a>
+	<a href="#" onclick='obWin.innerHTML=""'>clear</a>
+	<input type=checkbox checked id=noEvents><a href='javascript:void(0)' onclick='noEvents.click()'>No events</a>
+	<input type=checkbox checked id=asText><a href='javascript:void(0)' onclick='asText.click()'>Values as text</a>
+	<br>
+	<hr size=1 style="border-color: #0000ff" id=lijn>
+	<span id=obWin></span>
+	<hr size=1 style="border-color: #0000ff">
+	If you want to browse objects, which don't exist at the moment, you may create them here.<br>
+	<textarea name=htmlEle cols=50 rows=2>&lt;textarea name=test&gt;</textarea>
+	&nbsp;
+	<input type=button onclick="obElement.innerHTML+=htmlEle.value;" value="create">
+	<br>
+	<span id=obElement></span>
+	<script>
+function doBrowse(strObj)
+{	obWin.innerHTML=browseObject(strObj);
+}
+function fmtObjPath(strObj) {
+	var arr=strObj.split('.');
+	var res='';
+	var curCtx; //current context
+	for(var i=0; i<arr.length; i++) {
+		curCtx='';
+		for(var j=0; j<=i; j++) 
+			curCtx += arr[j] + (j<i?".":""); //add a point (.), if it's not the last element.
+		res+='<a href="#" onclick="doBrowse(\''+curCtx+'\')">'+arr[i]+'</A>'+(i<arr.length-2?".":"");
+	}
+	return res;
+}
+function TAG(tag,attrs,str) { return "<"+tag+(attrs==null||attrs==""?"":" "+attrs)+">"+str+"</"+tag+">" };
+
+function browseObject(strObj)
+{	var obj=eval(strObj);
+	var str="";
+	var i=0, row;
+	for(o in obj)
+	{	if(noEvents.checked && o.indexOf("on")==0)
+			continue; //skip
+		row="";
+		if((""+obj[o])=="[object]")
+			row=TAG("TD",null,"<a href='#' onclick='doBrowse(\""+strObj+"."+o+"\")'>"+o+"</a>");
+		else
+			row=TAG("TD",null,o);
+		sTmp=""+obj[o];
+		if(asText.checked)
+		{	sTmp=sTmp.replace(/</g,"&lt;");
+			sTmp=sTmp.replace(/>/g,"&gt;");
+		}
+		if(sTmp.length>100)
+			row+=TAG("TD",null,"<textarea rows=3 style='width: 100%; background-color: transparent; color: yellow' ondblclick='this.rows==3?this.rows=20:this.rows=3'>"+sTmp+"</textarea>");
+		else
+			row+=TAG("TD",null,sTmp);
+		str+=TAG("TR","class=" + (i++%6>=3?"odd":"even"),row );
+	}
+	str
+	="<COLGROUP class='tableLabel' style='width: 200px'><COLGROUP>"+str;
+	str=TAG("TABLE","id=tabBrowser cellpadding=0 cellspacing=0 cols=2 style=\"border: 1px solid yellow; width: 95%\"",str);
+	str="<DIV style='margin-bottom: 5px'>Browsing: <code>"+fmtObjPath(strObj)+"</code></DIV>"+str;
+	return str;
+}
+	</script>
+</body>
+</html>

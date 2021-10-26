@@ -1,0 +1,218 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Visual Studio 6.0">
+<TITLE></TITLE>
+<SCRIPT type="text/javascript" src="cookie.js"></SCRIPT>
+<SCRIPT type="text/javascript">
+var splitChar="&";
+
+function saveFormToCookie()
+{	var arrForm = new Array(); //0=filename odd=tagname even=value
+	var toSave;
+	var allElements = new Array("INPUT","SELECT");
+	var cookieName, fileDescription;
+	var arrIndex;
+	
+//collect name/value of all INPUT tags, with class=toSave
+	arrIndex=0;
+	fileDescription=prompt("Give a name to this form-content",getFileDescription() );
+	if(fileDescription==null)
+		return;
+	arrForm[arrIndex++]=escape(fileDescription);
+
+	for(var ele in allElements)
+	{	toSave=document.body.all.tags(allElements[ele]); //collection of all "ele" elements
+		for(var j=0; j<toSave.length; j++)
+		{	iterElement=toSave.item(j);				//object of found element
+			if(iterElement.className.indexOf("toSave") != -1)
+			{	if(iterElement.value!="") //is there anything to save
+				{	arrForm[arrIndex++] = escape(iterElement.name);
+					arrForm[arrIndex++] = escape(iterElement.value);
+				}
+			}
+		}
+	}
+	setFileDescription(arrForm[0]);
+	cookieName=getFileName();
+	var dtExpire = new Date();
+	dtExpire.setFullYear( dtExpire.getFullYear()+1 ); //expire within a year
+	setCookie(cookieName, arrForm.join(splitChar), dtExpire);
+}
+
+function loadCookieToForm(interactive)
+{	var cookieName=getFileName();
+	var cookieValue=getCookie(cookieName);
+	if(cookieValue==null)
+	{	if(interactive==null)
+		{	setFileDescription(null);
+			alert("Sorry, no data stored under this position");
+		}
+		return;
+	}
+	var arrForm = cookieValue.split(splitChar);
+	setFileDescription(unescape(arrForm[0]));
+	nameValueForm.reset();
+	for(var j=1; j<arrForm.length; j+=2)
+	{	eval("nameValueForm."+unescape(arrForm[j])).value = unescape(arrForm[j+1]);
+	}
+}
+
+function delCookie()
+{	var cookieName=getFileName();
+	var dtNow=new Date();
+	setCookie(cookieName,"",dtNow);
+	setFileDescription(null);
+}
+
+function getFileName() //is cookiename
+{	return loadSaveForm.id_cookieId.options[loadSaveForm.id_cookieId.selectedIndex].value;
+}
+
+function setFileDescription(description, i) //set text in selected option
+{	with(loadSaveForm.id_cookieId.options[(i==null?loadSaveForm.id_cookieId.selectedIndex:i)])
+	{	innerText = ""+(1+index)+" "+(description==null?"(empty)":description);
+	}
+}
+function getFileDescription(i)
+{	return loadSaveForm.id_cookieId.options[(i==null?loadSaveForm.id_cookieId.selectedIndex:i)].innerText.substr(2);
+}
+
+function initCookieLoadList()
+{	var cookieValue, arrForm;
+	//get all the fileDescriptions from the cookies
+	for(i=0; i<loadSaveForm.id_cookieId.options.length; i++)
+	{	cookieValue=getCookie(loadSaveForm.id_cookieId.options[i].value);	
+		if(cookieValue==null)
+		{	setFileDescription(null,i);
+		} else
+		{	arrForm=cookieValue.split(splitChar);
+			setFileDescription(arrForm[0], i );
+		}
+	}
+	loadSaveForm.id_cookieId.options.selectedIndex=0;
+	loadCookieToForm(true); //handles id_option1
+}
+
+function doSubmit()
+{	//do some checks first
+	if(nameValueForm.nmAction.value=="")
+	{	alert("Sorry, you've got to supply an action...");
+		nameValueForm.nmAction.focus();
+		return;
+	}
+	//copy the data from the "nameValueForm" form to the (hidden) "postForm" form.
+	postForm.idPara1.name	=nameValueForm.idAttr1.value;
+	postForm.idPara1.value=nameValueForm.idVal1.value;
+	postForm.idPara2.name	=nameValueForm.idAttr2.value;
+	postForm.idPara2.value=nameValueForm.idVal2.value;
+	postForm.idPara3.name	=nameValueForm.idAttr3.value;
+	postForm.idPara3.value=nameValueForm.idVal3.value;
+	postForm.idPara4.name	=nameValueForm.idAttr3.value;
+	postForm.idPara4.value=nameValueForm.idVal3.value;
+	postForm.idPara5.name	=nameValueForm.idAttr3.value;
+	postForm.idPara5.value=nameValueForm.idVal3.value;
+	postForm.idPara6.name	=nameValueForm.idAttr3.value;
+	postForm.idPara6.value=nameValueForm.idVal3.value;
+	//set method and Action
+	postForm.method=nameValueForm.idMethod.value;
+	postForm.action=nameValueForm.idAction.value;
+	//submit the form
+	postForm.submit();
+}
+</SCRIPT>
+</HEAD>
+<BODY onload="initCookieLoadList()">
+<H1>HTTP GET or POST Generator</H1>
+
+<TABLE cols=3>
+	<FORM name="loadSaveForm">
+		<TR>
+			<TD>&nbsp;
+			</TD>
+			<TD colspan=2>
+				<hr noshade size=1>
+				<SELECT id="id_cookieId" name="f_cookieId" style="WIDTH:150px;">
+					<OPTION id="id_option1" value="postFormSave1" selected></OPTION>
+					<OPTION id="id_option2" value="postFormSave2"></OPTION>
+					<OPTION id="id_option3" value="postFormSave3"></OPTION>
+					<OPTION id="id_option4" value="postFormSave4"></OPTION>
+					<OPTION id="id_option5" value="postFormSave5"></OPTION>
+				</SELECT>
+				&nbsp;
+				<INPUT type="button" value="Load" name=buttonLoad onclick="loadCookieToForm()">
+				<INPUT type="button" value="Del" name=buttonDel onclick="delCookie()">
+				<INPUT type="button" value="Save..." name=buttonSave onclick="saveFormToCookie()">
+				<hr noshade size=1>
+			</TD>
+		</TR>
+	</FORM>
+
+	<FORM name="nameValueForm">
+		<TR><TD></TD>
+				<TD>Attribute</TD>
+				<TD>Value</TD></TR>
+		<TR><TD>Parameter 1</TD>
+			<TD><INPUT id=idAttr1 name=nmAttr1 class="toSave">
+				</TD>
+			<TD><INPUT id=idVal1 name=nmVal1 class="toSave">
+				</TD></TR>
+		<TR><TD>Parameter 2</TD>
+			<TD><INPUT id=idAttr2 name=nmAttr2 class="toSave">
+				</TD>
+			<TD><INPUT id=idVal2 name=nmVal2 class="toSave">
+				</TD></TR>
+		<TR><TD>Parameter 3</TD>
+			<TD><INPUT id=idAttr3 name=nmAttr3 class="toSave"> 
+				</TD>
+			<TD><INPUT id=idVal3 name=nmVal3 class="toSave"> 
+				</TD></TR>
+		<TR><TD>Parameter 4</TD>
+			<TD><INPUT id=idAttr4 name=nmAttr4 class="toSave"> 
+				</TD>
+			<TD><INPUT id=idVal4 name=nmVal4 class="toSave"> 
+				</TD></TR>
+		<TR><TD>Parameter 5</TD>
+			<TD><INPUT id=idAttr5 name=nmAttr5 class="toSave"> 
+				</TD>
+			<TD><INPUT id=idVal5 name=nmVal5 class="toSave"> 
+				</TD></TR>
+		<TR><TD>Parameter 6</TD>
+			<TD><INPUT id=idAttr6 name=nmAttr6 class="toSave"> 
+				</TD>
+			<TD><INPUT id=idVal6 name=nmVal6 class="toSave"> 
+				</TD></TR>
+		<TR>
+			<TD>Method</TD>
+			<TD>
+				<SELECT id=idMethod name=nmMethod class="toSave">
+					<OPTION value="get">GET</OPTION>
+					<OPTION value="post" selected>POST</OPTION>
+				</SELECT>
+				&nbsp;&nbsp;&nbsp;&nbsp;Action
+			</TD>
+			<TD><INPUT id=idAction name=nmAction class="toSave"></TD>
+		</TR>
+		<TR>
+			<TD></TD>
+			<TD colspan=2>
+				<HR size=1 noshade>
+				<INPUT type="button" value="submit" onclick="doSubmit()">
+				<INPUT type="button" value="reset" onclick="nameValueForm.reset()">
+				<HR size=1 noshade>
+				<SPAN style="font-family:'verdana,arial'; font-size:6pt;">&copy; 1999-2000 by Doeke Zanstra</SPAN> 
+			</TD>
+		</TR>
+	</FORM>
+
+	<FORM name=postForm id=idPostForm>
+		<INPUT type="hidden" id=idPara1>
+		<INPUT type="hidden" id=idPara2>
+		<INPUT type="hidden" id=idPara3>
+		<INPUT type="hidden" id=idPara4>
+		<INPUT type="hidden" id=idPara5>
+		<INPUT type="hidden" id=idPara6>
+	</FORM>
+
+</TABLE>
+</BODY>
+</HTML>

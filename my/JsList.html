@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>JsList: range, reduce, map, filter</title>
+		<style type="text/css" media="screen">
+input.line, textarea { width: 100%;  }
+input[type='text'], textarea { border: 1px solid gray; }			
+		</style>
+		<script src="JsList/JsList.js" type="text/javascript" charset="utf-8"></script>  
+		<script type="text/javascript" charset="utf-8">
+function $(id) 
+{
+	return document.getElementById(id);
+}			
+function range_click()
+{
+	var x=$("range_input").value.split(",");
+	$("list").value = (x.length==1?range(+x[0]):x.length==2?range(+x[0],+x[1]):range(+x[0],+x[1],+x[2])).join(',');
+	
+}
+function toNum(a){return +a;} 
+function funcAsFunc() 
+{
+	var func=eval('('+$('func').value+')');
+	return func;
+}
+function reduce_click() 
+{
+	var list=map(toNum,$('list').value.split(','));
+	var func=funcAsFunc();
+	var init=$('initializer').value;
+	if(init) $('out').value=reduce(func,list,+init);	
+	else $('out').value=reduce(func,list);	
+}
+function map_click()
+{
+	var list=map(toNum,$('list').value.split(','));
+	var func=funcAsFunc();
+	$('out').value=map(func,list).join(",");	
+}
+function filter_click()
+{
+	var list=map(toNum,$('list').value.split(','));
+	var func=funcAsFunc();
+	$('out').value=filter(func,list).join(",");	
+}
+		</script>
+	</head>
+	<body>
+		<h1>Javascript list functions: map/reduce/filter/range</h1>
+		<form onsubmit="return false;">
+			<div>
+				start,end,step:<input type="text" id="range_input" value="25">
+				<input type="button" value="range" onclick="range_click();">
+			</div>
+			<div><input type="text" class="line" id="list" value="1,2,3,4,5,6,7,8,9"></div>
+			<div>
+				<textarea id="func" rows="5">
+function(a,b) {
+	return a+b;
+}</textarea></div>
+			<div>
+				<input type="button" value="reduce" onclick="reduce_click();">
+				initialiser:<input type="text" id="initializer" value="">
+				<input type="button" value="map" onclick="map_click();">
+				<input type="button" value="filter" onclick="filter_click();">
+			</div>
+			<div><input type="text" class="line" id="out" value=""></div>
+		<script src="ga.js"></script>
+	</body>
+</html>

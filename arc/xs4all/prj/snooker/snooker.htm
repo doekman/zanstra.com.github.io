@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title> new document </title>
+    <style type="text/css">
+canvas { border: 1px dotted slateblue }
+    </style>
+		<script type="text/javascript" src="canvas.js"></script>
+    <script type="text/javascript">
+var balls={
+  radius:30
+, spacing:2
+, width:function() { return balls.radius*2+balls.spacing*2; }
+, init:function() {
+    var canvas=document.getElementById('put');
+    var ctx=canvas.getContext('2d');
+    var x=balls.radius+balls.spacing, y=balls.radius+balls.spacing;
+    var colors="red,,yellow,green,#A52A2A,blue,#FFC0CB,black".split(',');
+    for(var i=0; i<colors.length; i++) {
+      if(colors[i]) {
+        ctx.beginPath();
+        ctx.fillStyle = colors[i];
+        ctx.arc(x,y,balls.radius,0,Math.PI*2,true); 
+        ctx.closePath();
+        ctx.fill();
+      }
+      x+=balls.width();
+    }
+    ctx.stroke();
+  }
+, click:function(e,dit) {
+    if(typeof e=='undefined') e=window.event;
+/*  var a=[]; 
+    for(var f in e) if(typeof e[f]!='function'&&f.toUpperCase()!=f) a.push(f+":"+e[f]);
+    a.push("-----");
+    for(var f in dit) if(typeof dit[f]!='function'&&f.toUpperCase()!=f&&typeof dit[f]!='object') a.push(f+":"+dit[f]);
+    alert(a.join('\n'));
+*/
+    var x=e.clientX-dit.offsetLeft;
+    var y=e.clientY-dit.offsetTop;
+    var ding=x/balls.width();
+    var pos=parseInt(ding,10);
+    var colors="Red,xxx,Yellow,Green,Brown,Blue,Pink,Black".split(',');
+    alert("Mouse clicked at ("+x+","+y+") and so ball number "+ding+" is "+pos+" and color "+colors[pos]);
+  }
+}
+window.onload=function() {
+  ieCanvasInit();
+  setTimeout(function() {balls.init();},250);
+}
+    </script>
+  </head>
+  <body>
+    <h1>Snooker</h1>
+    <div onclick="balls.click(event,this);"><canvas id="put" width="576" height="64"></canvas></div>
+  </body>
+</html>
+

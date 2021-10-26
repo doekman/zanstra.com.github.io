@@ -1,0 +1,44 @@
+	BODY {
+		background-color: black;
+		border-width: 0px;
+		margin: 0px;
+	}
+	P, H1, TD, A, BODY {
+		font-family: Arial;
+	}
+	P, A, TD, BODY {
+		font-size: 10pt;
+	}
+	P,A,TD,H1,H2,H3,BODY {
+		color: yellow;
+	}
+	A {
+		font-weight: bold;
+	}
+	A:hover {
+		color: red;
+	}
+	.tableLabel {
+		font-weight: bold;
+	}
+	HR {
+		color: yellow;
+		width: 95%;
+		text-align: left;
+		border-style: solid;
+		border-color: yellow;
+	}
+	.firstWord {
+		font-size: 200%;
+		font-weight: bold;
+	}
+	H2,H3 {
+		margin-bottom: 0px;
+	}
+	P {
+		margin-top; 0px;
+		margin-bottom; 1em;
+	}
+	UL {
+		margin: 0px 0px 0px 25px;
+	}

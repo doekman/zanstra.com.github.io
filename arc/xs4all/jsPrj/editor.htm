@@ -1,0 +1,65 @@
+<html>
+<head>
+	<title>Javascript: HTML Editor</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+	</style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="110"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    editor.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>HTML Editor (pre-beta fase)</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<div id="idEditor" contenteditable="true" style="border: 1px solid black; width: 15cm; height: 7cm">
+    Dit kun je editen.
+	</div>
+  <div>
+    URL <input type="text" name="strURL" value="test.htm" style="width: 11cm">
+    <button onclick="loadStart();" style="width: 1.4cm">Load</button>
+    <button onclick="ni();" style="width: 1.4cm">Save</button>
+  </div>
+  <div>
+    <a href="javascript: void superCookie()">Cookie name</a> <input type="text" name="strCookie" value="test" style="width: 4cm">
+    <button onclick="ni();" style="width: 1.4cm">Load</button>
+    <button onclick="ni();" style="width: 1.4cm">Save</button>
+  </div>
+
+<script language="javascript">
+function ni() { alert('ni: not implemented (yet).'); }
+function superCookie() { 
+  var strMsg='If text exceeds max cookie content-length, create a cookie array (cookie-names can\'t start with a digit)';
+  alert(strMsg);
+}
+var toLoad;
+function loadFinish() {
+  if(String(buffer.location.href).indexOf(toLoad)>=0) {
+//    alert(buffer.window.document.designMode);
+    document.frames('buffer').document.designMode='on';
+//    buffer.window.document.designMode='on';
+    idEditor.innerHTML=buffer.window.document.body.innerHTML;
+  }
+}
+function loadStart() {
+  buffer.window.location.href=toLoad=strURL.value;
+}
+</script>
+<iframe name="buffer" id="idBuffer" onload="loadFinish();" style="display: block"> </iframe>
+
+  <div class="footer">Doeke Zanstra, 2001, <a href="../index.htm">index</a></div>
+</td></tr></table><!--end columns--></body>
+</html>

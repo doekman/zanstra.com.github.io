@@ -1,0 +1,244 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>FTL: spreadsheet/form-like wiki extension, v0.2</title>    
+		<style type="text/css" media="screen">
+body {  background-color: #e8e8e8;}		
+textarea { width:100%; }
+#output { overflow: auto;}
+textarea, #output { 
+	padding:4px; 
+	height:44%; 
+	background-color: white;
+	border:1px solid gray;
+}
+form { display: inline;}
+/* wiki output */
+p, h1, h2, li, table.elastic-tab td, blockquote { font-family: "Helvetica Neue", Verdana, sans-serif; }
+h1 { font-size: 14pt;}
+h2 { font-size: 12pt;}
+body { font-size: 10pt; line-height:100%;}
+span.formula { border-bottom: 1px dashed gray; }
+table.elastic-tab { border-collapse: collapse; }
+table.elastic-tab td { padding: 0 4px 0 0; }
+input[readonly] { background-color: #e8e8e8;}
+blockquote { font-style: italic; color: gray;}
+blockquote:before { content: '"';}
+blockquote:after { content: '"';}
+		</style>
+		<script type="text/javascript" src="base2/base2-p.js" ></script>
+    <script type="text/javascript" src="firebug/firebug.js"></script>
+		<script type="text/javascript" src="Ftl/evaluator/Evaluator2.js" ></script>
+		<script type="text/javascript" src="Ftl/Resolver.js" ></script>
+		<script type="text/javascript" src="JsList/JsList.js" ></script>
+		<script type="text/javascript" charset="utf-8">
+function $(id) { 
+  var x=document.getElementById(id); 
+  if(x==null) console.error("$: Element %s does not exist",id);
+  return x;
+}
+function $F(id,val) {
+	if(arguments.length==2) SetFormValue(id,val);
+	else return GetFormValue(id);
+}
+//
+var evaluator;
+var DEPS;
+function clearDependencies() {
+	DEPS={};
+}
+function addDependency(a,b) {
+	function ArrayIn(a,b) {
+		for(var i=0; i<a.length; i++) if(a[i]==b) return true;
+		return false;
+	}
+	
+	if(DEPS[b]&&!ArrayIn(DEPS[b],a)) {
+		if(a) DEPS[b].push(a);
+	}
+	else DEPS[b]=a?[a]:[];
+}
+function addDependencies(a,list) {
+	addDependency(null,a);
+	for(var i=0; i<list.length; i++) {
+		addDependency(a,list[i])
+	}
+}
+function registerDependencies() {
+	for(var i in DEPS) {
+		//console.info("Adding %s: (%s)",i,DEPS[i].join(','));
+		evaluator.addNode(i,DEPS[i]);
+	}
+}
+//
+var textboxCounter, headingCounter, paragraphCounter, spanCounter, checkboxCounter;
+
+function textBox(s) {
+	var r, id="t"+(++textboxCounter), val;
+	if(s.charAt(0)=="@") {
+		var f=s.slice(1);
+		size=f.replace(/^.*?( *)$/,'$1').length||8;
+		r=' readonly title="'+id+': '+s+'" formula="'+base2.trim(f)+'"';
+		addDependencies(id,getVariables(f));
+		val='';
+	}
+	else if(/^[ x]$/i.test(s)) {
+		//checkbox, only one-way (no formula)
+		//hack: should have own function
+		textboxCounter--;
+		var id='c'+(++checkboxCounter);
+		var r=(s!=' '?' checked':'')+' onchange="evaluator.calc(DEPS[this.id],true)"';
+		return '<input type="checkbox" id="'+id+'"'+r+' title="'+id+'">';
+	}
+	else {
+		r=' onchange="evaluator.calc(DEPS[this.id],true)" title="'+id+'"';
+		size=s.length;
+		val=base2.trim(s);
+		//no formula, so not dependent
+	}
+	return '<input id="'+id+'"'+r+' value="'+val+'" size="'+size+'">';
+}
+function inlineFormula(s) {
+	var id='s'+(++spanCounter);
+	var res='<span class="formula" id="'+id+'" title="'+id+': '+s+'" formula="'+s+'"></span>';
+	addDependencies(id,getVariables(s));
+	return res;
+}
+var inline={
+	'**': function(text) { return '<strong>'+text+'</strong>'; },
+	'//': function(text) { return '<em>'+text+'</em>'; },
+	'__': function(text) { return '<u>'+text+'</u>'; },
+	"''": function(text) { return '<code>'+text+'</code>'; },
+	"--": function(text) { return '<strike>'+text+'</strike>'; }
+};
+function parseLine(s,nr) {
+	var pos, i, j, k, l, match, value, blocklevel, prefix="";
+	var rxEtab=/\s::\s/;
+	//heading
+	s=s.replace(/^(===+) *(.+) *\1$/,function(match,h,text){
+		var id="h"+(++headingCounter);
+		blocklevel='h1';
+		//close heading-container, but not before the first one.
+		prefix=(headingCounter==0?"":"</div>")+'<div id="'+id+'">';
+		return text;
+	});
+	//already calculate this, because of elastic tabstops
+	var id="p"+(++paragraphCounter);
+	var title=id+(headingCounter>0?" (section h"+headingCounter+")":"");
+	//blockquote
+	if(s.charAt(0)==">") {
+		s=s.slice(1);
+		blocklevel='blockquote';
+	}
+	// elastic tabs (not blocklevel)
+	if(rxEtab.test(s)) {
+		var a=s.split("\n"), t='<table class="elastic-tab">';
+		base2.forEach(a,function(line){
+			t+='<tr><td title="'+title+'">'+line.split(rxEtab).join('</td><td title="'+title+'">')+'</td></tr>';
+		});
+		s=t+'</table>';
+	}
+	// linebreak with newline (except when ended with whitespace)
+	s=s.replace(/([^ \t])\n/g,'$1<br>');
+	// bold, italic, underline, monospace
+	s=s.replace(/(\*\*|\/\/|__|''|--)(.+)\1/gi, function(match,tag,text){return inline[tag](text);} );
+  //parsing
+  pos=0;
+	while(pos!=-1) {
+		i=s.indexOf("[",pos); j=s.indexOf("]",i+2);
+		k=s.indexOf("@",pos); l=s.indexOf("@",k+2);
+		if(i!=-1&&j!=-1&&(i<k||k==-1)) {
+			//textboxes
+			value=textBox(s.substring(i+1,j));
+			s=s.substring(0,i)+value+s.substring(j+1);
+			pos=i+value.length+1;
+		}
+		else if(k!=-1&&l!=-1) {
+			//inline formula's
+			value=inlineFormula(s.substring(k+1,l));
+			s=s.substring(0,k)+value+s.substring(l+1);
+			pos=k+value.length+1;
+		}
+		else {
+			if(!blocklevel) blocklevel='p'; //default blocklevel
+			s=prefix+'<'+blocklevel+' id="'+id+'" title="'+title+'">'+s+'</'+blocklevel+'>';
+			pos=-1;
+		}
+	}
+	return s;
+}
+function parse(s) {
+	clearDependencies();
+	headingCounter=spanCounter=textboxCounter=paragraphCounter=checkboxCounter=0;
+	//normalize linebreaks
+	s=s.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+	//trim
+	s=s.replace(/^\w*(.*)\w*$/m,"$1");
+	//paragraphs are seperated by a blank line
+	var p=s.split(/\n\n+/g);
+	//parse line by line
+	for(var i=0; i<p.length; i++) {
+		p[i]=parseLine(p[i],i);
+	}
+	if(headingCounter>0) p.push("</div>"); //close last heading section
+	evaluator=new Evaluator();
+	registerDependencies();
+	evaluator.prepare();
+	evaluator.addCalcEventListener(function(nodeName,callback) {
+		try {
+			var formula=$(nodeName).getAttribute('formula');
+			if(formula) {
+				//console.info("Node %s changed. Recalculate formula '%s'",nodeName,formula);
+				$F(nodeName, resolve(formula));
+			}
+		}
+		catch(ex) {
+			console.warn("Error in formula, node '%s' seems unknown (%s)",nodeName,ex)
+		}
+		callback();
+	});
+	return p.join('\n');
+}
+//
+function render() {
+	$('output').innerHTML=parse($('markup').value);
+	try {
+		//console.info(""+evaluator);
+		evaluator.calc(null,true);
+	}
+	catch(ex) {
+		$('output').innerHTML=ex;
+	}
+}			
+		</script>
+	</head>
+	<body onload="render();">
+		<form onsubmit="return false;">
+			<textarea id="markup">
+Sample text: **strong**, //emphasized// 
+(space+newline is a softwrap) __underline__, ''monospace'' and --strike--.
+(newline is a linebreak) The total of all textboxes: @Sum(t1..t6)@.
+[X] Show form @ShowHide(c1,h1)@
+
+==== Expenses ====
+
+Groceries :: [3    ] :: Rent      :: [7    ] :: //enter your groceries here//
+Car       :: [     ] :: **Total** :: [@Sum(t1,t2,t3)] :: grand total
+Average   :: [@Avg(t1..t3)     ] :: Formula   :: [@t1+t2-t3*t4/t5     ]
+
+&gt;Textboxes get the length between the brackets. With a formula, only the trailing spaces are counted. Default
+with for formula fields without a space is 8. Elastic tabstops can be used within one paragraph. Use the ::-marker with
+spaces around it, and you get same size columns. Not all lines need to have the same number of tab-stops. Begin a
+paragraph with a &gt;-sign, and it's a blockquote.
+
+</textarea>
+			<p>
+				<input type="button" value="re-render" onclick="render()">
+				<acronym title="Faster than Light">FTL</acronym>: spreadsheet/form-like wiki extension.
+				<a href="Ftl.zip">Download full source-code</a>
+			</p>
+			<div id="output"><em>Press "render" to convert the markup to HTML.</em></div>
+		</form>
+
+	</body>
+</html>

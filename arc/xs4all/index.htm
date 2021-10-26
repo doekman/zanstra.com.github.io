@@ -1,0 +1,191 @@
+<html lang="nl">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+	<title>Home of Doekman</title>
+  <link rel="stylesheet" type="text/css" href="default.css" />
+	<style type="text/css">
+p.fout { 
+  color: blue;
+  font-style: italic;
+}
+  </style>
+  <!--Libraries-->
+  <link rel="stylesheet" type="text/css" href="mkbPoezie/mkbPoezie.css">
+  <script language="javascript" src="mkbPoezie/mkbPoezie.js"> </script>
+  <script language="javascript" src="js/window.js"> </script>
+  <script language="javascript" src="js/cookie.js"> </script>
+  <script language="javascript" src="js/get.js"> </script>
+  <script language="javascript" src="js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+function showJS(bln)
+{
+  //for backwards compatability
+  location.href=bln?'dzLib/ipe.htm':'index.htm';
+}
+window.onload=function pageInit() {
+  var qs=getParameter();
+  if(qs.run!=null) {
+    
+    eval(qs.run);
+  }
+  setAttention();
+}
+var oAttention;
+window.onscroll=setAttention;
+function setAttention()
+{
+  if(location.hash.length>0)
+  {
+    //lose attention on old stuff
+    if(oAttention) oAttention.className='';
+    //highlite the bookmark, if available
+    var aBM=document.getElementsByName(location.hash.substr(1));
+    if(aBM.length>0) 
+    {
+      oAttention=aBM[0];
+      oAttention.className='attention';
+    }
+  }
+}
+  </script>  
+</head>
+<body>
+<div id="divBody">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <h1 style="text-align: center">
+    <a name="logo">
+    <img src="img/ident/doekmanbigtrans.gif" style="vertical-align:baseline;"><!--img as icon-->
+    </a>
+  </h1>  
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>Home of Doekman</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+
+  <!--START float right-->
+  <table align="right" cellpadding="0"><tr><td style="border-top: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black">
+  <script language="javascript">
+    strImgPath='mkbPoezie/';
+    document.writeln( arrMkbPoezie.getRandomElement() );
+  </script>
+  </td></tr></table>
+  <!--END float right-->
+
+  <h2>Deze site</h2>
+  <p>
+    <big>Er wordt teveel gedaan...</big>
+  </p>
+
+  <h2><a name="captainsLog">Captains log</a></h2>
+	<ul>
+    <li>
+			<a href="picks/progress.html">04-09-2014</a>: 
+        Nieuwe aanvulling van <strong>progress-indicators</strong> en herordening (en nu ook een animated PNG).</li>
+			<a href="picks/progress.html">21-09-2013</a>: 
+        M'n <strong>progress-indicators</strong>-collectie aangevuld met 16 juweeltjes van een spinners.</li>
+      <li>
+  			<a href="picks.html">10-10-2011</a>: 
+        Wat zaken opgeruimd, en een <strong>picks</strong> categorie aangemaakt.</li>
+    <li>
+			<a href="quit.html">08-07-2011</a>: 
+      M'n <strong>gestopt met roken</strong> pagina verbeterd.</li>
+    <li>
+			<a href="mkbPoezie.htm">23-03-2011</a>: 
+      Er is weer nieuwe middenstandspoëzie (een dubbele <strong>schoen/poen</strong>).</li>
+    <li>
+			<a href="mkbPoezie.htm">01-06-2008</a>: 
+      Er is weer nieuwe middenstandspoëzie (kan <strong>schokkende</strong> beelden bevatten).</li>
+    <li>
+			<a href="quit.html">25-02-2008</a>: 
+      Ik vier dat ik vandaag 38 dagen <strong>gestopt</strong> ben met roken.</li>
+    <li>
+			<a href="mkbPoezie.htm">31-03-2007</a>: 
+      <strong>Toegezonden</strong> middenstandspoëzie toegevoegd, met foto.</li>
+    <li>
+			<a href="mkbPoezie.htm">08-03-2007</a>: 
+      Er is weer nieuwe <strong>middenstandspoëzie</strong>!</li>
+      <li>
+  			<a href="dzLib/toLiteral.htm">22-07-2006</a>: 
+        Again a small bug in toLiteral. It seems the library <strong>is actually used</strong></li>
+    <li>
+			<a href="dzLib/toLiteral.htm">28-06-2006</a>: 
+			These days, <strong>bug fixing toLiteral</strong> seems the only thing to do for me on this site.</li>
+    <li>
+			<a href="dzLib/toLiteral.htm">13-04-2006</a>: 
+			Bugfix voor toLiteral tbv <strong>Internet Explorer 5</strong>.</li>
+    <li>
+			<a href="dzLib/toLiteral.htm">26-12-2005</a>: 
+			Versie 1.2 van toLiteral gemaakt (nu nog <strong>beterder</strong>).</li>
+    <li>
+			<a href="tools/index.htm">18-12-2005</a>: 
+			Een <strong>gereedschapshoek</strong> toegevoegd.</li>
+    <li>
+			<a href="mkbPoezie.htm">20-11-2005</a>: 
+			Het totaal aan middenstandspoëzie heeft de <strong>webmasters leeftijd</strong> bereikt.</li>
+    <li>
+			<a href="dzLib/chknav.htm">16-11-2005</a>: 
+			Gmail checkbox keyboard navigator <strong>gekloond</strong>.</li>
+    <li>
+			<a href="arc/dzLib/index.htm">16-11-2005</a>: 
+			Een aantal zaken in dzLib <strong>gearchiveerd</strong>.</li>
+    <li>
+			<a href="#">16-11-2005</a>: 
+			Alle NedStat tellers verwijdert wegens <strong>advertenties/popups</strong>.</li>
+    <li>
+			<a href="logs/jsLog.htm">29-10-2005</a>: 
+			Added <strong>comments function</strong> to my javascript and idea blogs.</li>
+    <li>
+			<a href="inTec/telefoonNummer.htm">29-10-2005</a>: 
+			Adresboekformateerregels uitgebreidt met <strong>internationale notatie</strong>.</li>
+		<li>
+			<a href="logs/ideaLog.htm#HtmlFormFlashPersistence">26-10-2005</a>:
+			Recorded another idea: <strong>HTML Form persistance</strong> with Flash [en].</li>
+		<li>
+			<a href="logs/ideaLog.htm#GmailPlusISync">22-10-2005</a>:
+			Recorded <strong>two new ideas</strong> in my idea-blog: GMail+iSync and Wiki-FlowChart [en].</li>
+		<li>
+			<a href="logs/jsLog.htm#ScrollIntoView">15-10-2005</a>:
+			Cross-browser <strong>ScrollIntoView</strong> with a margin [en].</li>
+		<li>
+			<a href="google/index.htm">03-05-2005</a>:
+			Google-pagina met <strong>&lt;input type=&quot;search&quot;&gt;</strong> gemaakt.</li>
+		<li>
+			<a href="logs/jsLog.htm#weekNr">15-04-2005</a>:
+			M'n javascript-log weer opgepakt, met het hoofdstuk <strong>weeknummers</strong>.</li>
+		<li>
+			<a href="dzLib/ipe.htm">19-02-2005</a>:
+			Veel nieuwe functionaliteit aan m'n javascript IDE toegevoegd (oa <strong>pretty print</strong>, crunch, zoom).</li>
+		<li>
+			<a href="music/toonladderTijd.htm">02-02-2005</a>:
+			Toonladdertijd werkt nu ook in FireFox, en de <strong>pentatonische blues</strong> ladder toegevoegd.</li>
+		<li>
+			<a href="dzLib/ubbParser.htm">24-01-2005</a>:
+			New-line bug opgelost in m'n <strong>client-side ubbParser</strong> voor Safari/Firefox.</li>
+		<li>
+			<a href="mkbPoezie.htm">06-01-2005</a>:
+			Peter Post stuurde me maar liefst vier nieuwe <strong>middenstandsrijmselarijen</strong>.</li>
+		<li>
+			<a href="stats-cum.htm">06-01-2005</a>:
+			Een <strong>nieuw jaar</strong> voor de cumulatieve statistieken .</li>
+<!--te veel posten ? naar captains log-->
+    <li>
+      <a href="captainsLog.htm">Meer logboekposten...</a>
+	</ul>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Home of Doekman" title="Stuur een email" class="footer">Doeke Zanstra</a>, 
+    2001-2011, 
+    <a href="http://www.xs4all.nl/~zanstra/index.htm" title="Dit is de oorspronkelijke bron van deze pagina">source</a>
+   </div>
+</td></tr></table><!--end columns-->
+</div>
+<!--end div body-->
+
+</body>
+</html>

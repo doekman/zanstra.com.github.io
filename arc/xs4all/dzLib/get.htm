@@ -1,0 +1,122 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  pre2div('preSampleCode','divSampleCode');
+  pre2div('preDemoCode','divDemoCode');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    getParameter-object (querystring)
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+    Easy client-side access to the querystring. The querystring is exposed as an object.
+    <br><br>
+    <em>Download</em>:
+    <a href="../js/get.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/get.js" title="IE propriety mode">view-source</a>.
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code><b>win32</b>: ie6</code>, <code><b>OS X</b>: ie5.1</code>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode"> 
+//Access the querystring
+var oQS=new getParameter();
+if(oQS.strName!=null)
+{
+	alert('Supplied name is '+oQS.strName);
+}
+
+//Create a GET request without a form (and automatic escaping)
+var oQS=new getParameter();
+oQS.clearAll();
+oQS.strName='Your Name';
+oQS.strEmail='your.name@domain.com';
+document.writeln(oQS.toString());
+  </pre>
+  <h2>
+    Live Demo
+  </h2>
+		<h3>current QueryString</h3>
+	<p style="border: 1px solid gray; padding: 3px">
+		<script language="javascript" src="../js/get.js"> </script>
+		<script language="javascript">
+//The Demo Code
+var oQS=new getParameter(), bln=false;
+for(var i in oQS)
+{
+	if(typeof oQS[i]=='string') 
+	{
+		document.writeln('<strong>'+i+'</strong>: '+oQS[i]+'<br />');
+		bln=true;
+	}
+}
+if(!bln) document.writeln('<em>There\'s no querystring parameter supplied with URL</em>');
+	</script></p>
+	<p>
+		Want an QS-example: <a href="?strName=Doeke&strEmail=zanstra@xs4all.nl">name and email</a>.
+		There's also a <a href="?There=is&also=a&prety=long&one=.&Yes=I&am=not&always=very&creative=.">pretty long one</a>.
+
+	</p>
+  <div id="divDemoCode" style="display: none"></div>
+  <pre id="preDemoCode"> 
+//The Demo Code
+var oQS=new getParameter(), bln=false;
+for(var i in oQS)
+{
+	if(typeof oQS[i]=='string') 
+	{
+		document.writeln('<strong>'+i+'</strong>: '+oQS[i]+'<br />');
+		bln=true;
+	}
+}
+if(!bln) 
+{
+	document.writeln('<em>There\'s no querystring parameter supplied with URL</em>');
+}
+  </pre>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

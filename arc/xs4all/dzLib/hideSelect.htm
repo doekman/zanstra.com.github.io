@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <title> New Document </title>
+    <style type="text/css">
+#lullo {
+  border: 1px solid black;
+  background: yellow;
+  position: absolute;
+  width: 100px; height:50px;
+  left: 75px; top: 80px;
+}
+div.select {
+  display: inline;
+  border: 2px solid inset;
+  background-image: url(../img/selectButton.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  padding: 1px 16px 0px 3px;
+  /*needed?*/
+  padding-right: 16px; 
+  overflow: hidden;
+/*  position: absolute;*/
+}
+    </style>
+    <script type="text/javascript" src="../js/X.js"></script>
+    <script type="text/javascript">
+function hide(o) { o.style.visibility='hidden'; }
+function show(o) { o.style.visibility=''; }
+function showSelect(o)
+{
+  if(typeof o=='undefined') o=this;
+  var select=o.tagName=='SELECT'?o:o.nextSibling;
+  var hider=select.previousSibling;
+  show(select);
+//  hide(hider);
+}
+function hideSelect(o)
+{
+  var select,hider;
+  if(typeof o=='undefined') o=this;
+  if(o.tagName=='SELECT') {
+    select=o;
+    hider=select.hiderInserted?select.previousSibling:null;
+  }
+  else {
+    hider=o;
+    select=hider.nextSibling;
+  }
+  if(hider==null)
+  {
+    //create combo-like thing
+    hider=document.createElement('div');
+    hider.appendChild(document.createTextNode(''));
+    hider.className='select';
+    var clonedCSSProperties=['color','backgroundColor','fontFamily','fontSize'];
+    for(var i=0; i<clonedCSSProperties.length; i++)
+    {
+      var stl=clonedCSSProperties[i];
+      hider.style[stl]=select.currentStyle[stl];
+    }
+    hider=select.parentNode.insertBefore(hider,select);
+    hider.onselectstart=function() { return false; }
+    hider.onmousedown=showSelect;
+    
+    xResizeTo(hider,xWidth(select),xHeight(select));
+    select.hiderInserted='true';
+    //
+    select.style.position='absolute';
+    select.style.border='1px solid black';
+    select.size=7;
+    select.onclick=hideSelect;
+    xMoveTo(select,xLeft(hider),xTop(hider)+xHeight(hider));
+
+  }
+  hide(select);
+  hider.firstChild.nodeValue=select.options[select.selectedIndex].text;
+}
+
+window.onload=function()
+{
+  hideSelect(document.getElementById('continent'));
+}
+    </script>
+  </head>
+  <body>
+    <h1>Selects verbergen?</h1>
+    <form onsubmit="return false;">
+      <select name="continent">
+        <option> Afrika </option>
+        <option> Antactica </option>
+        <option> Azië </option>
+        <option> Europa </option>
+        <option> Noord-Amerika </option>
+        <option> Oceanië </option>
+        <option> Zuid-Amerika</option>
+      </select>
+      <select name="continent2">
+        <option> Afrika_ </option>
+        <option> Antactica </option>
+        <option> Azië </option>
+        <option> Europa </option>
+        <option> Noord-Amerika </option>
+        <option> Oceanië </option>
+        <option> Zuid-Amerika</option>
+      </select>
+    </form>
+    <div id="lullo">&nbsp;</div>
+    <h2>idee?</h2>
+    <p>
+      ga alle selects visueel vervangen door een DIV die er precies op lijkt.
+      De SELECT gewoon in de flow laten staan, en de DIV absoluut positioneren.
+      Als op de div geklikt wordt, de div verbergen en de select tonen. Na het kiezen
+      andersom.
+    </p>
+    <p>
+      Nadeel: alle selects zien er pre-xp uit. Bovenstaande natuurlijk alleen voor IE uitvoeren.
+    </p>
+    <h2>problemen</h2>
+    <ul>
+      <li>select.click() zorgt er niet voor dat de combobox uitklapt. select.fireEvent('onclick') werkt ook niet.
+      <li>hierdoor heb ik van de select/size=1 een select/size=7 gemaakt,
+        en wordt die onder de "hider" (slechte naam nu) geplaatst, en 
+        getoond indien nodig.
+      <li>dit idee gaat dus waarschijnlijk niet werken...
+      <li>extra probleem: nu de div de select moet vervangen in de flow,
+        krijgen we ie5 problemen (div is nu position:static en de select is position:absolute). een inline-element heeft in IE5 geen border...
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,344 @@
+<html>
+<head>
+	<title>dzLib feature maker</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+button.label {
+  width:150px;
+  border-width:0px;
+  color:black;
+  background-color:transparent;
+  text-align:left;
+}
+dt {
+  font-style: italic;
+}
+label {
+  cursor:hand;
+  pointer:hand;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function jsStrEncode(s) 
+{
+  return "'"+(''+s).replace("'","\\'")+"'";
+}
+function getRadioValue(s)
+{
+  var o=document.getElementsByName(s);
+  for(var i=0; i<o.length; i++)
+  {
+    if(o[i].checked==true) return o[i].value;
+  }
+  return null;
+}
+function generate()
+{
+  var s='window.open(', feat='', calcfeat='';
+  var usewith=getRadioValue('usewith');
+  var f=document.getElementsByName('feature');
+  var target=getRadioValue('sName');
+  var URL=ID('sURL').value;
+
+  if(target=='_blank'&&usewith=='form')
+  {
+    if(!confirm('Using target "_blank" in combination with "form" does not work correctly (it opens two windows). This is because there is no synchronization possible between javascript (onsubmit) and action/target HTML attributes.\n\nProceed anyway?'))
+    {
+      return;
+    }
+  }
+  if(usewith=='script'||usewith=='a'||usewith=='area')
+  {
+    s+=jsStrEncode(URL)+',';
+  }
+  else
+  {
+    s+=jsStrEncode('')+',';
+  }
+  s+=jsStrEncode(target)+',\n';
+
+  for(var i=0; i<f.length; i++)
+  {
+    if(i>0) feat+=',';
+    feat+=f[i].id+'='+(f[i].checked?'1':'0');
+  }
+  //Position
+  var pos=getRadioValue('pos');
+  if(pos=='fixed')
+  {
+    feat+=',left='+parseInt(ID('left').value,10)+',top='+parseInt(ID('top').value,10);
+  }
+  else if(pos=='center')
+  {
+    var relLeft=parseFloat(parseInt(ID('left').value,10)/100);
+    var relTop=parseFloat(parseInt(ID('top').value,10)/100);
+    var halfWidth=parseInt(parseInt(ID('width').value,10)*relLeft,10);
+    var halfHeight=parseInt(parseInt(ID('height').value,10)*relTop,10);
+    s='var x=parseInt(screen.width*'+relLeft+'-'+halfWidth+',10),y=parseInt(screen.height*'+relTop+'-'+halfHeight+',10);\n'+s;
+    calcfeat+="+'left='+x+',top='+y";
+  }
+  //Dimension
+  if(getRadioValue('size')=='size')
+  {
+    feat+=',width='+parseInt(ID('width').value,10)+',height='+parseInt(ID('height').value,10);
+  }
+  s+=jsStrEncode(feat)+calcfeat+');';
+  s=s.replace("'+'",',');
+  if(usewith=='script')
+  {
+    ID('result').value=s;
+  }
+  else
+  {
+    var tag='<'+usewith;
+    var forevent, URLAttr;
+    if(usewith=='a'||usewith=='area') 
+    {
+      forevent='onclick';
+      URLAttr='href';
+    }
+    else if(usewith=='form') 
+    {
+      forevent='onsubmit';
+      URLAttr='action';
+    }
+    tag='<'+usewith+' '+URLAttr+'="'+URL+'" target="'+target+'" '+forevent+'="'+s.replace(/\n/g,'');
+    if(usewith=='form') tag+='return true;"'; //the form needs to submit 
+    else tag+='return false;"'; //window is opened, url is loaded, so cancel
+    
+    if(usewith=='a') tag+='>Test result</a>';
+    else if(usewith=='area') tag+=' />';
+    else if(usewith=='form') tag+='>\n</form>';
+    ID('result').value=tag;
+  }
+}
+
+function enableByName(sName,bEnable)
+{
+  var o=document.getElementsByName(sName);
+  for(var i=0; i<o.length; i++)
+  {
+    o[i].disabled=!bEnable;
+  }
+}
+
+function runResult()
+{
+  var result=''+ID('result').value;
+  if(result.substring(0,1)=='<') ID('resultDiv').innerHTML=result;
+  else eval(result);
+}
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    <code>window.open</code> feature maker
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <dl>
+    <dt>Description</dt>
+    <dd>
+      Never type those anoying features again. Create a <code>window.open</code> statement.
+      Easilly center the newly opened window.
+    </dd>
+    <dt>Proper use of javascript with the <code>a</code>, <code>area</code> and <code>form</code> tags</dt>
+    <dd>
+      When you open a new window in an anchor in this way, your link will still work when 
+      a user doesn't support javascript. In that case, only the <em>url</em> and the 
+      <em>target</em> are supported: non-javascript browsers
+      degrade gracefully. See also <a href="http://www.scottandrew.com/weblog/2002_05#a000284">scottandrew.com</a>.
+    </dd>
+    <dt>Tested on</dt>
+    <dd>
+      ie6/Win, ie5.2.2/Mac, Moz/1.0, Moz/1.1
+    </dd>
+    <dt>Links</dt>
+    <dd>
+      <a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/reference/methods/open_0.asp">MSDN Library</a>,
+      <a href="http://developer.netscape.com/docs/manuals/communicator/jsref/win1.htm#1152528">developer.netscape.com</a>,
+      <a href="http://www.scottandrew.com/weblog/2002_05#a000284">scottandrew.com on javascript:</a>
+    </dd>
+  </dl>
+  
+  </p>
+  <h2>The app</h2>
+  <form name="frm">
+    <table style="border-width:0px;table-layout:fixed;width:100%">
+      <tr>
+        <th style="width:100px">Use with</th>
+        <td>
+          <div>
+            <input type="radio" name="usewith" id="usewith0" value="script" checked />
+            <label for="usewith0">script</label>
+            <input type="radio" name="usewith" id="usewith1" value="a" />
+            <label for="usewith1">a (anchor)</label>
+            <input type="radio" name="usewith" id="usewith2" value="area" />
+            <label for="usewith2">area</label>
+            <input type="radio" name="usewith" id="usewith3" value="form">
+            <label for="usewith3">form</label>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>URL</th>
+        <td>
+          <input type="text" id="sURL" style="width:250px" value="windowOpen.htm"/>
+        </td>
+      </tr>
+      <tr>
+        <th>Target</th>
+        <td>
+          <table style="border-width:0px;table-layout:fixed;width:100%"><tr><td style="width:100px">
+            <div>
+              <input type="radio" name="sName" id="sName0" value="_blank" onclick="enableByName('sUserDefName',false);" />
+              <label for="sName0">_blank</label>
+            </div><div>
+              <input type="radio" name="sName" id="sName2" value="_parent" onclick="enableByName('sUserDefName',false);" />
+              <label for="sName2">_parent</label>
+            </div><div>
+              <input type="radio" name="sName" id="sName4" value="_self" checked onclick="enableByName('sUserDefName',false);" />
+              <label for="sName4">_self</label>
+            </div>
+          </td><td>
+            <div>
+              <input type="radio" name="sName" id="sName5" value="_top" onclick="enableByName('sUserDefName',false);" />
+              <label for="sName5">_top</label>
+            </div><div>
+              <input type="radio" name="sName" id="sName6" value="userdefined" onclick="enableByName('sUserDefName',true);ID('sUserDefName').focus();" />
+              <label for="sName6">Custom</label>
+              <input type="text" name="sUserDefName" id="sUserDefName" value="" onchange="ID('sName6').value=this.value;" disabled />
+            </div>
+          </td></tr></table>
+        </td>
+      </tr>
+      <tr>
+        <th>Features</th>
+        <td>
+          <table style="border-width:0px;table-layout:fixed;width:100%"><tr><td style="width:100px">
+            <div>
+              <input type="checkbox" id="fullscreen" name="feature" />
+              <label for="fullscreen">fullscreen</label>
+            </div>
+            <div>
+              <input type="checkbox" id="location" name="feature" checked />
+              <label for="location">location</label>
+            </div>
+            <div>
+              <input type="checkbox" id="menubar" name="feature" checked />
+              <label for="menubar">menubar</label>
+            </div>
+            <div>
+              <input type="checkbox" id="resizable" name="feature" checked />
+              <label for="resizable">resizable</label>
+            </div>
+          </td><td>
+            <div>
+              <input type="checkbox" id="scrollbars" name="feature" checked />
+              <label for="scrollbars">scrollbars</label>
+            </div>
+            <div>
+              <input type="checkbox" id="status" name="feature" checked />
+              <label for="status">status</label>
+            </div>
+            <div>
+              <input type="checkbox" id="toolbar" name="feature" checked />
+              <label for="toolbar">toolbar</label>
+            </div>
+          </td></tr></table>
+          <table style="border-width:0px;table-layout:fixed;width:100%"><tr><td style="width:300px">
+            <fieldset style="height:110px">
+              <legend>Dimensions</legend>
+              <div>
+                <input type="radio" id="nosize" value="nosize" name="size" checked onclick="enableByName('dimnumbers',false);ID('center').disabled=true;ID('nopos').checked=true;" />
+                <label for="nosize">No dimensions</label>
+              </div>
+              <div>
+                <input type="radio" id="size" value="size" name="size" onclick="enableByName('dimnumbers',true);ID('center').disabled=false;" />
+                <label for="size">Dimensions(width,height) in pixels</label>
+              </div>
+              <div>
+                <input type="radio" id="spacer2" name="size" style="visibility:hidden" disabled />
+                <input type="text" id="width" name="dimnumbers" style="width:50px" maxlength="4" value="640" disabled />
+                <input type="text" id="height" name="dimnumbers" style="width:50px" maxlength="4" value="480" disabled />
+              </div>
+            </fieldset>
+          </td><td>
+            <fieldset style="height:110px">
+              <legend>Position</legend>
+              <div>
+                <input type="radio" id="nopos" value="nopos" name="pos" checked onclick="enableByName('posnumbers',false);" />
+                <label for="nopos">No position</label>
+              </div>
+              <div>
+                <input type="radio" id="fixed" value="fixed" name="pos" onclick="enableByName('posnumbers',true);" />
+                <label for="fixed">Fixed(left,top) in pixels</label>
+              </div>
+              <div>
+                <input type="radio" id="center" value="center" name="pos" onclick="enableByName('posnumbers',true);" disabled />
+                <label for="center">Center(px,py) in percentages</label>
+              </div>
+              <div>
+                <input type="radio" id="spacer1" name="pos" style="visibility:hidden" disabled />
+                <input type="text" id="left" name="posnumbers" style="width:50px" maxlength="4" value="50" disabled />
+                <input type="text" id="top" name="posnumbers" style="width:50px" maxlength="4" value="33" disabled />
+              </div>
+            </fieldset>
+          </td></tr></table>
+        </td>
+      </tr>
+      <tr>
+        <td><button onclick="generate();return false;">Generate</button></td>
+        <td>
+          <div>
+            <textarea style="width:100%" rows="5" id="result"></textarea>
+          </div>
+          <div>
+            <button id="testResult" onclick="runResult();return false;">Test result</button>
+          </div>
+          <div style="color:gray;font-size:80%">
+            Mozilla doesn't seem to hook events, when setting <code>innerHTML</code>,
+            and IE/Mac doesn't know <code>innerHTML</code>, but it works on both browsers.
+          </div>
+          <div id="resultDiv"></div>
+        </td>
+    </table>
+	  <h2>Other wizards</h2>
+		<ul>
+			<li><a href="http://www.xs4all.nl/~crisp/scrollers/scrollbarstyle.html">Visual Scrollbar CSS</a> - Determine <small title="What You See Is What You Get">WYSIWYG</small> the <small title="Cascading Style Sheets">CSS</small> for coloring you scrollbars in <small title="Internet Explorer">IE</small>.</li>
+			<li><a href="http://webfx.eae.net/tools/filtertool.html">Filter Tool</a> - Determine <small title="What You See Is What You Get">WYSIWYG</small> the <small title="Cascading Style Sheets">CSS</small> for applying filters in <small title="Internet Explorer">IE</small> (old IE4 style).</li>
+			<li><a href=""></a> - </li>
+		</ul>
+  </form>
+
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

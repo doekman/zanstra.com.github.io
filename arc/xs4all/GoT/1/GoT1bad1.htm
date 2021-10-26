@@ -1,0 +1,274 @@
+<html>
+  <head>
+    <style type="text/css">
+.menu {
+  margin-bottom: 1em; 
+  font-size: 8pt; font-family: Verdana, sans-serif; 
+}
+hr { border: 1px solid black; color: silver; height: 1px }
+    </style>
+    <script language="javascript">
+var sNewLine='\r\n';
+/*constructor*/ function GoT1(s) {
+  var arr;
+//--| Properties
+//var nB, nH;
+//var aKolom, aRij;
+//var aSolution;
+//--| Methods
+  this.process=GoT1_process;
+
+//--| Verwerk inputstring in gegevensstructuur
+//zoek breedte en hoogte
+  i=s.indexOf(' ');
+  this.nB=parseInt(s.substring(0,i),10);
+  j=s.indexOf(sNewLine,i+1);
+  this.nH=parseInt(s.substring(i,j),10);
+//Verzamel de  kolom data
+  this.aKolom=[];
+  for(var k=0;k<this.nB;k++) {
+    i=j+sNewLine.length; 
+    j=s.indexOf(sNewLine,i);
+    this.aKolom[k]=i>=j?[]:s.substring(i,j).split(' '); //split atleast returns array of lenght 1
+    for(var l=0; l<this.aKolom[k].length; l++) {
+      this.aKolom[k][l]=parseInt(this.aKolom[k][l],10); //convert to int
+    }
+  }
+//Verzamel de  rij data
+  this.aRij=[];
+  for(var k=0;k<this.nH;k++) {
+    i=j+sNewLine.length; 
+    j=s.indexOf(sNewLine,i);
+    if(j==-1) j=s.length; //EOString
+    this.aRij[k]=i>=j?[]:s.substring(i,j).split(' ');
+    for(var l=0; l<this.aRij[k].length; l++) {
+      this.aRij[k][l]=parseInt(this.aRij[k][l],10); //convert to int
+    }
+  }
+
+//--| initialiseer oplossings-array
+//structuur: een array[nB] van array[nH] van BitArray (Number)
+//Bit-0 zegt of bij de eerste oplossing op deze positie een # kan staan (1) of niet (0)
+//Van links naar rechts, van boven naar beneden logica
+//dimensie is max 30, dus past dit in een Number
+  this.aSolution=[];
+  for(i=0;i<this.nB;i++) {
+    this.aSolution[i]=[];
+    for(j=0;j<this.nH;j++) {
+      this.aSolution[i][j]=0; //0x00000000
+    }
+  }
+}
+
+//var nB, nH;
+//var aKolom, aRij;
+//var aSolution;
+
+/*public*/ function GoT1_process() {
+  var nBlokken, nTotalBlokLen;
+  var oPermCache={};
+//Itereer eerst door rijen
+  var s='';
+  with(this) {
+    for(var i=0;i<aRij.length;i++) {
+    //tel aantal blokken in de rij
+      var nXRuimteBlokken=nB-aRij[i].sum();
+    //initialiseer tussenruimte array
+      //var aXRuimte=[nRuimteBlokken];
+      //for(var j=1;j<1+aRij[i].length;j++) aXRuimte[j]=0;
+    //Loop door alle permutaties van blokken+ruimte
+    //Maak een lijst aan van alle tussenruimte permutaties
+      if(oPermCache[nXRuimteBlokken]==null) {
+        oPermCache[nXRuimteBlokken]=new Permutations(nXRuimteBlokken,aRij[i].length+1);
+      }
+//debug
+s+='--rij-'+i+'-(pos'+(aRij[i].length+1)+',len'+(nXRuimteBlokken)+')--------\n'
+  +'['+aRij[i].join(',')+']\n'
+  +oPermCache[nXRuimteBlokken].aPermutations.join('\n')+'\n';
+      //Loop kolommen voor rij i
+      for(var j=0;j<aKolom.length;j++) {
+        var nYRuimteBlokken=nH-aKolom[j].sum();
+        //permutaties kolom
+        if(oPermCache[nYRuimteBlokken]==null) {
+          oPermCache[nYRuimteBlokken]=new Permutations(nYRuimteBlokken,aKolom[i].length+1);
+        }
+s+='  --kol-'+j+'-(pos'+(aKolom[j].length+1)+',len'+(nYRuimteBlokken)+')--------\n'
+  +'  ['+aKolom[j].join(',')+']\n  '
+  +oPermCache[nYRuimteBlokken].aPermutations.join('\n  ')+'\n';
+        //loop permutaties voor rij i
+        for(var k=0; k<oPermCache[nXRuimteBlokken].length; k++) {
+          //loop permutaties voor kolom j
+          for(var l=0; l<oPermCache[nYRuimteBlokken].length; l++) {
+            
+        }
+      }
+    }
+  }
+  return s;
+}
+
+//-------------------------------------------------------------
+
+Array.prototype.sum=Array_sum;
+if([].top==null) Array.prototype.top=Array_top;
+if([].push==null) Array.prototype.push=Array_push;
+if([].pop==null) Array.prototype.pop=Array_pop;
+function Array_sum() {
+  var nSum=0;
+  for(var i=0; i<this.length; i++) nSum+=this[i];
+  return nSum;
+}
+function Array_top() {
+  return this[this.length-1];
+}
+function Array_push(o) {
+  this[this.length]=o;
+}
+function Array_pop() {
+  var o=this[this.length-1];
+  this.length--;
+  return o;
+}
+
+//-------------------------------------------------------------
+
+/*constructor*/ function Permutations(nTotalSum,nListLen) {
+//--| Properties
+  this.aPermutations=[];
+  this.nTotal=parseInt(nTotalSum,10);
+  this.nPositions=parseInt(nListLen,10);
+//--| Methods
+  this.buildList=Permutations_buildList;
+//--| Initialize
+  this.aPermutations.push(new Array(this.nPositions))
+  this.buildList(0);
+  if(this.aPermutations.top().sum()!=this.nTotal) this.aPermutations.pop();
+}
+
+/*private*/ function Permutations_buildList(i) {
+  //Left and right border space can be 0,
+  //Space between blocks has to be 1 or bigger
+  for(var n=i==0||i==this.nPositions-1?0:1; n<=this.nTotal; n++) {
+    var aTop=this.aPermutations.top();
+    aTop[i]=n;
+    if(i<aTop.length-1) {
+      this.buildList(i+1);
+    }
+    else {
+      var nt=aTop.sum();
+      if(nt>this.nTotal) return; //optimalisatie: return;
+      else if(nt==this.nTotal) {
+        this.aPermutations.push(aTop.slice(0)); //push a copy
+      }
+    }
+  }
+}
+function ID(s) { return document.getElementById(s); }
+
+function ruimtetest() {
+  var oPerm=new Permutations(ID('txtSum').value,ID('txtPos').value);
+  ID('uitvoer').value=oPerm.aPermutations.join('\n');
+  delete oPerm;
+}
+
+function test() {
+  var oGoT1=new GoT1(document.getElementById('invoer').value);
+  document.getElementById('uitvoer').value = oGoT1.process('\r\n');
+  delete oGoT1;
+}
+function pageInit() {
+  ID('opgaven').onchange();
+}
+    </script>
+  </head>
+  <body onload="pageInit()">
+    <div class="menu">
+      [
+      <a href="http://213.239.154.16/~crew/wasigh/gpc/">GPC 2001</a>
+      |
+      <a href="http://gathering.tweakers.net/showtopic.php/333529/1/25">Opgave 1</a>
+      |
+      <a href="GoT1gen.htm">GoT1gen</a>
+      |
+      <a href="GoT1.htm">GoT1</a>
+      ]
+    </div>
+
+    <form>
+      <div>Invoer <select id="opgaven" onchange="ID('invoer').value=this.options[this.selectedIndex].value;">
+        <option value="5 5
+1
+3
+2 2
+3
+1
+1
+3
+2 2
+3
+1">Opgave voobeeld</option>        
+        <option value="4 4
+0
+0
+0
+1
+0
+0
+1
+0">1 blokje</option>
+        <option value="5 5
+1 1
+1 1
+1
+1 1
+1 1
+1 1
+1 1
+1
+1 1
+1 1">Kruis</option>
+        <option selected value="2 2
+1
+1
+1
+1">(Back)slash 2x2</option>
+
+      </select></div>
+      <textarea cols="40" rows="10" id="invoer"></textarea>
+
+      <div>Uitvoer</div>
+      <textarea cols="40" rows="20" id="uitvoer">
+      </textarea>
+
+      <br />
+      <input type="button" value="GoT1" onclick="test();">
+      <input type="text" id="txtSum" value="2" size="3">
+      <input type="text" id="txtPos" value="3" size="3">
+      <input type="button" value="Permutations" onclick="ruimtetest();">
+
+    </form>
+  </body>
+</html>
+<!--
+/*'nette' manier
+//zoek breedte en hoogte
+  i=s.indexOf(' ');
+  this.nB=parseInt(s.substring(0,i),10);
+  j=s.indexOf(sNewLine,i+1);
+  this.nH=parseInt(s.substring(i,j),10);
+//Verzamel de  kolom data
+  this.aKolom=[];
+  for(var k=0;k<this.nB;k++) {
+    i=j+sNewLine.length; 
+    j=s.indexOf(sNewLine,i);
+    this.aKolom[k]=s.substring(i,j).split(' ');
+  }
+//Verzamel de  rij data
+  this.aRij=[];
+  for(var k=0;k<this.nH;k++) {
+    i=j+sNewLine.length; 
+    j=s.indexOf(sNewLine,i);
+    this.aRij[k]=s.substring(i,j).split(' ');
+  }
+*/
+-->

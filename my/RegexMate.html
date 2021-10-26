@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title> Regex Mate v0.34 </title>
+    <link rel="stylesheet" href="RegexMate/regex.css" type="text/css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="RegexMate/base2.js" type="text/javascript"></script>
+    <script src="RegexMate/base2-dom.js" type="text/javascript"></script>
+    <script src="RegexMate/base2-jsb.js" type="text/javascript"></script>
+    <script src="RegexMate/base2-json.js" type="text/javascript"></script>
+    <script src="RegexMate/bindings.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1>Regex Mate v0.34</h1>
+    <form onsubmit="return false" class="body" id="form">
+      <fieldset>
+        <legend>RegEx<span class="optional">p?</span>Mate<span class="comment">&trade;</span></legend>
+        <div id="regex">
+          <label for="regex_regex" class="top">/regex/</label>
+          <table class="layout">
+            <tr><td style="width:100%">
+              <input type="text" id="regex_regex" class="text" value="/\b[1-9][0-9]{3} ?[a-z]{2}\b/i" disabled>
+            </td><td class="icon">
+              <span id="regex_state"></span>
+            </td></tr>
+          </table>
+        </div>
+        <table class="layout">
+          <tr><td>
+              <label for="string1" class="top">string1</label>
+              <textarea id="string1" rows="2" disabled>Westerkade 7
+9718 AP Groningen, Nederland</textarea>
+            </td><td>
+              <label for="string2" class="top">string2 <span class="optional">(for replace)</span></label>
+              <textarea id="string2" rows="2" disabled>$1 $2 GRONINGEN</textarea>
+          </td></tr>
+        </table>
+        <div class="buttonbar">
+          <label>RegExp:</label>
+          <input type="button" id="test" class="button exec2" value="test" disabled title="/regex/.test(string1)">
+          <input type="button" id="exec" class="button exec2" value="exec" disabled title="/regex/.exec(string1)">
+          <input type="checkbox" id="while-on-global" disabled title="Continues to execute until the result is null, when using the global flag."><label for="while-on-global"><code>while</code></label>
+          <label>String:</label>
+          <input type="button" id="search" class="button exec2" value="search" disabled title="string1.search(/regex/)">
+          <input type="button" id="replace" class="button exec3" value="replace" disabled title="string1.replace(/regex/, string2)">
+          <input type="button" id="split" class="button exec3" value="split" disabled title="string1.split(/regex/, string2)">
+          <input type="button" id="match" class="button exec2" value="match" disabled title="string1.match(/regex/)">
+          <label>other:</label>
+          <input type="button" id="clear-log" class="button con" value="clear log" disabled>
+          <input type="checkbox" id="clear-log-on-run" checked disabled><label for="clear-log-on-run">Clear on run</label>
+        </div>
+        <div>
+          <label for="con" class="top">Console</label>
+          <ul id="con"></ul>
+        </div>
+      </fieldset>
+      <p>
+        You can discuss this tool at <a href="http://groups.google.com/group/base2-js/browse_thread/thread/63d9714100acfd25">Google Groups</a>.
+        Read <a href="RegexMate/whatsnew.html">What's new</a> in this version. 
+        <!-- Checkout <a href="RegexMate/LinkThing/apps/">links to other Regex tools</a> (<a href="RegexMate/LinkThing/linkthing.asp">regenerate</a>). -->
+      </p>
+      <p>
+        Some samples: 
+        <a type="command" href="?regex=/^\-?(0|[1-9]\d*)(\.\d+)?([eE][-+]?\d+)?$/&amp;string1=-12.13e+12"><span>JSON Number</span></a>,
+        <a type="command" href="?regex=/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2})(?::(\d{2})(?::(\d{2})(?:\.(\d{3})(\d?)\d*)?)?)?)?Z$/&amp;string1=2007-07-25T"><span>ISO Date</span></a>
+      </p>
+    </form>
+    <p class="footer">
+      Copyright &copy; 2007-2012 by <a href="http://zanstra.com/my/">D. Zanstra</a>
+      &ndash;
+      RegEx Mate and RegExp?Mate are trademarks of <a href="http://catsdeep.com/">Cats Deep</a>
+    </p>
+  </body>
+</html>

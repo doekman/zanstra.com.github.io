@@ -1,0 +1,167 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title> Photo Gallery Australia </title>
+	<meta name="Author" content="Doeke">
+	<style type="text/css">
+		A,P,TD {
+			font-family: Verdana, Arial;
+			font-size: 10pt;
+		}
+		H1 {
+			font-family: Verdana, Arial;
+			font-size: 24pt;
+			font-weight: normal;
+			text-align: center;
+		}
+		TABLE.mainTable {
+			width: 100%;
+			border: 1px solid black;
+		}
+		TD {
+			text-align: center;
+		}
+		A.phCmd {
+			color: White;
+			font-weight: Bold;
+			text-decoration: none;
+		}
+		A:hover {
+			color: Red;
+		}
+		.phTitle {
+			font-size: 18pt;
+		}
+		.phImage {
+			height: 485px;
+			vertical-align: top;
+		}
+		.phDescription {
+		}
+		.phNavigator {
+		}
+		.phButton {
+			background-color: Gray;
+			color: White;
+			font-weight: Bold;
+			width: 40px;
+			text-align: center;
+		}
+		.phSlider {
+			background-color: Gray;
+			color: White;
+			font-weight: Bold;
+			vertical-align: middle;
+		}
+		phSliderInput {
+			border-width: 0px;
+			border-style: solid;
+			border-color: black;
+			height: 18px;
+		}
+		.phImg {
+			display: none; 
+		}
+		.phIdx {
+			background-color: Red;
+			border-width: 2px;
+		}
+		.phIdxLd {
+			background-color: #00cc00;
+			border-width: 2px;
+		}
+		.phIdxSel {
+			border: 2px solid black;
+		}
+	</style>
+	<script language="javaScript" type="text/javascript">
+	function setProp(strObj,value) //only set property if value is different
+	{	var obj=eval(strObj);
+		if(obj!=value)
+			obj=value;
+	}
+	var aImg = new Array /*(0:image-URL,1:width,2:height,3:title,4:description*/
+	(	new Array("pictures/tip-a.jpg",640,437,"Dead-end track","Tip of Cape York, far Northern Queensland. De track die we hadden genomen, liep na een uurtje rijden dood. Terug dus...")
+	,	new Array("pictures/tip-b.jpg",640,433,"Riviertje","Wenlock river, een kleine meter diep, maar 'good old Dusty' kwam er met z'n benzine-motor zonder snorkel toch goed door")
+	,	new Array("pictures/tip-c.jpg",800,255,"Termieten","Termietenhopen. Even stoppen, uitstappen en bezinnen.")
+	,	new Array("pictures/tip-d.jpg",800,281,"Daintree-river","De Daintree rivier met tropisch regenwoud.")
+	, new Array("pictures/nz1.jpg",593,337,"Hostel-humor","Grappige spreuken in het Beethoven House Hostel in Wellington")
+	, new Array("pictures/nz2.jpg",576,325,"Fietsen","Ik en m'n fiets, ergens op het noordeiland (waarschijnlijk op weg naar Foxton Beach).")
+	, new Array("pictures/nz3.jpg",593,308,"Kayakken","Kayakken in Abel Tasman National Park (met David de Belg als reisgenoot)")
+	, new Array("pictures/nt1.jpg",580,384,"Ganzejacht","Na de ganzenjacht bij Yogi's Kingdom, Northern Territories")
+	, new Array("pictures/nt4.jpg",590,394,"Vissen","Vissen op de Timor Sea, ten noorden van Darwin.")
+	);
+	var nPhCurrent=-1; //pointer to current photo in the aImg array
+	function showPhoto(nPhoto)
+	{	if(nPhCurrent>=0)
+		{	var oTmp=eval("document.all.phIdx"+nPhCurrent);         //get reference to cursor in navigator
+			oTmp.className=oTmp.className.replace(/ phIdxSel/i,""); //dismiss from the 'selector' class
+			eval("document.all.phImg"+nPhCurrent).style.display="none"; //hide the picture, the cursus is pointing to
+		}
+		nPhCurrent=nPhoto;
+		document.all.phTitle.innerText=aImg[nPhCurrent][3];
+		eval("document.all.phImg"+nPhCurrent).style.display="block";
+		document.all.phDescription.innerText=aImg[nPhCurrent][4];
+		document.all.phDescription.style.width=""+aImg[nPhCurrent][1]+"px"; //ensure text isn't going to be wider than the photo
+		eval("document.all.phIdx"+nPhCurrent).className+=" phIdxSel";
+	}
+	function phPrev() 
+	{	if(nPhCurrent<=0)
+			showPhoto(aImg.length-1);
+		else
+			showPhoto(nPhCurrent-1);
+	}
+	function phNext()
+	{	if(nPhCurrent+1>=aImg.length) 
+			showPhoto(0);
+		else
+			showPhoto(nPhCurrent+1);
+	}
+	function loadImage(i)
+	{	st="<IMG SRC='"+aImg[i][0]+"' BORDER=0 WIDTH="+aImg[i][1]+" HEIGHT="+aImg[i][2]+" ID=phImg"+i+" CLASS=phImg ONLOAD='pictureLoaded("+i+")'>";
+		document.all.phImage.innerHTML+=st;
+	}
+	var lastInterval=null;
+	function setSlide(yes)
+	{	if(yes)
+		{	phNext(); //don't wait, start directly
+			lastInterval=setInterval('phNext()',document.all.interval.value*1000);
+		}
+		else if(lastInterval!=null)
+			clearInterval(lastInterval);
+	}
+	function createPhNavigator()
+	{	var strNav="";
+		strNav+="<table><tr><td id=phPrev class=phButton><a href='javascript:void(0)' onclick='phPrev()' class=phCmd>&lt;prev</a></td>";
+		for(var i=0; i<aImg.length; ++i)
+			strNav+="<td id=phIdx"+i+" class=phIdx><a title='"+aImg[i][3]+"' href='javascript:void(0)' onclick='showPhoto("+i+")' class=phCmd>&nbsp;"+i+"&nbsp;</a></td>"
+		strNav+="<td id=phNext class=phButton><a href='javascript:void(0)' onclick='phNext()' class=phCmd>next&gt;</td>";
+		strNav+="<td class=phSlider>&nbsp;<input type=text id=interval value=5 size=2 style='border-width: 0px; height: 16px'><input type=checkbox onclick='setSlide(this.checked)' id=intervalCheck><a href='javascript:void(0)' onclick='document.all.intervalCheck.click()' class=phCmd>autoSlide</a></td>";
+		strNav+="</tr></table>";
+		document.all.phNavigator.innerHTML=strNav;
+	}
+	function pictureLoaded(i) 
+	{	var obj=eval("document.all.phIdx"+i);
+		if(obj.className.search(/phIdxLd\b/i)==-1)
+		{	obj.className=obj.className.replace(/phIdx\b/i,"phIdxLd");
+//			obElement.innerHTML+='picture '+i+' loaded: '+eval('document.all.phImg'+i).readyState + "<BR>";
+		}
+	}
+	function phInit()
+	{	loadImage(0);
+		createPhNavigator();
+		for(var i=1; i<aImg.length; ++i)
+			loadImage(i);
+		showPhoto(0);
+	}
+	</script>
+</head>
+
+<body onload="phInit()">
+<table class=mainTable>
+	<tr><td class=phTitle id=phTitle>&nbsp;</td></tr>
+	<tr><td class=phImage><span id=phImage></span><br><span id=phDescription></span></td></tr>
+	<tr><td class=phNavigator id=phNavigator>&nbsp;</td></tr>
+</table>
+</body>
+</html>

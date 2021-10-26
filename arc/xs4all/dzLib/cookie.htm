@@ -1,0 +1,201 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+  <link rel="stylesheet" href="parseJScode.css">
+	<style type="text/css">
+h2 {
+  margin-top: 1em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+p#message {
+	color: Red;
+	font-weight: bold;
+	display: none;
+}
+p#message a {
+	color: #FF8080
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="../js/cookie.js"> </script>
+  <script language="javascript">
+function pageInit() {
+//--| color-syntax demo code
+  pre2div('preSampleCode','divSampleCode');
+//--| handle cookie
+	if(testCookie())
+	{
+		var sCookieName=ID('cookieName').value;
+		var s=getCookie(sCookieName);
+		if(s==null) {
+			s=prompt('Hello, what\'s your name?','');
+			if( setCookie(sCookieName,s,getExpireDate('w',2))==false )
+			{
+				//should never happen, because of the testCookie() call
+				noCookieSupport();
+			}
+		}
+	}
+	else
+	{
+		noCookieSupport();
+	}
+
+  if(s!=null) ID('cookieValue').value=s;
+}
+function noCookieSupport()
+{
+	disableForm();
+	alert("Sorry mate, it seems cookies are disabled.");
+}
+function ID(s)
+{
+	if(document.getElementById) return document.getElementById(s);
+	return document.all[s];
+}
+function setFormState(disabled,frm)
+{
+	if(!frm) frm=document.forms[0];
+	var i,e=frm.elements;
+	for(var i=0; i<e.length; i++)	
+	{
+		e[i].disabled=disabled;
+	}
+	e=frm.getElementsByTagName('LABEL');
+	for(i=0; i<e.length; i++) 
+	{
+		e[i].disabled=disabled;
+	}
+}
+function disableForm()
+{
+	setFormState(true);
+	ID('message').style.display='block';
+}
+function enableForm()
+{
+	setFormState(false);
+	return false; //cancel default action on A element
+}
+	</script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Client-side cookies
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+    Cookies can be set either client-side or server-side. This mini-lib provides functions 
+    for writing and reading cookies, <em>plus</em> a convinience function for setting the 
+    expiry-date.
+    <br><br>
+    <em>Download</em>:
+    <a href="../js/cookie.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/cookie.js" title="IE propriety mode">view-source</a>.
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code><b>win32</b>: ie5..ie6, ns6.1</code>, <code><b>OS X</b>: ie5.1</code>
+	</p>
+  <h2>
+    Usage:
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode">
+//Test is cookies are enabled
+if(testCookie())
+{
+  //Save a cookie, called 'userName' with value 'Your Name',
+  //and let it expire after 2 months.
+  setCookie('userName','Your Name',getExpireDate('m',2));
+}
+
+//Do the same, but cookie expires when browser (session) is closed.
+//The function also returns a boolean value to indicate if the
+//cookie was saved successfull.
+if( !setCookie('userName','Your Name') )
+{
+	alert('Saving of the cookie didn\'t succeed');
+}
+
+//And show an alert with the value of the cookie 
+alert( getCookie('userName') );</pre>
+  <h2>
+    Live Demo:
+  </h2>
+	<p id="message">
+		Setting cookies seems to be disabeld. Enable the function and reload the form to run this demo (<a href="" onclick="return enableForm();">just enable this freaking form</a>).
+	</p>
+  <form>
+    <label for="cookieName">Cookie name:</label>
+      <input type="text" id="cookieName" value="cookieTest" class="column2" />
+      <br />
+    <label for="cookieValue">Cookie value:</label>
+      <input type="text" id="cookieValue" value="Your Name" class="column2" />
+      <br />
+    <label for="cookieExpires">Cookie expires in:</label>
+      <input type="text" id="cookieExpires" value="2" style="width: 25px" />
+      <select id="expiryUnit">
+        <option value="h">h (hour)</option>
+        <option value="d">d (days)</option>
+        <option value="w">w (weeks)</option>
+        <option value="m">m (months)</option>
+        <option value="y">y (years)</option>
+      </select>
+      <br />
+    <input type="button" value="save" onclick="save();" class="column2" />
+    <input type="button" value="load" onclick="load();" />
+    (get rid of the cookie, by setting a negative number)
+    <script language="javascript">
+function save() {
+  var sCookieName=ID('cookieName').value;
+  var sCookieValue=ID('cookieValue').value;
+  var sCookieExpires=ID('cookieExpires').value;
+  var sExpiryUnit=ID('expiryUnit').options[ID('expiryUnit').selectedIndex].value;
+
+  var dtExpire=getExpireDate(sExpiryUnit,sCookieExpires);
+  if( setCookie(sCookieName,sCookieValue,dtExpire)==false)
+	{
+		alert("Can't save cookie.");
+	}
+	else
+	{
+	  alert('Cookie\n'+sCookieName+'='+sCookieValue+'\nexpires '+dtExpire);
+	}
+}
+function load() {
+  var sCookieName=ID('cookieName').value;
+  ID('cookieValue').value=getCookie(sCookieName);
+}
+    </script>
+
+  </form>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

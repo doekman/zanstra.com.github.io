@@ -1,0 +1,11 @@
+/*month classes*/
+.mvWeekend, .mvWeekday, .mvDayNames { text-align: right; padding: 2px }
+.mvWeekend { color: white; background-color: gray }
+.mvWeekDay { }
+.mvNonDay { color: lightgrey; background: transparent }
+td.mvToday { font-weight: bold; border: 1px solid red }
+/*same, but can names can be determined by user-defined functions*/
+.mvMonth { border: 1px solid black; border-collapse: collapse; margin: 5px; table-layout: fixed; width: 93% }
+.hiLite { background-color: yellow }
+.mvTitle { text-align: center; font-weight: bold; padding: 0px }
+.mvDayNames { color: gray; background-color: lightgrey; padding-top: 0px; padding-bottom: 0px }

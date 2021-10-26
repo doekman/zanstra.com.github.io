@@ -1,0 +1,165 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="../js/toSource.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  hiLiteJS('JS');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			toSource.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    toSource
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <p style="font-weight:bold;color:red;border:3px solid blue;padding:1em">
+    This library is deprecated. Please use the rewrite <a href="toLiteral.htm" style="color:red;background:yellow">toLiteral</a>.
+  </p>
+	<p>
+		<em>Description</em>:<br>
+    Within the Netscape-implementation, every object implements the <code>toSource</code> method, which
+    converts the object into an javascript-literal. This library provides the function <code>toSource</code>
+    to convert any variable (number, string, boolean, object, array, date-object, etcetera) into a literal.
+    <br><br>
+    <em><strong>ToDo</strong></em>: 
+    Look into differences with Mozilla.<br/>
+    <em>Download</em>:
+    <a href="../js/toSource.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/toSource.js" title="IE propriety mode">view-source</a>,
+    <a href="../js/toLiteral.js" title="Right mouse-click, and choose Save as..">rewrite, still in beta (toLiteral)</a>,
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code>win32: ie5-ie6, mac: ie5</code>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <p>
+    This library comes in handy for communication between server- and client-side ASP (assuming 
+    you use javascript serverside).
+  </p>
+  <pre class="JS"> 
+/*ASP with Javascript*/
+var str='I\'m creating a string\nwith escape codes.';
+Response.Write('var str='+toSource(str)+';\n');</pre>
+  <p>
+    You can use this lib as a light-weight, low-end browser replacement for XML. With javascript,
+    you create a datastructure of arrays/objects that contain strings and nubmers. This structure can
+    be accessed programmatically. For example, implement a client-side only <a href="../fotos/index.htm">photo-album</a>.
+    You can use this library to scan all pictures on width and height and write those values into the
+    javascript structure.
+  </p>
+  <h2>
+    Live Demo
+  </h2>
+  <p>
+    This example loads the javascript-structure, which I use to build up the menu on the left.
+    Press load to load the URL pointing to javascript code, and convert the variable
+    named in the 2nd textbox into a literal.
+  </p>
+  <form method="GET" action="toSource.htm">
+    <div>
+      <input type="text" id="sURL" style="width:75%" title="URL with javascript-code" value="http://www.xs4all.nl/~zanstra/dzLib/mindex.js"
+      ><input type="text" id="sVAR" style="width:15%" title="Name of javascript-variabele" value="arrMenu"
+      ><input type="button" value="load" style="width:10%" onclick="loadData(); return false;">
+    </div>
+    <div>
+      <textarea id="code" style="width:100%" rows="7"></textarea>
+    </div>
+  </form>
+  <script language="javascript">
+var oScriptLoader, nTimeout=100, nTimes=10;
+function loadData()
+{
+  ID('code').value='';
+  oScriptLoader=document.createElement('script');
+  oScriptLoader.setAttribute('type','text/javascript');
+  oScriptLoader.setAttribute('counter',0);
+  var oHead=document.getElementsByTagName('head')[0];
+  oScriptLoader=oHead.appendChild(oScriptLoader);
+  try
+  {
+    oScriptLoader.setAttribute('src',''+ID('sURL').value);
+  }
+  catch(e)
+  {
+    var nr=e.number & 0xFFFF;
+    if(nr==438)
+    {
+      alert('IE/Mac doesn\'t support setting [script.src] dynamically. [arrMenu] is defined on this page however, so the standard example should work.');
+    }
+    else
+    {
+      alert('Run-time error #'+nr+' ('+e.number+'):\n'+e.description);
+    }
+  }
+  window.setTimeout('completeData();',nTimeout);
+}
+function completeData()
+{
+  try
+  {
+    var sVarName=ID('sVAR').value
+    var o=eval(sVarName);
+  }
+  catch(e)
+  {
+    if(oScriptLoader.counter++<nTimes) 
+    {
+      window.setTimeout(completeData,nTimeout);
+    }
+    else
+    {
+      alert('Sorry, can\'t load resource, or variable is not defined in source.');
+    }
+    return;
+
+  }
+  ID('code').value=sVarName+' = '+toSource(o);
+}
+  </script>
+  <h2>History</h2>
+	<p>
+		After I got the idea, and programmed the biggest part, I found out, Netscape already has native support
+		for this functionality.
+		Netscape Javascript has the method <code>toSource()</code>, but ECMA (and therefor IE) has not. 
+		The NS-implementation can't be simulated in IE, because a number is not cast to an number-object
+		automatically <img src="../img/smileySad.gif"/>
+	</p>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

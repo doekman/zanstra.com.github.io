@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+	<SCRIPT language="javascript" type="text/javascript">
+		function verwijsDoor() {
+			var url=window.location.href.replace(/.html/i,'.htm');
+			if(url.indexOf('.htm')==-1)
+				url='index.htm';
+			window.location.href=url;
+		}
+	</SCRIPT>
+</HEAD>
+<BODY onload="verwijsDoor()">
+</HTML>

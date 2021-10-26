@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+	<META NAME="GENERATOR" Content="Edit Plus">
+	<link rel="stylesheet" type="text/css" href="../iframe.css">
+	<TITLE>Cool POST Tool</TITLE>
+	<STYLE type="text/css">
+		SPAN.tag {
+			color: White
+		}
+		SPAN.attr {
+			color: Red
+		}
+		SPAN.string {
+			color: Green
+		}
+		.nameValue {
+			font-weight: bold;
+			background-color: #000044;
+		}
+		.tags { 
+			FONT-FAMILY: Courier New; 
+			FONT-SIZE: 10pt
+		}
+		INPUT.tags {
+			width:100px
+		}
+		INPUT.methode {
+			height: 12pt;
+		}
+		INPUT.action, INPUT.tags {
+			border: black thin none;
+			background-color: White;
+			height: 12pt;
+			padding: 0pt;
+			margin: 0pt;
+		}
+	</STYLE>
+<SCRIPT type="text/javascript" language="javascript">
+		function doSubmit()
+		{	//do some checks first
+			if(nameValueForm.nmAction.value=="")
+			{	alert("Sorry, you've got to supply an action...");
+				nameValueForm.nmAction.focus();
+				return;
+			}
+			//copy the data from the "nameValueForm" form to the (hidden) "postForm" form.
+			postForm.nmPara1.name	=nameValueForm.nmAttr1.value;
+			postForm.nmPara1.value=nameValueForm.nmVal1.value;
+			postForm.nmPara2.name	=nameValueForm.nmAttr2.value;
+			postForm.nmPara2.value=nameValueForm.nmVal2.value;
+			postForm.nmPara3.name	=nameValueForm.nmAttr3.value;
+			postForm.nmPara3.value=nameValueForm.nmVal3.value;
+			postForm.nmPara4.name	=nameValueForm.nmAttr4.value;
+			postForm.nmPara4.value=nameValueForm.nmVal4.value;
+			postForm.nmPara5.name	=nameValueForm.nmAttr5.value;
+			postForm.nmPara5.value=nameValueForm.nmVal5.value;
+			postForm.nmPara6.name	=nameValueForm.nmAttr6.value;
+			postForm.nmPara6.value=nameValueForm.nmVal6.value;
+			//set method and Action
+			for(var i=0; i<nameValueForm.nmMethod.length; i++)
+				if(nameValueForm.nmMethod[i].checked)
+					postForm.method=nameValueForm.nmMethod[i].value;
+			postForm.action=nameValueForm.nmAction.value;
+			//submit the form
+			postForm.submit();
+		}
+		function infoPostTool()
+		{	if(confirm("postTool 2.0\n\nCopyright 1999-2000 by Doeke Zanstra\nThis code is free to use and alter. Enjoy.\n\nClick on OK to:\nhttp://go.to/JavascriptMan"))
+				window.open("http://go.to/JavascriptMan?project=postTool","_new");
+		}
+		function doInit()
+		{	saveFormFrame.saveFormInit(window.nameValueForm)
+		}
+	</SCRIPT>
+</HEAD>
+<BODY onload="doInit()">
+<H1>HTTP GET or POST Generator</H1>
+<IFRAME width=450px height=32px src="saveForm.htm" id=saveFormFrame scrolling=no></IFRAME>
+<BR><BR>
+
+<FORM name="nameValueForm">
+	<TABLE width=450px cellpadding=5px>
+		<TR class="nameValue">
+			<TD class="tags">
+				<span class="tag">&lt;FORM</span>
+				<span class="attr">method</span><span class="tag">=</span><INPUT type="radio" name=nmMethod class="toSave, methode" value="get">GET<INPUT type="radio" name=nmMethod class="toSave, methode" value="post" checked>POST
+				<span class="attr">action</span><span class="tag">=</span><INPUT name=nmAction class="toSave, action" value="postTool.asp"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr1 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal1 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr2 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal2 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr3 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal3 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr4 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal4 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr5 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal5 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+					&nbsp;&nbsp;<span class="tag">&lt;INPUT</span>
+					<span class="attr">name</span><span class="tag">=</span><INPUT name=nmAttr6 class="toSave, tags">
+					<span class="attr">value</span><span class="tag">=</span><INPUT name=nmVal6 class="toSave, tags"><span class="tag">&gt;</span><BR>
+
+				<span class="tag">&lt;FORM&gt;</span>
+			</TD>
+		<TR>
+	</TABLE>
+
+	<TABLE width=450px cellpadding=5px>
+		<TR>
+			<TD class="nameValue">
+				<INPUT type="button" value="submit" onclick="doSubmit()">
+				<INPUT type="button" value="reset" onclick="nameValueForm.reset()">
+				&nbsp;&nbsp;<A HREF="javascript:infoPostTool()" TITLE="Click for info box">postTool</a>
+			</TD>
+		</TR>
+	</TABLE>
+</FORM>
+
+	<FORM name=postForm id=idPostForm>
+		<INPUT type="hidden" name=nmPara1>
+		<INPUT type="hidden" name=nmPara2>
+		<INPUT type="hidden" name=nmPara3>
+		<INPUT type="hidden" name=nmPara4>
+		<INPUT type="hidden" name=nmPara5>
+		<INPUT type="hidden" name=nmPara6>
+	</FORM>
+
+</BODY>
+</HTML>

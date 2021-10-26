@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--?xml-stylesheet type="text/xsl" href="to-be-done.xsl"?-->
+<ieMacProblems>
+  <problems>
+    <category name="javascript">
+      <!--
+        This applies to all javascript functionality. Microsoft does not keep track
+        of javascript functions on Mac, so this tries to cover up for that:
+        http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/js56jsoriVersionInformation.asp
+      -->
+      <item category="Other" name="syntax" applies-to="RegExp" versions="x5.2">
+        <description>
+          The global-modifier doesn't work for iterative matching using
+					while(matches=re.exec(str)).
+					Using the global-modifier doesn't lead to an exception, 
+					but can lead to endless-loops, causing the browser to hang.
+					The global-modifier does work with the .replace method as expected though...
+					<see-also>http://www.xs4all.nl/~zanstra/dzLib/jsLog.htm</see-also>       
+				</description>
+      </item>
+      <item category="Other" name="syntax" applies-to="RegExp" versions="x5.2">
+        <description>
+          The non-greedy quantifier (for example .*? or \d{1,2}?) 
+          is not available, and leads to an exception.
+        </description>
+      </item>
+      <item category="method" name="call" applies-to="Function" versions="x5.2">
+        <description>Method is not available on Macintosh</description>
+          <workaround tested-on="x5.2 w6.0 w5.5 w5.01 w5.0 w4.0 m1.1"><![CDATA[
+if(!Function.call) Function.prototype.call=function(THIS)
+{
+  if(!THIS || typeof THIS!='object') 
+  { 
+    alert('First argument needs to be an object (this).'); 
+    return; 
+  }
+  THIS.$call=this;
+  for(var i=1; i<arguments.length; i++)
+  {
+    this.arguments[this.arguments.length] = arguments[i];
+  }
+  return THIS.$call();
+}]]></workaround>
+      </item>
+      <item category="method" name="apply" applies-to="Function" versions="x5.2">
+        <description>Method is not available on Macintosh</description>
+          <workaround tested-on="x5.2 w6.0 w5.5 w5.01 w5.0 w4.0 m1.1"><![CDATA[
+if(!Function.apply) Function.prototype.apply=function(THIS,args)
+{
+  if(!THIS || typeof THIS!='object') 
+  { 
+    alert('First argument needs to be an object (this).'); 
+    return; 
+  }
+  if(!args || !args.length)
+  {
+    alert('Second argument needs to be an array (arguments).'); 
+    return; 
+    
+  }
+  THIS.$apply=this;
+  for(var i=0; i<args.length; i++)
+  {
+    this.arguments[this.arguments.length] = args[i];
+  }
+  return THIS.$apply();
+}]]></workaround>
+      </item>
+      <item category="method" name="max" applies-to="Math" versions="x5.2">
+        <description>
+          Method only accepts first 2 parameters (same behaviour as IE5.01/Win and lower)
+          <see-also>http://www.xs4all.nl/~zanstra/jsPrj/oneliners.htm#biggest</see-also>
+        </description>
+      </item>
+    </category>
+    <category name="HTML">
+      <!--
+        This applies to all HTML, DOM objects, properties, etc. as listed on MSDN Library:
+        http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/reference/dhtml_reference_entry.asp
+      -->
+      <item category="DOM/1" name="replaceNode" applies-to="HTMLElement" versions="x5.2" error-type="MSDN-Incorrect">
+        <description>Not available</description>  
+        <workaround tested-on="x5.2 w6.0 m1.1"><![CDATA[
+if(node.replaceNode) node.replaceNode(newNode);
+else node.parentElement.replaceChild(newNode,node);
+        ]]></workaround>
+      </item>
+      <item category="DOM/0" name="setTimeout" applies-to="window" versions="x5.2" error-type="MSDN-NotSpecific">
+        <description>
+          The first parameter must be a string on Mac (as on IE4- on windows).
+          Supplying a function-reference does however not result in an error.
+        </description>
+      </item>
+      <item category="DOM/0" name="setInterval" applies-to="window" versions="x5.2" error-type="MSDN-NotSpecific">
+        <description>
+          The first parameter must be a string on Mac (as on IE4- on windows).
+          Supplying a function-reference does however not result in an error.
+        </description>
+      </item>
+    </category>
+  </problems>
+  <versions>
+    <version id="x5.2" product="Internet Explorer" platform="Mac OS X" version="5.2"/>
+    <version id="w6.0" product="Internet Explorer" platform="Windows32" version="6.0"/>
+    <version id="w5.5" product="Internet Explorer" platform="Windows32" version="5.5"/>
+    <version id="w5.01" product="Internet Explorer" platform="Windows32" version="5.01"/>
+    <version id="w5.0" product="Internet Explorer" platform="Windows32" version="5.0"/>
+    <version id="w4.0" product="Internet Explorer" platform="Windows32" version="4.0"/>
+    <version id="m1.1" product="Mozilla" platform="all" version="1.1"/>
+  </versions>
+  <error-types>
+    <error-type id="MSDN-NotSpecific">Documentation is not detailed enough</error-type>
+    <error-type id="MSDN-Incorrect">Documentation states, item is available, but isn't</error-type>
+  </error-types>
+</ieMacProblems>

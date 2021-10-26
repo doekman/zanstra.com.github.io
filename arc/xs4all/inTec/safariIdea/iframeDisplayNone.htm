@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title> Safari testcase | IFRAME display:none</title>
+    <style type="text/css">
+iframe {
+  display:none
+}
+    </style>
+  </head>
+  <body>
+    <h1> Safari testcase | IFRAME display:none</h1>
+    <form target="rpc" method="GET" action="iframeDisplayNone.htm">
+      <div>
+        <input type="text" name="name" id="name" value="In Safari, submitted to a new window, instead of the (not displayed) iframe." style="width:100%"/>
+      </div>
+      <div>
+        <input type="submit" value="Submit"/>
+      </div>
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+    <iframe name="rpc" src="about:blank"></iframe>
+  </body>
+</html>

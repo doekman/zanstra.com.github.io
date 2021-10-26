@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../xsl/jsmLib.xsl"?>
+<lib xml:lang="en" title="The javascript method library">
+  <object name="Number">
+    <method name="toFixed">
+      <description>Compatibility. Returns a string representing a number in fixed-point notation. Requires String.LPad</description>
+      <interface>
+        <param name="n">The number of deci</param>
+        <return type="string">Number of digits after the decimal point.</return>
+      </interface>
+      <code-block title="Library"><![CDATA[
+if(!Number.prototype.toFixed) {
+  Number.prototype.toFixed=function(n) {
+    if(!n) n=0;
+    var i=parseInt(this);
+    var d=(''+Math.round((this-i)*Math.pow(10,n))).LPad(2,'0');
+    return i+'.'+d;
+  }
+}]]></code-block>
+    </method>
+  </object>
+	<object name="Array">
+		<method name="rndItem">
+			<description>
+				Returns a random item from the given array.
+			</description>
+			<interface>
+				<return>
+					Same type as stored in the randomly choosen array property
+				</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+Array.prototype.rndItem=function Array_rndItem() 
+{ 
+	return this[parseInt(Math.random()*this.length,10)];
+}]]></code-block>
+			<remarks/>
+			<see-also/>
+			<categories/>
+		</method>
+		<method name="push">
+			<description>
+				Compatibility.
+			</description>
+			<interface>
+				<return>
+					New length of the array
+				</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+if(!Array.push) Array.prototype.push=function()
+{
+  for(var i=0;i!=arguments.length;i++)
+  {
+    this[this.length]=arguments[i];
+  }
+  return this.length;
+}]]></code-block>
+			<remarks/>
+			<see-also/>
+			<categories/>
+		</method>
+		<method name="pop">
+			<description>
+				Compatibility.
+			</description>
+			<interface>
+				<return>
+					Popped element.
+				</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+if(!Array.pop) Array.prototype.pop=function()
+{
+  var o=this[this.length-1];
+  this.length--;
+  return o;
+}]]></code-block>
+			<remarks/>
+			<see-also/>
+			<categories/>
+		</method>
+		<!--method name="">
+			<description></description>
+			<interface>
+				<param name=""></param>
+				<return></return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+}]]></code-block>
+			<code-block title="Example"><![CDATA[
+}]]></code-block>
+			<remarks/><see-also/><categories/>
+		</method-->
+	</object>
+	<object name="String">
+    <method name="toFixed">
+      <description>Pads the argument with spaces or characters specifies by s until the length n</description>
+      <interface>
+        <param name="n">The required length of the string</param>
+        <param name="s">The padding character, default a space</param>
+        <return type="string">The padded string</return>
+      </interface>
+      <code-block title="Library"><![CDATA[
+String.prototype.LPad=function(n,s) {
+  if(n&lt;0) return;
+  if(typeof s=='undefined') s=' ';
+  var res=this;
+  while(res.length&lt;n) res=s+res;
+  return res;
+}]]></code-block>
+    </method>
+		<method name="multi">
+      <description>
+        Multiply a string, and optionaly put a seperator between the strings.
+      </description>
+      <interface>
+				<param name="number">Anything that converts to a number. Negative values are made absolute. NaN throws an exception.</param>
+				<param name="seperator">Optional, anything that converts to a string.</param>
+        <return type="string">The created string</return>
+      </interface>
+			<code-block title="Library"><![CDATA[
+String.prototype.multi=function(number,seperator)
+//--#An extended version of VB's String function
+//--@number;type=number@String multiply factor. Should be positive
+//--@seperator;type=string;optional@optional seperator, handy for lists
+{
+  var a=[];
+  number=Math.abs(parseInt(number,10));
+  if(isNaN(number)) throw new Error('String.multi: number parameter should be an number');
+  while(number-->0)
+  {
+    a.push(this);
+  }
+  return a.join(seperator||'');
+}]]></code-block>
+			<remarks/><see-also/><categories/>
+		</method>
+		<method name="ltrim">
+			<description>
+				Removes leading <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			</description>
+			<interface>
+				<return type="string">The trimmed string</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+String.prototype.ltrim=function String_ltrim() 
+{  
+	return this.replace(/^[ \t\r\n]+/g,'');
+}]]></code-block>
+			<remarks/><see-also/><categories/>
+		</method>
+		<method name="rtrim">
+			<description>
+				Removes trailing <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			</description>
+			<interface>
+				<return type="string">The trimmed string</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+String.prototype.rtrim=function String_rtrim() 
+{  
+	return this.replace(/[ \t\r\n]+$/g,'');
+}]]></code-block>
+			<remarks/><see-also/><categories/>
+		</method>
+		<method name="trim">
+			<description>
+				Removes leading and trailing <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			</description>
+			<interface>
+				<return type="string">The trimmed string</return>
+			</interface>
+			<code-block title="Library"><![CDATA[
+String.prototype.trim=function String_trim() 
+{  
+	return this.replace(/^[ \t\r\n]+|[ \t\r\n]+$/g,'');
+}]]></code-block>
+			<remarks/><see-also/><categories/>
+		</method>
+	</object>
+</lib>

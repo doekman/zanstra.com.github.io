@@ -1,0 +1,234 @@
+<html>
+<head>
+	<title>Javascript: Toonladdertijd</title>
+  <link rel="stylesheet" href="GuitarNeck.css" />
+  <link rel="stylesheet" href="Keyboard.css" />
+  <link rel="stylesheet" href="kwintCirkel.css" />
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+th {
+  text-align: left; vertical-align: top;
+}
+#idKwintCirkel {
+	position: relative;
+}
+#kwintencircelInfo {
+  font-weight: bold;
+  padding: 5px; margin: 10px;
+}
+div#toonladderInfo {
+  text-align: left;
+  font-family: Tahoma, Helvetica, sans-serif; font-size: 24pt; font-weight: bold;
+  padding: 5px; margin: 10px;
+	word-spacing:10pt;
+}
+div#toonladderInfo span {
+  border: 1px solid gray;
+	padding-left: 10px; padding-right: 10px;
+}
+div#afstandenInfo {
+  text-align: left;
+  font-family: Tahoma, Helvetica, sans-serif; font-size: 24pt; font-weight: normal;
+  padding: 5px; margin: 10px;
+	word-spacing:10pt;
+}
+div#afstandenInfo span {
+  border: 1px solid gray;
+	padding-left: 30px; padding-right: 20px;
+}
+	</style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/get.js"> </script>
+  <script language="javascript" src="keys.js"> </script>
+  <script language="javascript" src="scales.js"> </script>
+  <script language="javascript" src="GuitarNeck.js"> </script>
+  <script language="javascript" src="Keyboard.js"> </script>
+  <script language="javascript" src="kwintCirkel.js"> </script>
+  <script language="javascript">
+var console, intKey=0, intScale=1, kwintCirkel;
+function pageInit() {
+  var qs=getParameter();
+  kwintCirkel=new Kwintencirkel(75,120,0);
+  kwintCirkel.insertHTML('idKwintCirkel');
+  if(qs.run==null) {
+    setConsole('keyboard');
+  }
+  else {
+    eval(qs.run); //run the querystring parameter "run"
+  }
+}
+/*setConsole: swap between keyboard and guitar*/
+function setConsole(from) {
+  switch(from) {
+    case 'keyboard':
+      console=new Keyboard();
+      break;
+    case 'guitar':
+      console=new GuitarNeck();
+      break;
+  }
+  console.insertHTML('idConsole');
+  showScale();
+}
+/*showScale: press the right keys on the console*/
+/*private*/function divByTwo(n) {
+	var nn=parseInt(n/2,10);
+	var s='';
+	if(nn>0) s=String(nn);
+	if(n%2==1) s+='½';
+	return s;
+}
+var intLastScaleIndex;
+function showScale() {
+	var intKey=parseInt(document.forms.frmControls.key.value,10);
+	var intOrgKey=intKey;
+	var intScale=parseInt(document.forms.frmControls.scale.value,10);
+	var arrA=arrScale[intScale].arrAfstand;
+	var strLadder='', strAfstanden=' ';
+
+/*make sure, a grouping option in a select, will not be selected*/
+  if(arrA==null) {
+    if(typeof intLastScaleIndex=='undefined') {
+      document.forms.frmControls.scale.selectedIndex=1;
+    }
+    else {
+      document.forms.frmControls.scale.selectedIndex=intLastScaleIndex;
+    }
+    return;
+  }
+  intLastScaleIndex=document.forms.frmControls.scale.selectedIndex;
+/*only use a filled scale*/
+  if(arrA.length==0) {
+    alert('Sorry, deze toonladder is nog niet gevuld.');
+    return;
+  }
+/*Do the real work*/
+	console.releaseAllKeys();
+	for(var i=0; i<arrA.length; i++) { 
+		console.pressKeys(intKey,intOrgKey%12==intKey%12);
+		strLadder+=getKey(intKey)+' ';
+		strAfstanden+=divByTwo(arrA[i])+' ';
+		intKey+=arrA[i];
+	}
+	strLadder+=getKey(intKey);
+  document.getElementById('toonladderInfo').firstChild.innerHTML=strLadder;
+	document.getElementById('afstandenInfo').firstChild.innerHTML=strAfstanden;
+/*kwintencircel*/
+  document.getElementById('btnKwintOmhoog').value='Rechtsom ('+getKey(intKey+7)+')';
+  document.getElementById('btnKwintOmlaag').value='Linksom ('+getKey(intKey-7)+')';
+/*kwintencirkel control*/
+  kwintCirkel.pressKey(intKey);
+}
+/*ID(name).value doesn't work (always?) in Safari*/
+function SelectsValue(name,value)
+{
+	var s=ID(name);
+	if(typeof value=='undefined') { 
+		//get
+		return s.options[s.selectedIndex].value;
+	}
+	else {
+		//set
+		for(var i=0; i<s.options.length; i++) {
+			var v=s.options[i];
+			if(v.value==value) {
+				v.selected=true;
+				return;
+			}
+		}
+	}
+}
+/*ga n noten omhoog, voor kwintencircel*/
+function goUp(n) {
+	var nKey=parseInt(SelectsValue('key'),10)+parseInt(n,10);
+	if(nKey<0) nKey+=12;
+	SelectsValue('key',nKey%12)
+	showScale();
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/musicLogo.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    toonladderTijd
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td style="width:100%"><!--column 3a-->  
+	<h1>Toonladdertijd</h1>
+</td></tr><tr><td width="100"><!--column 1b-->
+<!--menu-->
+  <script language="javascript">writeMenu();</script>
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+<!--console-->
+  <div id="idConsole" class="radioTabBody">
+    hier komt de console
+  </div>
+<!--Einde console-->
+<!--Controls: key/scale: toonsoort/toonladder-->
+  <form name="frmControls" onsubmit="return false;">
+  <table border="0" width="100%">
+    <tr>
+      <th width="40">Toonsoort</th>
+      <th width="200">Toonladder</th>
+      <th width="">&nbsp;</th>
+    </tr>
+    <tr>
+      <td><!--toonsoort-->
+        <select id="key" name="key" size="14" style="width: 100%" onchange="showScale()">
+          <script language="javascript"> 
+            for(var i=0; i<12; i++) {
+              document.write  ('<option value="'+i+'"'+(i==intKey?' selected':''));
+              document.writeln('>'+getKey(i)+'</option>');
+            }
+          </script>
+        </select>
+      </td>
+      <td><!--toonladder-->
+        <select id="scale" name="scale" size="14" style="width: 100%" onchange="showScale()">
+          <script language="javascript"> 
+            for(var i=0; i<arrScale.length; i++) {
+              document.write('<option value="'+i+'"');
+              document.write(i==intScale?' selected':'');
+              if(arrScale[i].arrAfstand==null) {
+                document.write(' style="color: #000099">');
+              }
+              else {
+                document.write('>&nbsp;&nbsp;'); //inspringen
+              }
+              document.writeln(arrScale[i].name+'</option>');
+            }
+          </script>
+        </select>
+      </td>
+      <td>
+        <div id="informatie">
+          <div id="toonladderInfo"><span>.</span></div>
+          <div id="afstandenInfo"><span>.</span></div>
+          <div id="kwintencircelInfo">
+              Kwintencirkel<br>
+							<div id="idKwintCirkel">&nbsp;</div>
+              <input type="button" value="." style="width:105px" onclick="goUp(7);" id="btnKwintOmhoog"><br>
+              <input type="button" value="." style="width:105px" onclick="goUp(-7);" id="btnKwintOmlaag">
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  </form>
+	<p style="width:350px">
+	  You might want to check out the 
+	  <a href="http://www.8notes.com/resources/notefinders/piano_chords.asp">Piano Chord and Scale Finder</a>
+	  at 8notes.com, as I'm not going to update this page anymore.
+	</p>
+  <br>
+  <div class="footer">Doeke Zanstra, 2001-2007, <a href="../index.htm">index</a></div>
+</td></tr></table><!--end columns-->
+<!--absolute positioned stuff here-->
+</body>
+</html>

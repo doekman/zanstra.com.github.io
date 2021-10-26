@@ -1,0 +1,110 @@
+<html>
+<head>
+	<title>dzLib: callerStack</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="../js/callerStack.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  pre2div('preSampleCode','divSampleCode');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    callerStack
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <p>
+		<em>Description</em>:<br>
+    This function shows the caller-stack-chain (who called who, and who called him, and so on). 
+    Handy for debugging purposes, so you can see which function initiated the call.
+    <br><br>
+
+    IE and OmniWeb on Mac seem to name the functions of an
+    HTMLElement-event. On Windows, the originating function is <em>anonymous</em>
+    but on Mac it's <em>onclick</em>. Pretty neat, eh <img src="../img/smileyHappy.gif" class="smiley"/>
+    <br><br>
+
+    Doesn't work in Mozilla. The sentences
+    <cite>caller is no longer used.</cite> and 
+    <cite>The caller property is available only within the body of a function. </cite>
+    from <a href="http://devedge.netscape.com/library/manuals/2000/javascript/1.5/reference/function.html#1196447">DevEdge</a>
+    do not point into a direction for a solution <img src="../img/smileySad.gif" class="smiley" style="width:12px;height:12px"/>
+
+    <br><br>
+    <em>Download</em>:
+    <a href="../js/callerStack.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/callerStack.js" title="IE propriety mode">view-source</a>.
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code>ie4.0-6.0/Win, ie5.2/Mac, OmniWeb4.1/Mac</code>
+    <br>
+    <em>Fails on</em>: <code>moz1.0/1.1</code>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode">
+function Show() { alert( callerStack() ); }
+function Call(s) { Show(); }
+function Stack(n) { Call('String argument'); }
+function Chain(b,n) { Stack(-12.34567e+89); }
+
+var fFunctionRef=Chain;
+</pre>
+  <h2>
+    Live Demo
+  </h2>
+  <script language="javascript">
+function Show() { alert( callerStack() ); }
+function Call(s) { Show(); }
+function Stack(n) { Call('String argument'); }
+function Chain(b,n) { Stack(-12.34567e+89); }
+
+var fFunctionRef=Chain;
+
+  </script>
+  <p>The following button calls a function, and that function calls another function. 
+    This is done 4 times, before a call is made to <code>callerStack()</code>. Do
+    a view source for the code.
+  </p>
+  <form name="frm">
+    <input type="button" onclick="Chain(true,123);" name="a" value="Chain(true,123);" />
+    <input type="button" onclick="alert( getFunctionName(fFunctionRef) );" name="b" value="alert( getFunctionName( fFunctionRef ) );" />
+  </form>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

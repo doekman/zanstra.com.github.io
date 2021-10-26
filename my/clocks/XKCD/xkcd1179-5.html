@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>XKCD Clock - jsFiddle demo by doekman</title>
+  
+  <script type='text/javascript' src='/js/lib/dummy.js'></script>
+  
+  
+  
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+  <style type='text/css'>
+    
+  </style>
+  
+
+
+<script type='text/javascript'>//<![CDATA[ 
+window.onload=function(){
+function loadImages(sources, callback) {
+    var images = {}
+    ,   loadedImages = 0
+    ,   numImages = 0
+    ;
+    // get num of sources
+    for(var src in sources) {
+        numImages++;
+    }
+    for(var src in sources) {
+        images[src] = new Image();
+        images[src].onload = function() {
+            if(++loadedImages >= numImages) {
+                callback(images);
+            }
+        };
+        images[src].src = sources[src];
+    }
+}
+var canvas = document.getElementById('myCanvas')
+,   context = canvas.getContext('2d')
+,   sources = {
+        xkcd: 'http://imgs.xkcd.com/comics/iso_8601.png'
+    }
+,   cijfers = {}
+;
+
+loadImages(sources, function(images) {
+    context.drawImage(images.xkcd, 0, 0);
+    cijfers["-"] = {img:images.xkcd, sx:180,sy:168,sw:12,sh:29 };
+    cijfers["0"] = {img:images.xkcd, sx:135,sy:168,sw:21,sh:29 };
+    cijfers["1"] = {img:images.xkcd, sx:155,sy:168,sw:6,sh:29 };
+    cijfers["2"] = {img:images.xkcd, sx:117,sy:168,sw:19,sh:29 };
+    cijfers["3"] = {img:images.xkcd, sx:160,sy:168,sw:20,sh:29 };
+    cijfers["7"] = {img:images.xkcd, sx:258,sy:168,sw:19,sh:29 };
+    DrawDate();
+    //var c = cijfers["7"];
+    //context.strokeStyle = 'red';
+    //context.strokeRect(110,165,172,35);
+    //context.strokeRect(c.sx,c.sy,c.sw,c.sh);
+});
+
+function DrawDate() {
+    var dt = Iso8601date(new Date())
+    ,   dx = 112 // initial value, update later, see ar[0]
+    ,   dy = 168 // see ar[1]
+    ,   fx = -2  //font correction x
+    ,   fy = 3   //font correction y
+    ,   fs = 24  //fontSize in pt
+    ,   tw = 0   //total width
+    ,   ar = [110,165,172,35]; //area
+    ;
+    //--- clear the original date
+    context.beginPath();
+    context.rect(ar[0], ar[1], ar[2], ar[3]);
+    context.fillStyle = '#d9d9d9';
+    context.fill();
+    //--- init backup font
+    context.font = fs+'pt Comic Sans MS, Comic Sans, fantasy';
+    context.fillStyle = 'black';
+    context.textBaseLine = 'top'; 
+    context.textAlign = 'left';
+    //--- measure total width, and center the text
+    for(var i=0; i<dt.length; i++) {
+        var ch = dt[i]
+        ,   c  = cijfers[ch]
+        ;
+        tw += c ? c.sw : context.measureText(ch).width + fx;
+    }
+    dx = ar[0] + Math.round((ar[2] - tw) / 2);
+    //--- draw the date
+    for(var i=0; i<dt.length; i++) {
+        var ch = dt[i]
+        ,   c  = cijfers[ch]
+        ;
+        if (c) {
+            context.drawImage(c.img,c.sx,c.sy,c.sw,c.sh,dx,dy,c.sw,c.sh);
+            dx += c.sw;
+        }
+        else {
+            var metric = context.measureText(ch);
+            context.fillText(ch, dx, dy + fs + fy);
+            dx += metric.width + fx;
+        }
+    }
+}
+
+function Iso8601date(dt) {
+    var a = [''+dt.getFullYear(), dt.getMonth()+1, ''+dt.getDate()];
+    if (a[1] <= 9) a[1] = '0' + a[1]; else a[1] = '' + a[1];
+    return a.join('-');
+}
+}//]]>  
+
+</script>
+
+
+</head>
+<body>
+  <body>
+    <h1>XKCD Clock</h1>
+    <p>
+        A clock, based on XKCD comic <a href="http://xkcd.com/1179/">1179 on ISO 8601</a> with real-time date. 
+    </p>
+    <div>
+        <canvas id="myCanvas" width="392" height="457"></canvas>
+    </div>
+    <p>
+        <i>Technical notes:</i> Missing digits are replaced by Comic Sans font, and the lower (discouraged) part is not yet being updated. Still looking for numbers on old comics, maybe <a href="http://xkcd.com/1044/">1044</a>?
+    </p>
+    <ul>
+        <li><a href="http://w3schools.com/tags/ref_canvas.asp">w3schools</a></li>
+        <li><a href="http://www.html5canvastutorials.com/tutorials/html5-canvas-tutorials-introduction/">HTML5 Canvas Tutorial</a></li>
+        <li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">The standard</a></li>
+    </ul>
+</body>
+  
+</body>
+
+
+</html>
+

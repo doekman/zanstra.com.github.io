@@ -1,0 +1,222 @@
+<html>
+<head>
+  <link rel="stylesheet" href="../default.css">
+  <style type="text/css">
+.menu, .menutitle {
+  padding: 2px 2px 2px 4px; 
+}
+.menu { 
+  position: absolute;
+  left: 113px;
+  width: 550px;
+  visibility: hidden;
+  background-color: #cccccc;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+}
+#menu1 { top: 76px }
+#menu2 { top: 96px }
+#menu3 { top: 116px }
+#menu4 { top: 136px }
+#menu5 { top: 156px }
+.menutitle { 
+  width: 100px; 
+  font-weight: bold; 
+  cursor: default
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+</head>
+<body>
+<script language="javascript">
+var whichDom='', styleObj='', currentStyleObj='';
+
+if (document.layers)  {
+  whichDom = '["'
+  styleObj = '"]'
+  currentStyleObj = '"]'
+} else if (document.all)  {
+  whichDom = ".all."
+  styleObj = ".style"
+  currentStyleObj = '.currentStyle'
+} else {
+  whichDom = '.getElementById("'
+  styleObj = '").style'
+  currentStyleObj = '").currentStyle'
+}
+
+function setObject(obj) { //get style object 
+var theObj
+ if (typeof obj == "string")
+  theObj = eval("document" + whichDom + obj + styleObj)
+ else
+  theObj = obj
+ return theObj
+}
+
+function getObject(obj) {//get currentStyle object
+var theObj
+ if (typeof obj == "string")
+  theObj = eval("document" + whichDom + obj + styleObj)
+ else
+  theObj = obj
+ return theObj
+}
+
+</script>
+<script language="javascript">
+// the NS code doesn't really work, because of:
+// onmouseover/onmouseout: only supported on layer/link
+// needs some work still
+var strMenuOpenId;
+var idTimeoutClose, idTimeoutOpen;
+
+function showMenuReal(strId) {
+  var oTitle,oItem;
+	idTimeoutOpen=null;
+  if(typeof strMenuOpenId=='string') { //hide previous menu when open
+    cancelHideMenu(); //cancel a running hideMenu timeout.
+    hideMenuReal(strMenuOpenId);
+  }
+  setObject(strId).visibility='visible';
+  setObject(strId+'title').color='Blue';
+	setObject(strId+'title').backgroundColor='#cccccc'; //Opera doesn't swallow this one (.color works)
+  strMenuOpenId=strId;
+}
+function hideMenuReal(strId) {
+	idTimeoutClose=null;
+  if(typeof strMenuOpenId=='string'&&strMenuOpenId!=strId) { 
+    cancelHideMenu(); 
+    hideMenuReal(strMenuOpenId);
+  }
+  setObject(strId).visibility='hidden';
+  setObject(strId+'title').color='Black';
+  setObject(strId+'title').backgroundColor='transparent';
+	if(strMenuOpenId==strId) {
+		strMenuOpenId=null;
+	}
+}
+function closeMenu() {
+	if(typeof strMenuOpenId=='string') {
+		hideMenu(strMenuOpenId)
+	}
+}
+function showMenu(strId) {
+	cancelHideMenu();
+	setObject(strId+'title').color='Blue';
+	idTimeoutOpen=window.setTimeout('showMenuReal("'+strId+'")',200);
+}
+function hideMenu(strId) {
+	cancelShowMenu();
+	setObject(strId+'title').color='Black';
+	idTimeoutClose=window.setTimeout('hideMenuReal("'+strId+'")',750);
+}
+function cancelShowMenu() {
+	if(typeof idTimeoutOpen=='number') {
+		window.clearTimeout(idTimeoutOpen);
+		idTimeoutOpen=null;
+	}
+}
+function cancelHideMenu() {
+  if(typeof idTimeoutClose=='number') {
+    window.clearTimeout(idTimeoutClose);
+    idTimeoutClose=null;
+  }
+}
+</script>
+<table cellpadding="0" border="0"><tr><td><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>
+  <div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    hysteresis1.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->
+  <h1>Hysteresis (toon en verberg)</h1>
+</td></tr><tr><td><!--column 1b-->
+  <div style="border: 1px solid black; background-color: #eeeeee; width: 100%">
+    <div onmouseover="showMenu('menu1');" onmouseout="hideMenu('menu1');" onclick="showMenuReal('menu1')">
+      <div id="menu1title" class="menutitle">Kranten</div>
+      <div id="menu1" class="menu">
+          <a href="http://www.nrc.nl/">NRC Handelsblad</a>
+        | <a href="http://www.volkskrant.nl/">Volkskrant</a>
+        | <a href="http://www.telegraaf.nl/">Telegraaf</a>
+        | <a href="http://www.parool.nl/">Parool</a>
+        | <a href="http://www.ad.nl/">Algemeen Dagblad</a>
+        | <a href="http://www.trouw.nl/">Trouw</a>
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu2');" onmouseout="hideMenu('menu2');">
+      <div id="menu2title" class="menutitle">Nieuws sites</div>
+      <div id="menu2" class="menu">
+          <a href="http://www.tweakers.net/">Tweakers NET</a>
+        | <a href="http://www.t-mail.nl/voorpagina.php">T-Mail</a>
+        | <a href="http://www.nu.nl/">nu.nl</a>
+        | <a href="http://www.webwereld.nl/">Web-wereld</a>
+        | <a href="http://www.internetnieuws.nl/">Internet Nieuws</a>
+        
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu3')" onmouseout="hideMenu('menu3');">
+      <div id="menu3title" class="menutitle">ISP Portals</div>
+      <div id="menu3" class="menu">
+          <a href="http://www.hetnet.nl/default.htm">Het Net</a>
+        | <a href="http://www.planet.nl/">Planet</a>
+        | <a href="http://www.xs4all.nl/">XS4ALL</a>
+        | <a href="http://www.tmfweb.nl/">TMF Web</a>
+        | <a href="http://www.wanadoo.nl/">Wannado</a>
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu4')" onmouseout="hideMenu('menu4');">
+      <div id="menu4title" class="menutitle">Messaging</div>
+      <div id="menu4" class="menu">
+          <a href="http://www.xoip.nl/">XOIP</a>
+        | <a href="http://www.message4u.nl/">Message4U</a>
+        | <a href="http://hotmail.com/">Hotmail</a>
+        | <a href="http://mail.yahoo.com">Yahoo</a>
+        | <a href="http://www.operamail.com">Opera Mail</a>
+        | <a href="http://netmail.hetnet.nl/">Het Net</a>
+      </div>
+    </div>
+    <div onmouseover="showMenu('menu5')" onmouseout="hideMenu('menu5');">
+      <div id="menu5title" class="menutitle">Strip-sites</div>
+      <div id="menu5" class="menu">
+          <a href="http://www.arboris.nl/">Aboris</a>
+        | <a href="http://www.bigballoon.nl/">Big Balloon</a>
+        | <a href="http://www.dupuis-entertainment.com/">Dupuis</a>
+        | <a href="http://www.casterman.com/">Casterman (fr)</a>
+        | <a href="http://www.lelombard.com/home_nl.htm">Le Lombard</a>
+        | <a href="http://www.standaard.com/">Standaard</a>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!--menu-->
+  <script language="javascript">writeMenu();</script>
+  <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->
+  <p>
+		Dit is tweede versie van <a href="hysteresis.htm">deze pagina</a>. 
+    Op dit menu zit ook een <em>toon</em>-hysteresis. Daar 
+    ikzelf nogal ongeduldig ben vind ik dit niet echt handig, 
+		maar wellicht iets voor anderen... 
+	</p>
+	<p>
+		De HTML zorgt vanuit zichzelf ook al voor een <em>kleine vertraging</em>, dus
+		wellicht dat deze optie op een HTML pagina een beetje over done is.
+		Voor de ongeduldigen: het menu opent ook door een muis-klik. 
+	</p>
+	<p>
+		Gebruikte waarden voor de timeouts:<br>
+		tonen na 200 (ms);<br>
+		verbergen na 750 (ms).
+	</p>
+  <div class="footer">Doeke Zanstra 2001, version 1.1a, <a href="../index.htm">index</a></div>
+</td></tr></table><!--end columns-->
+</body>
+</html>

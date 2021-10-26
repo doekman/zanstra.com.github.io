@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <title> Safari testcase | load script dynamically </title>
+    <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript">
+function test1()
+//--#This test loads a script that shows an alert
+//--#Works in Mozilla, IE failes.
+{
+  var script=document.createElement('script');
+  var head=document.getElementsByTagName('head')[0];
+  script.setAttribute('type','text/javascript');
+  script.setAttribute('src','script.js');
+  head.appendChild(script);
+}
+function test2()
+//--#This test loads a script that shows an alert (old school style)
+//--#Works in IE, Mozilla
+{
+  var script=document.createElement('SCRIPT');
+  var head=document.getElementsByTagName('HEAD')[0];
+  script.language='javascript';
+  script.src='script.js';
+  script.defer='defer';
+  head.appendChild(script);
+}
+function test3()
+//--#Insert it into the body
+//--#Works in IE
+{
+  var script=document.createElement('script');
+  var body=document.getElementsByTagName('body')[0];
+  script.setAttribute('type','text/javascript');
+  script.setAttribute('src','script.js');
+  body.appendChild(script);
+}
+    </script>
+  </head>
+  <body>
+    <h1> Safari testcase | load script dynamically </h1>
+    <p>
+      When creating a script-element with <code>document.createElement</code>
+      and insering this element into the DOM, the attached script is not
+      executed.
+    </p>
+    <p>
+      For non-IE, show-source to see comments in javascript for more info.
+    </p>
+    <p>
+      <a href="script.js">The to be loaded script</a>.
+    </p>
+    <h2>document.createElement</h2>
+    <form onsubmit="return false;">
+      <script>
+showCode(test1);
+showCode(test2);
+showCode(test3);
+      </script>
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

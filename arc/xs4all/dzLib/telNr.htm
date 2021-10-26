@@ -1,0 +1,256 @@
+<!--
+Vraag gesteld over bijlage 2 in nummerplan (065) en nieuwsbrief:
+Datum 20021028, Volgnummer 6085 
+-->
+<html>
+<head>
+	<title>Javascript: Valideer telefoonnummer</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+		td.label { width: 150px }
+		td.data { font-weight: bold; font-family: monospace; width: 200px }
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+	</style>
+  <script type="text/javascript" language="javascript" src="../js/telNr.js" id="jsTelNr"> </script>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script type="text/javascript" language="javascript"> 
+function obj2str(o,r) {
+  var s=''; 
+  for(var i in o) { 
+    if(!r||r.test(i)) {
+      s+=i+': '+o[i]+'\n'; 
+  } }
+  return s;
+}
+function toggleDisplay(o) {
+	o.style.display=o.currentStyle.display=='none'?'block':'none';
+}
+function ID(s) { return document.getElementById(s); }
+function doIt(s) {
+  var oTelNr=new TelNr(s); 
+  var formaat=ID('formaat').value;
+  setSpan(oTelNr.kengetal,'spanKengetal');
+  setSpan(oTelNr.abonneeNr,'spanAbonneeNr');
+  setSpan(oTelNr.validated,'spanValidated');
+  setSpan(oTelNr.type,'spanType');
+  setSpan(oTelNr.error,'spanError');
+  if(formaat)
+  {
+    ID('spanToString').innerHTML=oTelNr.toString(formaat);
+    ID('spanFormat').innerHTML="'"+ID('formaat').value+"'";
+  }
+  else
+  {
+    ID('spanToString').innerHTML=oTelNr.toString();
+    ID('spanFormat').innerHTML='';
+  }
+}
+function setSpan(v,i)
+{
+  if(v!=null)
+  {
+    ID(i).innerHTML=v;
+  }
+  else
+  {
+    ID(i).innerHTML='null';
+    ID(i).style.fontWeight='normal';
+    ID(i).style.fontStyle='italic';
+  }
+}
+	</script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    validateTelNr.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>Valideer telefoonnummer</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->   <p>Deze javascript-library implementeert een javascript-object, om een nederlands telefoonnummer te valideren aan de hand van het nummerplan, opgesteld door het Ministerie van Economische Zaken. Mocht je een Macintosh hebben, dan kun je ook je <a href="../inTec/telefoonNummer.htm">adresboek verbeteren</a>. De correcte benaming is <em>netnummer</em>, maar in de volksmond wordt <em>netnummer</em> ook vaak gebruikt. Wegens historische redenen is de eigenschap naam (property name) in javascript <var>kengetal</var>.
+  </p>
+  <h2>Demo</h2>
+	<form id="frmTelNr" onsubmit="doIt(document.forms.frmTelNr.txtTelNr.value);return false;">
+    <div style="border: 1px solid black; margin-bottom: 5px; padding: 2px 2px 2px 2px; width:400px">
+      <table style="border-collapse:collapse">
+        <tr>
+          <td>Telefoonnummer:</td>
+          <td>
+            <input type="text" id="txtTelNr" value="0515521276" class="textbox" style="width: 100px" />
+          </td>
+        </tr>
+        <tr>
+          <td>Formaat:</td>
+          <td>
+            <select id="formaat">
+              <option value="KG">KG</option>
+              <option value="kg">kg</option>
+              <option value="NR">NR</option>
+              <option value="NR2_">NR2_</option>
+              <option value="NR_2">NR_2</option>
+              <option value="NR3_">NR3_</option>
+              <option value="NR_3">NR_3</option>
+              <option value="" selected>---(standaard formaat)---</option>
+              <option value="KPN">KPN (Standaard KPN)</option>
+              <option value="kpn">kpn (idem ongegroepeeerd)</option>
+              <option value="NORM">NORM (zo zou het moeten)</option>
+              <option value="KG-NR">KG-NR (zo doet iedereen het)</option>
+              <option value="INT">INT (internationaal)</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input type="submit" value="Valideer" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><hr /></td>
+        </tr>
+        <tr>
+          <td class="label" style="width:150px">o.kengetal</td>
+          <td class="data" id="spanKengetal"></td>
+        </tr>
+        <tr>
+          <td class="label">o.abonneeNr</td>
+          <td class="data" id="spanAbonneeNr"></td>
+        </tr>
+        <tr>
+          <td class="label">o.validated</td>
+          <td class="data" id="spanValidated"></td>
+        </tr>
+        <tr>
+          <td class="label">o.type</td>
+          <td class="data" id="spanType"></td>
+        </tr>
+        <tr>
+          <td class="label">o.error</td>
+          <td class="data" id="spanError"></td>
+        </tr>
+        <tr>
+          <td class="label">o.toString(<span id="spanFormat"></span>)</td>
+          <td class="data" id="spanToString"></td>
+        </tr>
+      </table>
+    </div>
+  </form>
+  <h2>Download</h2>
+	<ul>
+		<li>
+			<a href="../js/telNr.js">Download javascript object code</a>
+      (<a href="view-source:http:/www.xs4all.nl/~zanstra/js/telNr.js">view-source</a>).
+		</li>
+	</ul>
+  <h2>Uitleg</h2>
+	<p>
+		Simpele dingen als het valideren van een telefoonnummer zijn vaak moeilijk.
+		Ik heb geprobeerd om een <em>simpel</em>, maar toch ook <em>flexibel</em> javascript
+		object te maken.
+	</p>
+	<p>
+		Het idee is helder: een string geldt als invoer. Het object splitst het in een <strong>netnummer</strong>
+		en een <strong>abonneenummer</strong> (de properties <code>netnummer</code> en <code>abonneeNr</code>). 
+		Verder kijkt hij of het een valide telefoonnummer (propertie <code>validated</code> als boolean).
+    Ook is er een <code>type</code> property (zie hieronder).
+		Als toegift is er een functie die het telefoonnummer als een leesbare string teruggeeft (methode <code>toString</code>).
+	</p>
+	<p>
+    Er wordt dus gecontroleerd op <strong>netnummer</strong> en op lengte. Per type wordt 
+    het volgende gecontroleerd:
+	</p>
+  <ul>
+    <li>
+      <strong>'mobiel'</strong>: Het nummer is aangewezen voor mobiele communicatie en 
+      de lengte klopt (10 cijfers).</li>
+    <li>
+      <strong>'regio'</strong>: Het betreft een regio-gebonden telefoonnummer (het netnummer
+      bestaat) en de lengte klopt (10 cijfers).</li>
+    <li>
+      <strong>'internet'</strong>: Het nummer is bedoeld als internet-oprit en de lengte klopt
+      (10 cijfers).</li>
+    <li>
+      <strong>'persoonlijke-assistentdiensten'</strong>: Het nummer is bedoeld voor
+      persoonlijke assistent-diensten (zoals fax-in-email van KPN).</li>
+    <li>
+      <strong>'informatie'</strong>: Het nummer is bedoeld als gratis danwel betaald 
+      informatienummer, en de lengte klopt (8 of 11 cijfers).</li>
+    <li>
+      <strong>null</strong>: De prefix van het nummer is niet herkend (.validated=null) 
+      of het is een illegale prefix (validated=false). 
+      In geval van niet herkennen kan het gaan om een valide nummer (probeer 112 maar).</li>
+  </ul>
+  <p>
+    De library is bijgewerkt tot en met het nummerplan van 1 oktober 2002.
+  </p>
+  <h2>Achtergrondinformatie</h2>
+  <p>
+    Het <a href="http://www.ez.nl/beleid/ext_frame.asp?site=/beleid/home_ond/dgtp/beleidwetgeving/nummers_namen/nummerplannen.html"
+    >nummerplan telefoon- en ISDN-diensten</a> is wordt beheert door
+    het <a href="http://www.ez.nl/">Ministerie van Economische Zaken</a>.
+    De nummerblokken en nummers zelf worden beheert door de
+    <a href="www.opta.nl">OPTA</a> (kies rechts in het menu <em>nummers en registraties</em>).
+    Bij de OPTA kun je ook opzoeken bij welke <acronym title="Telecom Operator">telco</acronym>
+    het nummer is aangesloten.
+  </p>
+  <h2>Todo</h2>
+  <ul>
+    <li>
+      Internationale optie? Lijst van landennummers, en dan het + teken of 00 zien
+      als prefix? Nummers buiten NL niet valideren en netnummer van 4 cijfers aannemen?
+    </li>
+    <li>Nummerplan nog eens goed doorspitten</li>
+    <li>Naambellen doen. Is dit handig?</li>
+    <li>Object Reference maken</li>
+  </ul>
+  <h2>Historie</h2>
+  <ul>
+    <li>
+      2-4-2009 (v1.4): Bug met 0900 opgelost (bedankt Wouter van Kuipers)</li>
+      <li>
+        16-12-2002 (v1.3a): Deze pagina werkt nu ook in Mozilla (de 
+        library werkte al).</li>
+    <li>
+      07-11-2002 (v1.3): Bijgewerkt tot nummerplan 1 oktober 2002. 
+      0842/0847 (bijv. fax-in-email) wordt ondersteund. Er wordt nu 
+      ook herkent of een netnummer niet mag (door ministerie gedeclareerd als
+      niet beschikbaar voor toekenning of reservering). Foutmelding geintroduceert.
+      Werking van .validated gewijzigd: true=goed, false=fout, null=weet niet. Gebruik: <code>if(o.validated) alert('goed'); else if(o.validated==false) alert('fout'); else alert('weet niet');</code>. Deze pagina verhuist van \jsPrj naar \dzLib.
+    <li>
+      01-11-2002 (v1.2): je kunt nu een formaat opgeven bij de toString-method.
+      De String.group method was nog een hele kluif! Ook nog een landen-nummer van 
+      nederland toegevoegd, mocht het TelNr object nog internationale aspiraties krijgen.
+      Tevens het internetnummer (06760) als netnummer gezien, ipv (06).
+      De verantwoordelijkheid van het nummerplan is van het Ministerie van Verkeer en Waterstaat 
+      overgegaan naar het Ministerie van Economische Zaken. Er is een nieuw nummerplan uit.
+      Nog niet doorgenomen.</li>
+    <li>
+      28-10-2002 (v1.1): lengte info nummers goed gemaakt, 06-nummers toegevoegd, type-property
+      toegevoegd en de code iets beter opgezet (bedankt Jasper, voor de inspiratie).</li>
+    <li>
+      31-07-2001 (v1): Initiele versie</li>
+  </ul>
+  <div class="footer">
+    Copyright &copy; 2001-2009 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+  </div>
+</td></tr></table><!--end columns--></body>
+</html>

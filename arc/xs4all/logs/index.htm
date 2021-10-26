@@ -1,0 +1,59 @@
+<html>
+<head>
+	<title>Weblogs</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+.notice { color: red }
+.notice a:link, 
+.notice a:visited { color: #FF8080; font-weight: bold }
+.notice a:active, 
+.notice a:hover { background-color: yellow }
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+function pageInit() {
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			webLogs.xml<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Weblogs
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <script src="latest.js" type="text/javascript" language="javascript"></script>
+  <p lang="en">
+	  <a style="float:right" href="http://www.haloscan.com/"><img width="88" height="31" src="http://www.haloscan.com/halolink.gif" border="0" alt="Weblog Commenting and Trackback by HaloScan.com" /></a>
+  <script type="text/javascript" language="javascript">
+document.write('My latest (recorded) idea is <a href="ideaLog.htm">'+latestIdea+'</a>, ');
+document.write('and my latest javascript log-entry is about <a href="jsLog.htm">'+latestJSLog+'</a>.');
+document.write('The newest one-liner is <a href="logs/oneLiners.htm#trim">Trim</a>.');
+  </script>
+  </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Weblogs" title="Stuur een email">Doeke Zanstra</a>, 2003-2005. 
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

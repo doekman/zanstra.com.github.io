@@ -1,0 +1,194 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../../js/qs.js"> </script>
+  <script language="javascript" src="../../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  pre2div('preSampleCode1','divSampleCode1');
+  pre2div('preSampleCode2','divSampleCode2');
+  pre2div('preSampleCode3','divSampleCode3');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    The ultimate Query String object <span style="color: red">(beta)</span>
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+		In contrast to languages like VB and C#, "arguments" on web-pages are always strings.
+		Because I hated that, this library was created.</p>
+	<p>
+		Using this lib, you can specify a <em>call definition</em> (comparable to the Function 
+		statement in VB), and add <em>arguments</em>. The types match javascript-types: available are
+		string, int, float, boolean, date (nl format: dd-mm-yyyy) and enum (in fact a string,
+		with a pick-list constraint).
+	</p>
+	<p>
+		An argument contains a single value or is multi valued (array). The latter is typically used with
+		the HTML multiple-select or multiple checkboxes with the same name.
+		Arguments can be required or optional. When required, an error-line is added to the error-array when
+		the argument is missing.
+		When optional, a default-value can be specified when this argument is omitted in the call.
+	</p>
+	<p>
+		One or more <em>call definitions</em> are called the <em>interface</em> of that page.
+		The query string parameter <code>call</code> is used to determine which call definition to use.</p>
+	<p>
+		<em>Download</em>:
+    <a href="../js/qs.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/qs.js" title="IE propriety mode">view-source</a>.
+    <br>
+    <em>Targetted</em>: <code>all</code>
+    <br>
+    <em>Tested on</em>: <code><strong>win32</strong>: ie6</code>
+	</p>
+	
+	<h2>Beta comments/remarks/thoughts</h2>
+	<p>
+		<br/>
+		More remarks: <a href="mailto:doekman@xs4all.nl?subject=Ultimate%20Query%20String" title="e==email">e me</a>.
+	</p>
+	<ul>
+		<li><b>note</b>: This lib is a first move to a server-side (asp) lib</li>
+		<li><b>todo 1</b>: Think about case-sensitivity: make the querystring case-<strong>in</strong>sensitive,
+			so <code>?pick=tulip&Pick=Rose</code> results in an array (now it results in two different arguments).</li>
+		<li><b>todo 2</b>: error-check the integrity of the arguments-definition.</li>
+		<li><b>Deal with errors</b>: With this design, the programmer has to deal with errors h(im|er)self (via the aErr array). 
+			This point is not comparable to compiled languages. Maybe do something with http-referer?</li>
+		<li><b>design goal 1</b>: The lib is designed to be low in error-generation (better
+			solve an error-condition by (example) picking a default value)</li>
+		<li><b>design goal 2</b>: Less errors, by re-using code</li>
+		<li><b>design goal 3</b>: Better readable code: when using the lib, at least the call-defs are documented.</li>
+		<li><b>disadvantage 1</b>: Can't use this lib in combination with <code>input type=file</code> (not to bad)</li>
+		<li><b>disadvantage 2</b>: The developer has to <strong>think</strong> when designing h(is|er) page.</li>
+		<li><b>options</b>: how to deal with feature requests like determined string length, other date formats</li>
+		<li><b>options statement</b>: current statement about options is not to <em>validate</em> form-entries,
+			but to make the parameters more manageable for the programmer, so no length constraint (string),
+			or min/max constraints (int).</li>
+		<li><b>server-side</b>: how to use this in combination with post/get. Specify each argument as post and/or get?</li>
+		<li><b>compatibility</b>: the lib is written for broad javascript-compatibility: this means no <code>for(i in o)</code>.
+		  Maybe constraint to ECMA-Script 262? (thus only IE5+ support from MS). Advantage: use exceptions and
+			simplify code (no more double object/array-index to the same objects)</li>
+	</ul>
+
+  <h2>
+    Usage: Typed, one call definition
+  </h2>
+  <div id="divSampleCode1" style="display: none"></div>
+  <pre id="preSampleCode1"> 
+/*Arguments are declared with "named" js-arguments, querystring examples:
+	?name=Doeke&email=doeke@zanstra.net
+	?name=Doeke&age=29&sex=Male&email=hotmail@zanstra.net&email=zanstra@hotmail.com */
+var oCall=new CallDefinition();
+with(oCall)
+{
+	addArgument( {sName:'name', sType:'string',bIsArray:false,bRequired:true} );
+	addArgument( {sName:'email',sType:'string',bIsArray:true, bRequired:true} );
+	addArgument( {sName:'age',  sType:'int',   bIsArray:false,bRequired:false} );
+	addArgument( {sName:'sex',	sType:'enum',  bIsArray:false,bRequired:false,
+	              vDefault:'Unknown',aEnumValues:['Male','Femail','Unknown']} );
+}
+var oInterface=new Interface(oCall);
+
+if(oInterface.aErr.length!=0)
+{
+	document.writeln('Errors found:<br/>'+oInterface.aErr.join('<br/>'));
+}
+else
+{
+	with(oInterface.oArg)
+	{
+		document.writeln('Name: '+name+'<br/>');
+		document.writeln('Email: '+email.join(', ')+'<br/>');
+		if(age!=null)
+			document.writeln('Age: '+age+'<br/>');
+		document.writeln('Sex: '+sex+'<br/>');
+	}
+}
+  </pre>
+
+  <h2>
+    Usage Typed, multiple call definition
+  </h2>
+  <div id="divSampleCode2" style="display: none"></div>
+  <pre id="preSampleCode2"> 
+//--| In this example, a page can be opened and saved.
+//--| "Normal" js-arguments are used now with addArgument. Querystring examples:
+//--|   ?id=12                            (the default CallDefinition 'open' is used)
+//--|   ?call=save&id=13&text=Bladiebla
+var oCallOpen=new CallDefinition('open');
+var oCallSave=new CallDefinition('save');
+with(oCallOpen)
+{
+	addArgument('id', 'int', false, true);
+}
+with(oCallSave)
+{
+	addArgument('id',     'int',    false, true);
+	addArgument('text',   'string', false, true);
+	addArgument('publish','date',   false, false, new Date()); //if omitted, publish now
+}
+
+var oInterface=new Interface(oCallOpen, oCallSave);</pre>  
+	<p>
+		The internal logic determines on basis of the querystring parameter "call" 
+		which CallDefinition to use (ie <code>?call=open</code> or <code>?call=save</code>).
+		If the call-parameter is omitted, the first supplied CallDefinition is used
+		(oCallOpen in this case).
+	</p>
+	<h2>
+    Usage Untyped
+  </h2>
+  <div id="divSampleCode3" style="display: none"></div>
+  <pre id="preSampleCode3"> 
+/*The lib can be used untyped (but is it usefull?)*/
+var oInterface=new Interface();
+if(oInterface.oArg.name==null) 
+	document.writeln('Name is required');</pre>
+
+  <h2>
+    Live Demo
+  </h2>
+	<p>
+		<br/>
+		See the ultimate query string object in action in the <a href="../fotos/index_.htm">photoalbum</a>
+		(and the <a href="../fotos/index.htm">old fotoAlbum</a> with the <em>deprecated</em> get.js).
+	</p>
+
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

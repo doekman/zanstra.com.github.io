@@ -1,0 +1,57 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title> New Document </title>
+  <script language="javascript">
+function show1(e)
+{
+  alert(o2s(e,1));
+}
+function show2(e)
+{
+  alert(o2s(e,2));
+}
+function show3(e)
+{
+  alert(o2s(e,3));
+}
+function o2s(e,mode)
+{
+  //mode: 0=all,1=normal, 2=function/object, 3=constants
+  var s='', t;
+  for(var i in e) 
+  {
+    if(mode==2&&typeof e[i]!='function'&&typeof e[i]!='object') continue;
+    if(mode==3&&/^[A-Z]/.test(i)==false) continue;
+    if(mode==1&&(typeof e[i]=='function'||typeof e[i]=='object'||/^[A-Z]/.test(i)==true)) continue;
+    t=''+e[i];
+    if(typeof e[i]=='function') t=t.replace(/\n/g,'');
+    s+=i+':'+t+'\n';
+  }
+  return s;
+}
+function bla(e)
+{
+  alert(o2s(e,1));
+  e.stopPropagation(); //has no effect, because event is non-cancelable
+
+}
+window.addEventListener('load',initStuff,false);
+function initStuff(e)
+{
+  alert(o2s(e,1));
+  document.getElementById('d1').addEventListener('click',show1,false);
+  document.getElementById('d2').addEventListener('click',show2,false);
+  document.getElementById('d3').addEventListener('click',show3,false);
+  document.getElementById('d4').addEventListener('focus',bla,false);
+}
+</script>
+</head>
+
+<body>
+  <div id="d1">Normal properties</div>
+  <div id="d2">Functions and objects</div>
+  <div id="d3">Constants</div>
+  <a href="#" id="d4">focus me</a>
+</body>
+</html>

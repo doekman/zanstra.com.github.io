@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Opgelet</title>
+    <link rel="stylesheet" href="../default.css">
+    <style type="text/css">
+.button {
+  background-color: blue;
+  color: yellow;
+  font-weight: bold;
+}
+    </style>
+    <script language="javascript">
+function pageInit() {
+  var args=window.dialogArguments;
+  document.getElementById('idIcon').src=args[0];
+  document.getElementById('idMelding').innerHTML=args[1];
+  window.focus();
+}
+    </script>
+  </head>
+  <body onload="pageInit();" style="margin: 10px; padding: 0px">
+    <table cellpadding="0" border="0" width="100%">  
+      <tr>
+        <td width="45" style="text-align: center"><img src="" id="idIcon"></td>
+        <td id="idMelding">&nbsp;</td>
+      </tr>
+      <tr><td colspan="2">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><button onclick="window.close();" class="button" style="width: 45px;">OK</button></td>
+      </tr>
+    </table>
+  </body>
+</html>

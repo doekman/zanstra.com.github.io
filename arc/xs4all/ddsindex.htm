@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<meta http-equiv="Content-type" content='text/html; charset="ISO-5589-1"' />
+		<title>Titel: Geen<sup>sm</sup></title>
+		<style type="text/css">
+			body { background-color: #eeeeee }
+			#spanCounter { font-family: Verdana, sans-serif; font-weight: bold; font-size: 36pt }
+			#divBoe { font-family: Verdana, sans-serif; font-weight: bold; font-size: 144pt; text-align: center; color: Red }
+		</style>
+		<script language="javascript">
+			var iCountDown=9, iDelta=950;
+			function verhuizen() 
+			{
+				location.href='http://www.xs4all.nl/~zanstra/';
+			}
+			function telAf() 
+			{
+				if(document.all)
+				{
+					document.all['spanCounter'].innerText=iCountDown;
+					if(--iCountDown<0)
+					{
+						if(iCountDown==-1) 
+						{
+							document.all['divBoe'].innerText='Boe';
+							window.setTimeout(verhuizen,iDelta);
+						}
+					}
+					else
+					{
+						window.setTimeout(telAf,iDelta);
+					}
+				}
+			}
+			window.onload=telAf;
+		</script>
+	</head>
+	<body>
+		<h1>301 Moved Permanently</h1>
+		<div>
+			<span style="float: right" id="spanCounter">10</span>
+			http://<strong>huizen.dds.nl/~olrik/</strong> is in verband met de digitale dood verhuist naar 
+			<a href="http://www.xs4all.nl/~zanstra/">http://<strong>www.xs4all.nl/~zanstra/</strong></a>.
+		</div>
+		<div id="divBoe"></div>
+	</body>
+</html>

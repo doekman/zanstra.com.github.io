@@ -1,0 +1,13 @@
+BODY
+{ background-color: white
+; font-family: Verdana, sans-serif
+; font-size: 11pt
+}
+H1
+{ font-size: 18pt
+; font-weight: bold
+}
+PRE
+{ background-color: #C0C0C0
+; border: 1px solid black
+}

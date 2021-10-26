@@ -1,0 +1,22 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="iframe.css">
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+<textarea 
+rows=20 style="width: 95%; border-width: 0px; background-color: black; color: #00bb00; font-weight: bold"
+name=listing>alert('Type some text, and press run to start');
+listing.value+="Ready...";
+</textarea>
+<br><br>
+<input type=button value='Run' onclick='eval(listing.value); listing.focus()'>
+<input type=text value='below is an <span id=spanTest>' name=createText size=35>
+<input type=button value='Create' onclick='spanTest.innerHTML=createText.value'>
+<br>
+<span id=spanTest>This is the span</span>
+</body>
+</html>

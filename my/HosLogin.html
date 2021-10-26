@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>HOS Login</title>
+	<style type="text/css">
+#content { width:400px; margin: 0 auto; }
+h1 { text-align: center;}
+abbr { border-bottom: 1px dashed gray;}
+fieldset div { clear:left; margin-top:0.25em;}
+fieldset label { 
+  display:block;
+  float:left;
+  width:100px;
+}
+fieldset legend { text-align:center;}
+	
+body.dialog { 
+  background-color: black;
+}
+#accessDenied {
+  display:none;
+}
+.error { 
+  margin: 20% auto;
+  color:red;
+  font:bold 75px/100% sans-serif;
+  text-align:center;
+  width:7em;
+}	
+.error span {
+  font-weight:normal;
+  font-size:500%;
+}
+.left  { float:left }
+.right {float:right }
+	</style>
+	<script type="text/javascript">
+function blink(items, show) {
+  for(var i=0; i<items.length; i++) {
+    items[i].style.visibility = show?"visible":"hidden";
+  }
+  setTimeout( function(){ blink(items, !show); }, show?600:300);
+}
+function $(id){ return document.getElementById(id); }
+function SayXsDenied() {
+  document.getElementsByTagName("BODY")[0].className="dialog";
+  $("content").style.display="none";
+  $("accessDenied").style.display="block";
+  //startup blinking
+  var list=[], a=document.getElementsByTagName("SPAN");
+  for(var i=0; i<a.length; i++) {
+    var span=a[i];
+    if(/\bleft|right\b/.test(span.className)) list.push(span);
+  }
+  blink(list, true);
+}	
+window.onload=function() {
+  console.info('There is no intention to steal passwords here...')
+  $("login").onclick=function() {
+    SayXsDenied();
+  };
+};
+	</script>
+</head>
+<body>
+  <div id="content">
+    <h1><abbr title="Holywood Operating System">HOS</abbr> Login</h1>
+    <fieldset>
+      <div>
+        <label>Username</label>
+        <input type="text" name="username">
+      </div>
+      <div>
+        <label>Password</label>
+        <input type="password" name="password">
+      </div>
+      <div> 
+        <input type="button" id="login" value="Login">
+        <a href="/my/">back to index</a>
+      </div>
+    </fieldset>
+  </div>
+  <div id="accessDenied">
+    <p class="error"><span class="left">[</span><span class="right">]</span>Access Denied</p>
+  </div>
+</body>
+</html>

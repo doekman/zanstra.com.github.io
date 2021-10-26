@@ -1,0 +1,6 @@
+Een controle op je index.gif liet zien dat deze niet bruikbaar is.
+Je onbruikbaar index.gif is verplaatst naar corrupt.gif..
+Het systeem gaf de volgende melding:
+
+Warning 325: Corrupt GIF image (/pack1_2/home/o/l/olrik/www/index.gif)
+

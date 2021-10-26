@@ -1,0 +1,15 @@
+/*styles for js-parser*/
+.js { font-family: monospace; font-size: 10pt; color: #880000 }
+.quote { color: blue }
+.number { color: red }
+.regexp { color: blue }
+.escape { color: gray; font-weight: normal }
+.otherLiteral { color: darkblue; font-weight: bold }
+.operator { color: green }
+.remark { color: green }
+.keyword { color: blue; font-weight: bold }
+.reserved { color: white; font-weight: bold; background-color: Red }
+.buildin { color: red }
+.lineNumber { color: gray }
+.bracketOnOver { font-weight: bold; background-color: yellow; cursor: default }
+.bracketOnClick { background-color: Red }

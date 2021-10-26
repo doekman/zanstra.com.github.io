@@ -1,0 +1,98 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript" src="../js/toSource.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  hiLiteJS('JS');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			toLiteral.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    toLiteral
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+    This library enables you to serialize javascript variables to a string, which can be <code>eval</code>uated. Very convenient when you need the data server-side, or while debugging your client-side code. The code is optimized for performance and compatibility.
+    <br><br>
+    <em>Current version</em>:
+     v1.3 (2006-04-13). See code for details
+    <br>
+    <em>Download</em>:
+    <a href="../js/toLiteral.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/toLiteral.js" title="IE propriety mode">view-source</a>
+    <br>
+    <em>Tested win</em>: <code>IE5/6, Firefox 1.0.7/1.5; Opera7.51/9.00</code><br/>
+    <em>Tested mac</em>: <code>IE5.2.3, Firefox 1.0.6/1.5; Safari 1.3.2/2.0.2/Nightly2006-04-13; Opera 7.54 + 8.52</code><br/>
+    <em>Tested server</em>: <code>IIS5.0/ASP</code><br/>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <pre class="JS"> 
+/*ASP with Javascript*/
+var str='I\'m creating a string\nwith escape codes.';
+Response.Write('var str='+ToLiteral(str)+';\n');</pre>
+
+  <h2>Test toLiteral</h2>
+  <script type="text/javascript">
+var toLiteralTestDing=
+{ numberDing:12
+, stringDing:'Zooi'
+, boolDing:true
+, decimalDing:12.34
+, dateDing:new Date(1972,11-1,14)
+, arrayDing:[1,2,3]
+, objectDing:{naam:'Doeke Zanstra',email:'doeke@zanstra.net'}
+}
+  </script>
+  <iframe style="width:100%;height:250px;border:1px solid gray" frameborder="0" src="testToLiteral.htm?n=toLiteralTestDing"></iframe>
+  <h2>Known issues</h2>
+  <ul>
+    <li>Doesn't work with Opera 6.02/Mac. </li>
+    <li>No pretty-print/formatting is implemented.</li>
+  </ul>
+  <h2>History</h2>
+	<p>
+		After I got the idea, and programmed the biggest part, I found out, Netscape already has native support
+		for this functionality.
+		Netscape Javascript has the method <code>toSource()</code>, but ECMA (and therefor IE) has not. 
+		This is a rewrite of my <a href="toSource.htm">toSource</a> library. It's a rewrite, to boost performance. The library sports a <code>method</code> and a <code>function</code> interface. When you serialize variables 
+	</p>
+  <div class="footer">
+    Copyright &copy; 2001-2005
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib.toLiteral" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

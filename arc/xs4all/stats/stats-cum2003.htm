@@ -1,0 +1,143 @@
+<html>
+<head>
+	<title>Home of Doekman: statistieken gecummuleerd</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" />
+  <link rel="stylesheet" type="text/css" href="default.css" />
+	<style type="text/css">
+table.stats
+{
+  border-collapse: collapse;
+}
+td.number { text-align: right; }
+select { font-size: 9px }
+option { color:gray }
+option.selected { color:black }
+  </style>
+  <script language="javascript" src="js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script src="js/qs.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_2.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_3.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_4.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_5.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_6.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_7.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_8.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_9.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_10.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats_2003_11.js" language="javascript" type="text/javascript"></script>
+  <script src="js/BarGraph.js" language="javascript" type="text/javascript"></script>
+  <script language="javascript">
+//handig voor menu-tjes. Kan helaas geen 2 variabelen tegelijk aan...
+//die location.pathname is speciaal voor Safari (want anders gaat Safari naar het default-document).
+function url(name,value)
+/*--#Maak een nieuwe URL op basis van huidige URL en nieuwe querystring parameter <x>
+Als <x> niet bestaat, wordt deze aan de URL toegevoegd.
+Als <x> wel bestaat, wordt deze waarde vervangen.*/
+{
+  var qs=location.search;
+  var i=qs.indexOf('?'+name+'=');
+  if(i==-1) i=qs.indexOf('&'+name+'=');
+  if(i>=0)
+  {
+    i++; //skip questionmark or ampersand
+    //replace querystring value
+    var j=qs.indexOf('&',i);
+    if(j==-1) qs=qs.substring(0,i)+name+'='+value;
+    else qs=qs.substring(0,i)+name+'='+value+qs.substr(j);
+  }
+  else //x niet gevonden in querystring
+  {
+    if(qs.indexOf('?')==-1) qs='?'+name+'='+value;
+    else if(qs.lastIndexOf('&')+1==qs.length) qs+=name+'='+value;
+    else qs+='&'+name+'='+value;
+  }
+  return location.href.substring(0,location.href.indexOf('?'))+qs;
+}
+function menuItem(anker,tekst,name,value) 
+{ 
+  document.write(anker==true?tekst.link(url(name,value)):tekst.bold());
+}
+
+//--| Create the bar graph
+function createTheGraph()
+{
+  var units={hits:'hits',traffic:'Kb'};
+  var g=new BarGraph(350,units[select]);
+
+  var dataSets=[stats_2003_2,stats_2003_3,stats_2003_4,stats_2003_5,stats_2003_6,stats_2003_7,stats_2003_8,stats_2003_9,stats_2003_10,stats_2003_11];
+  var setLabel=['Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+
+  for(var i=0; i<dataSets.length; i++)
+  {
+    var dataSet=dataSets[i];
+    g.beginGroup(setLabel[i]);
+    for(var j=0; j<dataSet.length; j++)
+    {
+      var dataItem=dataSet[j];
+      var size=select=='hits' ? dataItem.hits : dataItem.traffic;
+      var text=dataItem.name=='index' ? dataItem.url.match(/([^\/]+\/)index.htm$/i)[1] : dataItem.name;
+      var handle='<a href="'+dataItem.url+'" title="'+dataItem.relurl+'">'+text+'</a>';
+      g.addItem(dataItem.relurl,size,handle);
+    }
+  }
+  return g;
+}
+
+var call=new CallDefinition();
+call.addArgument('select','enum',false,false,'hits',['hits','traffic']);
+call.addArgument('color','enum',false,false,'blue',['blue','red','none']);
+
+var page=new Interface(call);
+var select=page.aErr.length==0&&typeof page.oArg.select=='string'?page.oArg.select:'hits';
+var color=page.aErr.length==0&&typeof page.oArg.color=='string'?page.oArg.color:'blue';
+
+var grafiek=createTheGraph();
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="110"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="img/iconStats.gif" border="0" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			site.stats<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>Statistieken 2003 cumulatief</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu(); grafiek.writeLegend();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <script language="javascript">
+
+//--| write header
+document.write('<p>');
+/*cummulatief*/
+document.write('Toon (<a href="stats.htm">deze maand</a>|<b>cumulatief 2003</b>|<a href="stats-cum2004.htm">2004</a>|<a href="stats-cum.htm">2005</a>).');
+/*sorteren*/
+document.write(' Sorteer op (');
+menuItem(select!='hits','hits','select','hits');
+document.write('|');
+menuItem(select!='traffic','traffic','select','traffic');
+document.writeln(').');
+/*einde header*/
+document.write('</p>');
+
+grafiek.writeGraph();
+  </script>
+  <p>
+    <br/>
+    Verder zijn er nog de <a href="statistics.html">xs4all gegenereerde</a> statistieken.
+    Daarnaast moet ik nog nadenken over <em>wat</em> ik überhaupt met stats moet/wil/zal doen...
+  </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Home of Doekman" title="Stuur een email">Doeke Zanstra</a>, 
+    2001-2004.
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../xsl/webLog.xsl"?>
+<log title="Javascript weblog 2002-2004" xml:lang="en">
+  <topics>
+    <topic category="js" created="2005-04-15" id="imBack" comments="closed">
+      <title>Moved</title>
+      <p>OK, my blogging adventure hasn't really worked out.... I'll keep publishing my javascript-stuff here, and see what happens.</p>
+    </topic>
+    <topic category="js" created="2005-10-22" id="Archived2004" comments="closed">
+      <title>Archived</title>
+      <p>The topics below have been archived. See <a href="jsLog.htm">newer stuff here</a>.</p>
+    </topic>
+    <topic category="js" created="2004-08-01" id="moved" comments="closed">
+      <title>Moved</title>
+      <p>Blogging has been moved to <a href="http://blogger.xs4all.nl/zanstra/" class="notice">blogger.xs4all.nl/zanstra/</a>. It's powered by blogging-engine (notably me using third party tools, I must have gotten mad), more sophisticated than my xml/xslt/batch-file/ftp-blogging engine ;-)</p>
+    </topic>
+    <topic category="js" created="2004-05-23" id="js_XmlHttpRequest" comments="closed">
+      <title>XmlHttpRequest in Safari 1.2</title>
+      <p>The very handy XmlHttpRequest (<a href="http://developer.apple.com/internet/webcontent/xmlhttpreq.html">Apple just released documentation</a>) object (already available on Mozilla and IE/Win) is now also available in Safari 1.2+, so it's really an accepted and usable way to get and post your data on a web-page. <a href="http://webfx.eae.net/dhtml/xmlextras/xmlextras.html">WebFX</a> might have some extra handy info on XML client-side scripting. <a href="http://jibbering.com/2002/4/httprequest.html">This Google SOAP example</a> is not really usable, because of cross-domain security.</p>
+    </topic>
+    <topic category="js" created="2004-04-23" id="js_xpath" comments="closed">
+    <title>client-side XPath</title>
+    <p>
+    <a href="http://glazkov.com/blog/">Dimitri Glazkov</a> created a client-side javascript, so you can use <a href="http://glazkov.com/blog/archive/2004/04/06/168.aspx">XPath to query an HTML document</a>, like this (this is native in Mozilla):
+    </p>
+    <code-block type="application/x-javascript"><![CDATA[
+var iterator=document.evaluate("//input[@type='text']",document,null,0,null);]]></code-block>
+  </topic>
+    <topic category="js" created="2004-03-08" id="swapNode" comments="closed">
+      <title>swapNode</title>
+    <p>
+    The <a href="http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/swapnode.asp">swapNode</a> method is very handy, so I created <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/">DOM Level 2</a> compliant function replacement. 
+    </p>
+      <code-block type="application/x-javascript"><![CDATA[
+function DOMNode_swapNode(n1,n2)
+{
+  n1.parentNode.insertBefore(n2.parentNode.removeChild(n2),n1);
+}]]></code-block>
+    </topic>
+    <topic category="js" created="2004-01-17" id="insertAfter" comments="closed">
+      <title>DOMNode.insertAfter</title>
+      <p>
+        This function should have been defined in DOM Level 1, since I need it very often. Couldn't find a better place to put it, since it's not really javascript.
+        This function insertes the DOMNode <code>newChild</code> after the <code>refChild</code> element.
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+function DOMNode_insertAfter(newChild,refChild)
+//Post condition: if childNodes[n] is refChild, than childNodes[n+1] is newChild.
+{
+  var parent=refChild.parentNode;
+  if(parent.lastChild==refChild) return parent.appendChild(newChild);
+  else return parent.insertBefore(newChild,refChild.nextSibling);
+}]]></code-block>
+    </topic>
+    <topic category="js" created="2004-01-01" id="view_dom_source" comments="closed">
+      <title>View DOM source</title>
+      <p>
+        A bookmarklet to show the HTML present in the DOM tree of your browser.
+        Very handy if you use <code>document.write</code> extensive:
+        <a href="javascript:var o=document.documentElement,p,w=window.open('','_blank'),d=w.document;d.write('&lt;html&gt;&lt;body&gt;&lt;pre&gt;');z('&lt;'+o.tagName);for(var i=0;p=o.attributes[i],i!=o.attributes.length;i++)if(p.specified)z(' '+p.nodeName+'=&quot;'+p.nodeValue+'&quot;');z('&gt;'+o.innerHTML+'&lt;/'+o.tagName+'&gt;');d.write('&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;');d.close();function z(s){d.write(s.replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;'));}"><strong>view-DOM-source</strong></a>. Just try it on this page, and look for the menu of the coloured source code ;-)
+      </p>
+    </topic>
+    <topic category="js" created="2003-10-07" id="sort_closure" comments="closed">
+      <title>How to handily use sort</title>
+      <p>
+        I always wondered why the <a href="http://devedge.netscape.com/library/manuals/2000/javascript/1.3/reference/array.html#1196882">sort</a> method of an Array takes a <em>compare function</em>
+        as an (optional) parameter. Why wasn't this solved in the Object-Oriented fashion
+        (whats a function doing in OO land)?
+      </p>
+      <p>
+        First let me show in an example how I used the sort method at first:
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+/***The FileList implementation*********/
+function FileList()
+{
+  this.list=new Array();
+}
+FileList.prototype.add=function(o)
+{
+  this.list.push(o);
+}
+FileList.prototype.sort=function()
+{
+  this.list.sort(File_compare);
+}
+
+/***The File implementation*********/
+function File(name,size) 
+{
+  this.name=name;
+  this.size=size;
+}
+function File_compare(f1,f2)
+{
+  if(f1.name < f2.name) return -1;
+  else if(f1.name > f2.name) return 1;
+  else return 0;
+}
+
+/***Use the objects*********/
+var fileList=new FileList();
+fileList.add( new File('index.htm',1024) );
+fileList.add( new File('default.htm',384) );
+fileList.sort( FileCompare );]]></code-block>
+      <p>
+        First I thought the usage of a function was because of the <a href="http://www.crockford.com/javascript/remedial.html">premature standardization</a> of the language. 
+        The guys at Netscape (inventors of javascript) forgot, every object should implement a <code>compare</code> method (so I thought):
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+//This code is hypothetical, it doesn't work
+File.prototype.compare=function(f1,f2)
+{
+  if(f1.name < f2.name) return -1;
+  else if(f1.name > f2.name) return 1;
+  else return 0;
+}
+
+fileList.sort();]]></code-block>
+      <p>
+        The problem is you lose flexibility. A list of files typically needs
+        to be sorted on multiple properties, like name and file size. Reverse
+        order sorting is also a handy option to have. And all configurable, please.
+      </p>
+      <p>
+        Then I realized, I could use nested functions (a function within a function)
+        to implement this:
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+FileList.prototype.sort=function(property,descending)
+//--@property;type=string@Name of the property used as sort order.
+//--@descending;type=boolean@Whether to sort ascending or descending
+{
+  function fileCompare(f1,f2)
+  {
+    if(f1[property] < f2[property]) return descending?-1:1;
+    else if(f1[property] > f2[property]) return descending?1:-1;
+    else return 0;
+  }
+  this.list.sort(fileCompare);
+}
+fileList.sort('name',true);]]></code-block>
+      <p> 
+        What's happening here? The inner function (fileCompare) has access to the 
+        local variables and arguments of the outer function (sort). 
+        With this technique, you can "configure" a function without using global variables
+        (and thats good, because you don't want an one-sort-order-for-all).
+      </p>
+      <p>
+        You can't do something like this in C though. In languages like Object Pascal (Delphi),
+        Modula-2, Perl and of course Javascript you can.
+        Javascript (and Perl) depends on <a href="http://www.wikipedia.org/wiki/Closure_(programming)">closure</a> for this.
+        More on closure later, because this application doesn't use the power of
+        closure to its full extend.
+      </p>
+    </topic>
+
+    <topic category="js" created="2003-10-06" id="used_scripts" comments="closed">
+      <title>"Show used scripts"-bookmarklet</title>
+      <p>
+        Since day one of the web, I'm a <em>view-source</em> guy. Always wanting
+        to know how people solved things. Nowadays, I just do view source, 
+        to check if the author implemented the thing the way I thought of it when I looked at the page. And every now and then I learn something new.
+      </p>
+      <p>
+        You can imagine I was shocked, when I came up with the idea of a
+        <a href="javascript:var%20i,o=document.getElementsByTagName('script');for(i=0;i!=o.length;i++)if(o[i].src)if(confirm('Open%20file%20['+o[i].src+']'))window.open(o[i].src,'_blank');void 0;" title="showScripts"><strong>view-included-scripts</strong></a> bookmarklet. Argh, it's so simple, but so very handy...
+      </p>
+      <p>
+        <updated/>This updated script <a href="javascript:var s='Pick your script: ',i,j,o=document.getElementsByTagName('script');for(i=0;i!=o.length;i++)if(o[i].src)s+='('+i+') '+/[-_a-z0-9]+\.[a-z]+$/i.exec(o[i].src)[0]+', ';j=prompt(s,'','ja');if(j!=null)if(o[j])if(o[j].src)window.open(o[j].src,'_blank');void 0;" title="pickYourScript"><strong>pick-your-script</strong></a> gives you just one prompt.
+      </p>
+    </topic>
+    <topic category="js" created="2003-09-08" id="kennify" comments="closed">
+      <title>Kennify bookmarklet</title>
+      <p>
+        From a <a href="http://www.xs4all.nl/~jrmarks/">friend</a> I got an
+        URL to <a href="http://www.namesuppressed.com/kenny/">kennify</a> text
+        (confused? See some <a href="http://www.comedycentral.com/tv_shows/southpark/">South Park</a> cartoons first). 
+        I was so impressed, so I made a <a 
+href="javascript:document.getElementsByTagName('body')[0].appendChild(document.createElement('script')).setAttribute('src','http://www.xs4all.nl/~zanstra/js/kennify.js');void 0;"><strong>bookmarklet</strong></a> (javascript bookmark, also called <a href="http://favelets.com/">favelet</a>), so every web-page
+        can be kennified. So add the link to your favorites, and have fun.
+      </p>
+      <p>
+        Some notes. Although I rewrote
+        the javascript of the Kenny Translator, I actually didn't change the algorithm; it's just less text. The bookmarklet doesn't work in the XML version of this log, 
+        because it Kennifies all text-nodes in the document.body tree.
+        The bookmarklet uses <a href="http://www.xs4all.nl/~zanstra/js/kennify.js">this javascript resource</a> (<a href="view-source:http://www.xs4all.nl/~zanstra/js/kennify.js">view-source</a>).
+        Thanks to <a href="http://www.q42.nl/research/">q42</a> for the bookmarklet example. I rewrote it, because it was IE-only, and I didn't need the <code>readyState</code> check anyway. 
+      </p>
+      <p>
+        <updated/> Works in Mozilla. Got an 
+        <a 
+href="javascript:
+o=document.getElementsByTagName('script');
+if(o.length==0) alert('Can\'t kennify; there\'s no existing script block');
+else if(o[0].src.indexOf('js/kennify.js')>0) kenny4all(document.body);
+  else o[0].setAttribute('src','http://www.xs4all.nl/~zanstra/js/kennify.js');
+void 0;"><strong>Opera7-only version</strong></a> (works only when there's at
+least one script-block on the page). Safari and Opera 5 and 6 don't seem to be
+able to DOM-load javascript :-( Who <a href="mailto:zanstra@xs4all.nl?subject=Kennify bookmarklet for Safari/Opera">helps me out</a>? <updated/> Marek Pawlowski mentions the "standard" kennify bookmarklet works fine from <strong>Opera version 7.5</strong>. Tested OK. Way to go Opera.
+      </p>
+      <p>
+        <updated/> again. It works again (I forgot to change an internal
+        IP address to one known on the internet, sorry).
+      </p>
+    </topic>
+    <topic category="js" created="2003-02-14" id="js_multi_line_string" comments="closed">
+      <title>Multi-line strings in javascript</title>
+      <p>
+        Recently I found out how to use multi-line strings in javascript at
+        <a href="http://gathering.tweakers.net/forum/list_messages/708622">GoT</a>.
+        Just put a backslash before the newline (like in C):
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+var s='This is a string\
+and the string continues';]]></code-block>
+      <p>
+And then I wondered, why didn't I notice this before. If you can work 
+yourself through the 
+<a href="http://www.ecma-international.org/publications/files/ecma-st/Ecma-262.pdf">ECMA-262 specification</a>
+(see chapter 7.3 and 7.8.4), you find that a new-line is illegal within a string.
+But then again, ECMA doesn't define a non-escape character
+after a backslash. Netscape defines, if a non-escape character
+is put after a backslash, you should 
+<a href="http://devedge.netscape.com/library/manuals/2000/javascript/1.5/guide/ident.html#1008368">ignore the backslash</a> 
+(although Netscape has deprecated this usage).
+Microsoft is <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/js56jsconspecialcharacter.asp">not
+even mentioning</a> what the behaviour is in these special cases.
+      </p>
+      <p>
+        So I ran some tests on browsers. See the results below. New-line means the escape
+        sequence results in a newline within the string. Concat means the escape sequence
+        is "eaten" by the browser.
+      </p>
+      <table>
+        <tr>
+          <th>Platform</th>
+          <th>Browser</th>
+          <th>Result</th>
+        </tr>
+        <tr>
+          <td rowspan="1">OS 9</td>
+          <td>Internet Explorer 5</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td rowspan="7">OS X 10.2.4</td>
+          <td>Opera 5</td>
+          <td>new-line</td>
+        </tr>
+        <tr>
+          <td>Safari 1.0 beta (v60)</td>
+          <td>new-line</td>
+        </tr>
+        <tr>
+          <td>Chimera 0.6</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td>Mozilla 1.0 and 1.2.1</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td>OmniWeb 4.1</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td>iCab 2.9</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td>Internet Explorer 5.2</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td rowspan="4">Windows 2000</td>
+          <td>Opera 7.02 Bork</td>
+          <td>new-line</td>
+        </tr>
+        <tr>
+          <td>Netscape 4.72</td>
+          <td>new-line</td>
+        </tr>
+        <tr>
+          <td>Internet Explorer 6.0</td>
+          <td>concat</td>
+        </tr>
+        <tr>
+          <td>Mozilla 1.3a</td>
+          <td>concat</td>
+        </tr>
+      </table>
+      <p>
+        The good news is, no browser in this test chokes on this. The bad news
+        is the behaviour is not consistent. Opera and Safari are important enough
+        to keep consideration with (unless you're an IE weazer). It's funny, the
+        inventors of Javascript have changed behaviour in their javascript engine.
+      </p>
+      <p>
+        An other bad thing: it's not documented anywhere. If you know more about
+        this feature, please <a href="mailto:zanstra@xs4all.nl?subject=webLog:multi-line string">mail me about it</a>.
+        Hmm, I like the C# way better after all.
+      </p>
+    </topic>
+    <topic category="js" created="2002-12-23" id="regexp_problem" comments="closed">
+      <title>Regular Expressions</title>
+      <p>
+        The global-modifier of a regular expression only works on IE/Win from
+        version 5.5 and up. On IE/5.2 on Mac the support is also lacking.
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+/*This doesn't work on IE5 (it will hang, because it keeps matching 
+the first match...*/
+function getSites(s)
+{
+  var re=/(http:\/\/[^\s\"]+)/ig;
+  var matches=re.exec(s);
+  var result=[];
+  while(matches!=null)
+  {
+    result[result.length]=matches[1];
+    matches=re.exec(s); 
+  }
+  return result;
+}]]></code-block>
+      <p>
+        The problem with this: no error is generated by the javascript-parser 
+        (the global-modifier is ignored), but the behaviour is different.
+      </p>
+    </topic>
+    <topic category="js" created="2002-10-19" id="static_objects" comments="closed">
+      <title>Static objects</title>
+      <p>
+        In javascript you can use <em>static objects</em> like the <code>Math</code>-object.
+        These objects can't be instantiated themselves. Here's the trick how to do the
+        same with our own objects.
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+function ClassState() 
+{ 
+  //Throw an error when a user tries to create this object.
+  throw {number:445,description:'Object doesn\'t support this action'};
+}
+ClassState.global=0;
+ClassState.inFunction=1;
+ClassState.inEnum=2;]]></code-block>
+    </topic>
+    <topic category="js" created="2002-10-03" id="js_hex" comments="closed">
+      <title>Hex in javascript</title>
+      <p>
+        The use of hexadecimal values in javascript is a bit hidden. Here I'll show the 
+        main calls.
+      </p>
+      <code-block type="application/x-javascript"><![CDATA[
+var i=0x8F8F; // hex number literal
+var j=parseInt('c0c0',16); //convert hex string to a number
+alert( (i+j).toString(16) ); //display the sum of i and j in hex]]></code-block>
+    </topic>
+  </topics>
+  <categories>
+    <category name="js">Javascript</category>
+  </categories>
+</log>

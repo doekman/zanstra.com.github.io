@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>SqlSelect: Sql query with parameters</title>
+	<script src="SqlSelect/SqlSelect.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+//---| form
+function $(id) { return document.getElementById(id); }
+function createSQL() {
+  var sql = new SqlSelect($("SQL").value);
+  var params = $("params").value.split(/\n/);
+  for(var i=0; i<params.length; i++) {
+    var s=params[i];
+    var pos = s.indexOf(" ");
+    var name = s.substring(0, pos);
+    var value = s.substring(pos+1);
+    if(/^true|false$/i.test(value)) value=!!value;
+    var n=parseFloat(value); if(!isNaN(n)) value=n;
+    if(value=='null') value=null;
+    sql.addParameter(name,value);
+  }
+  $("output").value = sql.toString();
+}  
+	</script>
+	<style type="text/css" media="screen">
+textarea { width: 100%;}	 
+	</style>
+</head>
+<body>
+  <h1>SQL Select creator (<a href="http://zanstra.com/base/howto/sql_injection">more info</a>)</h1>
+  <form onsubmit="return false;">
+    <label>SQL String</label>
+    <textarea id="SQL" rows="6">SELECT * 
+FROM employee 
+WHERE idEmployee=@id
+  AND hasNotebook=@hasNotebook
+  AND homeTown=@homeTown
+  AND name=@name</textarea>
+    <label>Parameters (name + SPACE + value)</label>
+    <textarea id="params" rows="6">id 12
+hasNotebook true
+homeTown null
+name Doekman</textarea>
+    <div>
+      <input type="button" onclick="createSQL();" value="create SQL">
+    </div>
+    <textarea id="output" rows="7"></textarea>
+  </form>
+  <script src="ga.js"></script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<html>
+  <head>
+    <title> Image Crop and Resize </title>
+    <style type="text/css">
+label, legend {
+  font: 12px/200% Arial;
+  color: slateblue;
+}
+fieldset {
+  border: 1px solid slateblue;
+  width: auto; 
+  float:left;
+}
+.number {
+  width: 4em;
+  text-align: right;
+}
+#url { width: 100% }
+#thumbnail { position: absolute; }
+#crop {
+  position:absolute;
+  border:1px solid yellow;
+  width:10px;
+  height:10px;
+  overflow:hidden;
+}
+    </style>
+    <script type="text/javascript">
+var IMG={
+  width: 0,
+  height: 0,
+  loaded: false,
+  cx1:0,cy1:0,
+  cx2:20,cy2:20,
+  get:function(p) { var q=p.substr(0,2);return p.substr(2)=="1"?Math.min(IMG[q+1],IMG[q+2]):Math.max(IMG[q+1],IMG[q+2]); }
+};
+function $(id) { return document.getElementById(id); }
+function LoadImage_OnLoad() {
+  var img=$("thumbnail");
+  img.onload=null; 
+  img.onerror=null;
+  // Save original size
+  IMG.width=this.width;
+  IMG.height=this.height;
+  $("restore").title="Reset to original values: "+IMG.width+"x"+IMG.height;
+  IMG.loaded=true;
+  RestoreImageSize();
+  $("cx2").value=IMG.cx2=this.width;
+  $("cy2").value=IMG.cy2=this.height;
+  UpdateFormState();
+}
+function LoadImage_OnError() {
+  var img=$("thumbnail");
+  img.onload=null; 
+  img.onerror=null;
+  IMG.loaded=false;
+  UpdateFormState();
+  alert("Failure loading image");
+}
+function LoadImage() {
+  var url=$("url");
+  var img=$("thumbnail");
+  img.onload=LoadImage_OnLoad; 
+  //Safari doesn't do img.onerror
+  if(img.addEventListener) img.addEventListener("error",LoadImage_OnError,false);
+  else img.onerror=LoadImage_OnError; 
+  img.src=url.value; 
+}
+function ResizeImage() {
+  var img=$("thumbnail");
+  img.width=$("w").value;
+  img.height=$("h").value;
+  img.style.clip=$("docrop").checked
+    ? GetCropImageStyle()
+    : "";
+}
+function GetCropImageStyle() {
+  var a=[];
+  var w=+$("w").value;
+  var h=+$("h").value;
+  var cx1=+$("cx1").value;
+  var cy1=+$("cy1").value;
+  var cx2=+$("cx2").value;
+  var cy2=+$("cy2").value;
+  var a=[cy1,cx2,cy2,cx1];
+  return "rect("+a.join("px,")+"px)";
+}
+function RestoreImageSize() {
+  $("w").value=IMG.width;
+  $("h").value=IMG.height;
+}
+function UpdateFormState() {
+  $("restore").disabled=!IMG.loaded;
+  $("apply").disabled=!IMG.loaded;
+}
+function UpdateDrag(mouse) {
+  var crop=$("crop");
+  crop.style.left=(IMG.xbase+IMG.get("cx1"))+"px";
+  crop.style.top=(IMG.ybase+IMG.get("cy1"))+"px";
+  crop.style.width=(IMG.get("cx2")-IMG.get("cx1"))+"px";
+  crop.style.height=(IMG.get("cy2")-IMG.get("cy1"))+"px";
+  if(mouse) {
+    $("cx1").value=IMG.get("cx1");
+    $("cy1").value=IMG.get("cy1");
+    $("cx2").value=IMG.get("cx2");
+    $("cy2").value=IMG.get("cy2");
+  }
+}
+window.onload=function() {
+  UpdateFormState();
+  $("w").onchange=function() {
+    var val=this.value;
+    if(/^\d+%$/.test(val)) {
+      this.value=Math.round(+val.substr(0,val.length-1)/100*IMG.width);
+    }
+    if($("asra").checked) {
+      $("h").value=Math.round(this.value/IMG.width*IMG.height);
+    }
+  }
+  $("h").onchange=function() {
+    var val=this.value;
+    if(/^\d+%$/.test(val)) {
+      this.value=Math.round(+val.substr(0,val.length-1)/100*IMG.height);
+    }
+    if($("asra").checked) {
+      $("w").value=Math.round(this.value/IMG.height*IMG.width);
+    }
+  }
+  $("thumbnail").onmousedown=function() { 
+    IMG.xbase=event.x-event.offsetX;
+    IMG.ybase=event.y-event.offsetY;
+    IMG.cx2=IMG.cx1=event.offsetX;
+    IMG.cy2=IMG.cy1=event.offsetY;
+    IMG.drag=true;
+    $("crop").style.display='block';
+    $("docrop").checked=true;
+    UpdateDrag(true);
+    return true; 
+  }
+  $("crop").onmousemove=$("thumbnail").onmousemove=function() { 
+    if(IMG.drag) {
+      if(this.tagName=="IMG") {
+        IMG.cx2=event.offsetX;
+        IMG.cy2=event.offsetY;
+      }
+      else { //tagName=="DIV"
+        IMG.cx2=event.offsetX+IMG.cx1;
+        IMG.cy2=event.offsetY+IMG.cy1;
+      }
+      UpdateDrag(true);
+    }
+  }
+  $("crop").onmouseup=$("thumbnail").onmouseup=function() { 
+    IMG.drag=false;
+    UpdateDrag(true);
+  }
+  $("docrop").onclick=function() {
+    $("crop").style.display=this.checked?"block":"none";
+  }
+  $("cx1").onchange=$("cx2").onchange=$("cy1").onchange=$("cy2").onchange=function() {
+    IMG[this.id]=this.value;
+    $("crop").style.display='block';
+    UpdateDrag(true);
+  }
+  LoadImage();
+  $("crop").style.display='none';
+}    
+    </script>
+  </head>
+  <body>
+    <h1> Image Crop and Resize </h1>
+    <p>
+      Crop and resize an image client-side. You can draw the crop-rectangle if you load the image (and have Safari; doesn't work in FireFox yet). Size is entered in pixels (no unit) or in percentage (try enter 50%). More UI to come (generate CSS; move crop rectangle; width/height of crop; crop aspect ratio contraint).
+    </p>
+    <form onsubmit="return false;">
+      <fieldset id="image_url">
+        <legend>Image URL</legend>
+        <input type="text" id="url" value="http://gadgets.blogo.nl/images/blogo_blogs/strips12.jpg">
+        <input type="button" value="Load" onclick="LoadImage();">
+      </fieldset>
+      <fieldset>
+        <legend>Size</legend>
+        <div>
+          <input type="text" id="w" class="number" value="0" title="Width">
+          &times;
+          <input type="text" id="h" class="number" value="0" title="Height">
+        </div>
+        <div>
+          <input type="checkbox" id="asra"><label>lock aspect ratio</label>
+        </div>
+        <div>
+          <input type="button" id="restore" value="reset values" onclick="RestoreImageSize()">
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><input type="checkbox" id="docrop"><label for="docrop">Crop</label></legend>
+        <div>
+          <label>x1</label>
+          <input type="text" id="cx1" class="number" value="0" title="Left">
+          <label>&nbsp;y1</label>
+          <input type="text" id="cy1" class="number" value="0" title="Top">
+        </div>
+        <div>
+          <label>x2</label>
+          <input type="text" id="cx2" class="number" value="0" title="Left">
+          <label>&nbsp;y2</label>
+          <input type="text" id="cy2" class="number" value="0" title="Top">
+          <a href="#" onclick="alert(GetCropImageStyle());return false;">get clip</a>
+        </div>
+      </fieldset>
+      <div style="clear:left">
+        <label>&nbsp;</label>
+        <input type="button" id="apply" value="apply" onclick="ResizeImage()">
+      </div>        
+    </form>
+    <p>
+      <img src="about:blank" id="thumbnail">
+      <div id="crop"></div>
+    </p>
+    <div id="dbg" style="position:fixed; top:10px; right: 10px">dbg</div>
+  </body>
+</html>

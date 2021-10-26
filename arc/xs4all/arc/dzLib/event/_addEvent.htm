@@ -1,0 +1,94 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <META HTTP-EQUIV="MSTHEMECOMPATIBLE" CONTENT="no">
+    <title> DOM Level 0.5 Events</title>
+    <style type="text/css">
+input.button {
+  font-family:monospace;
+  width:480px;
+  text-align:left;
+}
+pre {
+  border:1px solid gray;
+  background-color:lightgrey;
+}
+    </style>
+    <script language="javascript" type="text/javascript" src="event.js"></script>
+    <script language="javascript">
+function groet()
+{
+  var nHour=new Date().getHours();
+  if(nHour<6) window.status='Goedenacht.';
+  else if(nHour<12) window.status='Goedemorgen.';
+  else if(nHour<18) window.status='Goedemiddag.';
+  else window.status='Goedeavond.';
+}
+function initForm()
+{
+  document.forms[0].elements[1].focus();
+}
+
+function slapen()
+{
+  alert('slapen.');
+}
+function werkt()
+{
+  alert('het werkt');
+}
+
+addEvent(window,'onload',groet);
+addEvent(window,'onload',initForm);
+//addEvent(window,'onload',initEvents);
+    </script>
+  </head>
+
+  <body>
+    <h1 id="titel">DOM 0.5 events</h1>
+    <p>
+      Peter-Paul Koch tells on <a href="http://www.xs4all.nl/~ppk/js/">his site</a>
+      Microsoft's advanced event-handling has some 
+      <a href="http://www.xs4all.nl/~ppk/js/events_advanced.html">drawbacks</a>.
+    </p>
+    <p> 
+      And I need a flexible event-model that works with all major (modern) browsers.
+      That's what this projects tries to accomplish: get the most out of it.
+      Suprisingly, it the basics seem to work in IE5 (both Win and Mac), Mozilla,
+      and Opera 5 (minor problem).
+    </p>
+    <form>
+      <input type="button" class="button" onclick="addEvent('titel','onclick',werkt);return false;" value="addEvent('titel','onclick',werkt);" />
+      <br>
+      <input type="button" class="button" onclick="removeEvent('titel','onclick',werkt);return false;"value="removeEvent('titel','onclick',werkt);" />
+      <br>
+      <code>var oTitel=ID('titel');</code>
+      <br>
+      <input type="button" class="button" onclick="var oTitel=ID('titel');addEvent(oTitel,'onclick','slapen();');return false;" value="addEvent(oTitel,'onclick','slapen();');" />
+      <br>
+      <input type="button" class="button" onclick="var oTitel=ID('titel');removeEvent(oTitel,'onclick','slapen();');return false;" value="removeEvent(oTitel,'onclick','slapen();');" />
+      <hr/>
+      <input type="button" class="button" onclick="alert(ID('titel').onclick);" value="alert(ID('titel').onclick);" />
+      <br/>
+      <button onclick="slapen" id="dingdong123">slapen?</button>
+      <button onclick="alert(ID('dingdong123').onclick)">slapen.onclick</button>
+    </form>
+    <pre>
+function slapen()
+{
+  alert('slapen.');
+}
+function werkt()
+{
+  alert('het werkt');
+}</pre>
+    <ul>
+      <strong>Todo</strong>
+      <li>Event-properties (unifying event object?)</li>
+      <li>Run events in tag's context (fn.call(this));</li>
+      <li>Combine addEvent and window_onload</li>
+      <li>One function for returnvalue???</li>
+      <li>Opera: removeEvent doesn't work. .replace doesn't seem to work???</li>
+    </ul>
+  </body>
+</html>

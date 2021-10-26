@@ -1,0 +1,65 @@
+==================================================================
+https://keybase.io/doekman
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://zanstra.com
+  * I am doekman (https://keybase.io/doekman) on keybase.
+  * I have a public key with fingerprint 7297 CC1D DAE8 9DB5 8DF3  3DFD 6384 87DE FE24 F526
+
+To claim this, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "fingerprint": "7297cc1ddae89db58df33dfd638487defe24f526",
+            "host": "keybase.io",
+            "key_id": "638487defe24f526",
+            "uid": "0c09dc8b1b819e00666f9fe204821b00",
+            "username": "doekman"
+        },
+        "service": {
+            "hostname": "zanstra.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1412275684,
+    "expire_in": 157680000,
+    "prev": "14710a317577f67a45ed8f755c108ae039d9e44970e48f1768cf98158a0b4368",
+    "seqno": 3,
+    "tag": "signature"
+}
+
+with the aforementioned key, yielding the PGP signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v1.1.0
+Comment: https://keybase.io/crypto
+
+yMHoAnicbZFbSBRhFMd3V+2ysVDSQxCVDaFJq83MzuWbpUAytYx6KI00Y5nLN+u0
+7sw0O7utd4SKlQzLDEQTeohuhNHFgoSyrQcpIssblhpECIY3soQKq2/E3vpeDt85
+v///nMN54UqwOe15jmx3lzqP2191z4RtBRntnysxQZPKMW8lFoCLQVZUPzR0Q1FN
+zIuxJMeKIiFJPAScJNBAkj0eSZYYD6AAK0EZkpRMkwzmxkq1kKVANgIfgpmKhnLo
+41MklP0PH14s4CLOSSIQCAEQHMRxhmFkDlE4BUhCwHELDEFD5YMQ0ZIGA0Fexard
+GEpGFBFaI1udl4AKXg2ZBp8pakGk1A3N1EStDBVKTVP3WjqzXLfAk1DwLVn4BEWV
+0NZIEIFGSNFUzEsgUjQVy5OgCJJkaQZQbgxGdcWAPsUiaJYBOHpWGxhBlgTFEjjv
+IViaZWWG5SkaSkBmaVokcMBD3MNJHKQojsUhBWQCyUWZAwQNeFygPAzArKVOqBrm
+9aAxeT+yDCl+lTfDBsSq490liTa707YsyWHdzeZcufrfNXP8y/+EB2/lDI8HnjX0
+PapLFfTZhjNTY+wEyBey7Rtet235WJF08/7tfEfFke1tU9MB89zc5Viw0NyTltrl
+0r5ODWy6N7ZW79CypV6i6r3WMrKQO5/3eH1G34XnsdBQ46ofzf30oaJI9eG5rIGH
+7XH/m/0zZd+Tj5NrhuKnd+9Kr//24eCoq7N5b3TkneP6qPPp1em75a3+qlo52rm1
+5Mbm+pj0lTzWfyrh18+i39pgQu+nGFxI/VIzfrT45UTt7IGkHQWTZ8El5zUxYKZr
+V9Y1usI5PYmzCytGOwYLi7NS3jZdtJ1vmY429KQ1bavbGR+qyQ2kDT/pap25432w
+UZ9MSd73F+/OF04=
+=b1Oj
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/doekman
+
+==================================================================

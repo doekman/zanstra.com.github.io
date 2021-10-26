@@ -1,0 +1,70 @@
+	BODY {
+		background-color: black;
+		border-width: 0px;
+		margin: 10px 10px 10px 10px;
+	}
+	P, H1, TD, A, BODY {
+		font-family: Arial;
+	}
+	P, A, TD, BODY, TH {
+		font-size: 10pt;
+	}
+	P,A,TD,TH,H1,H2,H3,BODY {
+		color: yellow;
+	}
+	TH {
+		font-weight: bold;
+		text-align: left;
+		background-color: #0000bb;
+		color: yellow;
+		border-bottom: 1px yellow solid;
+	}
+	TH A, A.label, A:visited.label, A:active.label {
+		text-decoration: none;
+	}
+	TH A:hover, A:hover.label {
+		color: blue;
+		background-color: yellow;
+	}
+	H1, P
+	{	margin: 0px 0px 0px 0px
+	}
+	A {
+		font-weight: bold;
+	}
+	.tableLabel {
+		font-weight: bold;
+	}
+	HR {
+		color: yellow;
+		width: 95%;
+		text-align: left;
+		border-style: solid;
+		border-color: yellow;
+	}
+	.firstWord {
+		font-size: 200%;
+		font-weight: bold;
+	}
+	H2,H3 {
+		margin-bottom: 0px;
+	}
+	P {
+		margin-top; 0px;
+		margin-bottom; 1em;
+	}
+	UL {
+		margin: 0px 0px 0px 25px;
+	}
+	LABEL 
+	{	font-weight: bold
+	;	text-decoration: underline
+	;	cursor: hand
+	}
+	INPUT, TEXTAREA 
+	{	border: 0px solid none
+	}
+	TABLE
+	{ border: 1px solid yellow
+	;	width: 95%
+	}

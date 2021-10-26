@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title> Safari testcase | window.open width problems</title>
+  </head>
+  <body>
+    <h1> Safari testcase | window.open width problems</h1>
+    <p> 
+      This page is describing two problems with setting the width feature of the
+      window.open method (3rd parameter). Problem one: there's no checking on minimum 
+      window with, which may lead to misrendering of the addressbar (google input entry).
+      Problem two: when specifiying the width with a fraction, the width is set to
+      something like 100px and will lead to misrendering of the addressbar.
+    </p>
+    <p> 
+      Real world testcase: <a href="http://www.startpagina.nl/">startpagina.nl</a>.
+      This is a Dutch directory and one of the top-3 most visted websites in the Netherlands
+      (the wrong behaviour has also been reported to the webmaster of startpagina.nl). 
+    </p>
+    <p>
+      According to Interface Builder the main window (Browser.nib) had the minimal 
+      dimensions of width:392px and height:200px (Safari 1.1.1 (v100.1)).
+    </p>
+    <form onsubmit="return false;">
+      <p>
+        To small width (1):
+        <input type="button" onclick="window.open('about:blank','_blank','location=1,width=1')" value="too small" />
+      </p>
+      <p>
+        Just right width (392):
+        <input type="button" onclick="window.open('about:blank','_blank','location=1,width=392')" value="just right" />
+      </p>
+      <p>
+        But smaller is no problem (292):
+        <input type="button" onclick="window.open('about:blank','_blank','location=1,width=292')" value="no problem" />
+      </p>
+      <p>
+        Getting problems at 175 pixels:
+        <input type="button" onclick="window.open('about:blank','_blank','location=1,width=175')" value="problems" />
+      </p>
+      <p>
+        Decimal numbers always a problem (400.1):
+        <input type="button" onclick="window.open('about:blank','_blank','location=1,width=400.1')" value="always problems" />
+      </p>
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

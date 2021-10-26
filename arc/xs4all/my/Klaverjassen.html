@@ -1,0 +1,241 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Klaverjassen score 0.2</title>
+  <!-- script src="http://base2.googlecode.com/svn/trunk/lib/base2-jsb-fp.js"></script>
+  <script src="Klaverjassen/model.js"></script -->
+  <meta name="viewport" content="width=device-width" /> 
+  <!-- see also: http://www.8164.org/designing-for-the-ipad/ -->  
+	<style type="text/css">
+#container { width:320px; }	
+table { width:100%; border:1px solid black; border-collapse:collapse;}
+td, th { padding: 0 4px;}
+.gameNr { width:1em; text-align:right; }
+.current { background-color:#eee;}
+col.wij, col.zij { width:150px;}
+.roem { float:right; padding:0 4px;}
+input[type="number"] {text-align:right; width:6em;}
+	</style>
+	<script type="text/javascript">
+//--| the boom	
+var boom=[];
+boom.addSpel = function() {
+  boom.push({punten:{},cum:{},roem:{wij:0,zij:0}});
+}
+boom.toggleCurrent = function() {
+  this.current = this.opponent();
+}
+boom.opponent = function() {
+  return this.current=="wij" ? "zij" : "wij";
+}
+boom.addRoem = function(nr) {
+  this.top().roem[this.current] += nr;
+}
+boom.getRoem = function() {
+  return this.top().roem[this.current];
+}
+boom.setSpel = function(nr) {
+  var top = this.top();
+  top.punten[this.current] = nr;
+  top.cum[this.current] = nr + top.roem[this.current];
+  top.punten[this.opponent()] = (162 - nr);
+  top.cum[this.opponent()] = (162 - nr) + top.roem[this.opponent()];
+  var prev = this.top(1);
+  if (prev) {
+    top.cum[this.current] += prev.cum[this.current];
+    top.cum[this.opponent()] += prev.cum[this.opponent()];
+  }
+  setLastGame(false);
+  this.addSpel();
+  setLastGame(true);
+}
+boom.delSpel = function() {
+  if (this.length>0) {
+    this.pop();
+    delRow();
+    var top = this.top();
+    delete top.punten[this.current];
+    delete top.cum[this.current];
+    delete top.punten[this.opponent()];
+    delete top.cum[this.opponent()];
+    setLastGame(false);
+  }
+}
+boom.top = function(nr) {
+  if (typeof nr=='undefined') nr = 0;
+  return boom.length==0 ? undefined : boom[boom.length-1-nr];
+}
+boom.addUndo = function(x) {
+  boom.undo.push(x);
+  updateUndoState(); // weg?
+}
+boom.doUndo = function() {
+  if (boom.undo.length==0) false;
+  boom.undo.pop()();
+  return true;
+}
+boom.current = "wij";
+boom.undo = [];
+
+//--| LIB 
+function $(id) { return document.getElementById(id); }
+function addClass(node,cls) { node.className += ' '+cls; }
+function delClass(node,cls) { node.className = node.className.replace(cls,'');}
+//--|
+function wissel() {
+  boom.toggleCurrent();
+  displayCurrent();
+  boom.addUndo(function() {
+    boom.toggleCurrent();
+    displayCurrent();
+  });
+}
+function displayCurrent() {
+  var cols = $('score').getElementsByTagName('col');
+  if (boom.current=="wij") {
+    addClass(cols[1], 'current');
+    delClass(cols[2], 'current');
+  }
+  else { //if (boom.current=="zij") {
+    addClass(cols[2], 'current');
+    delClass(cols[1], 'current');
+  }
+}
+function setRoem(nr) {
+  nr = Number(nr);
+  boom.addRoem(nr)
+  setLastGame(false);
+  boom.addUndo(function() { 
+    boom.addRoem(-nr)
+    setLastGame(false);
+  });
+}
+function setLastGame(add) {
+  setRow(makeRowHtmlFromGame(boom.length, boom.top()), add );
+}
+function toTurf(n) {
+  var putenPerStreepje = 10, strepenPerGroep = 5, a = [];
+  n = Math.floor(n/putenPerStreepje);
+  vijven = Math.floor(n / strepenPerGroep);
+  extra = n - (vijven*strepenPerGroep);
+  while (vijven--) a.push('<strike>////</strike> ');
+  while (extra--) a.push('/');
+  return a.join('');
+}
+function updateUndoState() {
+  $('btn_undo').disabled = boom.undo.length==0;
+}
+function doUndo() {
+  if (boom.doUndo()) updateUndoState();
+}
+function doGewonnen() {
+  var pnt = $('txt_punten');
+  var punten = Number(pnt.value);
+  if (isNaN(punten) || punten<0 || punten>162) {
+    alert('Graag punten (van 0-162) tellen, en invullen.');
+    pnt.focus();
+    return;
+  }
+  voegSpelToe(punten);
+}
+function voegSpelToe(punten) {
+  boom.setSpel(punten);
+  boom.addUndo(function() {
+    boom.delSpel();
+  });
+}
+function doPit() {
+  //als opponent roem heeft, kan niet.
+  boom.setSpel(162);
+  boom.addUndo(function() {
+    boom.delSpel();
+  });
+}
+function doNat() {
+  var roem = boom.getRoem();
+  if (roem>0) boom.addRoem(-roem);
+  boom.toggleCurrent();
+  displayCurrent();
+  if (roem>0) boom.addRoem(roem);
+  boom.setSpel(162);
+  boom.addUndo(function() {
+    boom.delSpel();
+    if (roem>0) boom.addRoem(-roem);
+    boom.toggleCurrent();
+    displayCurrent();
+    if (roem>0) boom.addRoem(roem);
+  });
+}
+function delRow() {
+  var score = $('score');
+  score.deleteRow(score.rows.length - 2);
+}
+function setRow(rowHtml, add) {
+  var score = $('score');
+  var tr = add ? score.insertRow(score.rows.length - 1) : score.rows[score.rows.length - 2];
+  tr.innerHTML = rowHtml;
+}
+function makeRowHtmlFromGame(nr, game) {
+  function getProperty(obj, prop) {
+    return prop in obj ? obj[prop] : '-';
+  }
+  var wij = getProperty(game.cum, 'wij')
+  ,   zij = getProperty(game.cum, 'zij');
+  if (nr>1) {
+    if ('wij' in game.punten) wij += ' ('+game.punten.wij+')';
+    if ('zij' in game.punten) zij += ' ('+game.punten.zij+')';
+  }
+  return makeRowHtml(nr, wij, toTurf(game.roem.wij), zij, toTurf(game.roem.zij));
+}
+function makeRowHtml(nr, wij, wijRoem, zij, zijRoem) {
+  return '<td>'+nr+'</td><td>'+wij+'<span class="roem">'+wijRoem+'</span></td><td>'+zij+'<span class="roem">'+zijRoem+'</span></td>';
+}
+window.onload = function() {
+  displayCurrent();
+  boom.addSpel();
+  setLastGame(true);
+  updateUndoState();
+}
+	</script>
+</head>
+<body>
+  <div id="container">
+    <h1>Klaverjassen score 0.2</h1>
+    <table id="score">
+      <col class="gameNr"><col class="wij"><col class="zij">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>Wij</th>
+          <th>Zij</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Roem: 
+      <input type="button" value="20" onclick="setRoem(this.value);">
+      <input type="button" value="40" onclick="setRoem(this.value);">
+      <input type="button" value="50" onclick="setRoem(this.value);">
+      <input type="button" value="100" onclick="setRoem(this.value);">
+      <br>
+      <input type="button" value="wissel" onclick="wissel();">
+      <input type="button" value="undo" id="btn_undo" onclick="doUndo();">
+      <br>
+      <input type="number" min="0" max="162" step="1" value="0" id="txt_punten">
+      <input type="button" value="gewonnen" onclick="doGewonnen();">
+      <input type="button" value="pit" onclick="doPit();">
+      <input type="button" value="nat" onclick="doNat();">
+    </p>
+  </div>
+  <div class="footer">
+    Score bijhouden van <a href="http://nl.wikipedia.org/wiki/Klaverjassen">Klaverjassen</a>.
+  </div>
+</body>
+</html>

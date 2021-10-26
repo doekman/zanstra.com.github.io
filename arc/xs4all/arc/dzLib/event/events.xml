@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--?xml-stylesheet type="text/xsl" href="to-be-done.xsl"?-->
+<library name="EventLib">
+  <chapter name="Reference">
+    <chapter name="Objects">
+      <item name="EventLib">
+        <description>
+          Providing methods to get almost DOM Level 2 Events capabilities.
+          Use the already created "eventLib" object.
+        </description>
+        <applies-to chapter="Methods" name="addEventListener"/>
+        <applies-to chapter="Methods" name="removeEventListener"/>
+        <applies-to chapter="Methods" name="$createLink"/>
+        <applies-to chapter="Methods" name="$createEvent"/>
+      </item>
+      <item name="Function">
+        <description>
+          Some extra methods for the Function-object.
+        </description>
+        <applies-to chapter="Methods" name="getName"/>
+        <applies-to chapter="Methods" name="innerFunction"/>
+        <applies-to chapter="Methods" name="call"/>
+      </item>
+      <item name="String">
+        <applies-to chapter="Methods" name="trim"/>
+      </item>
+    </chapter>
+    <chapter name="Methods">
+      <item name="addEventListener">
+        <description>
+          Adds (attach) an event to a Node.
+        </description>
+        <applies-to chapter="Objects" name="EventLib"/>
+        <arguments>
+          <argument name="element">
+            A string, identifying a HTML Node, of a Node-reference.
+          </argument>
+          <argument name="type">
+            String, identifying the event-type, without the "on" prefix in lowercase.
+          </argument>
+          <argument name="listener">
+            A function-reference.
+          </argument>
+          <return-value>boolean, indicating success (true) or failure (false)</return-value>
+        </arguments>
+      </item>
+      <item name="removeEventListener">
+        <description>
+          Removes (detach) an event from a Node.
+        </description>
+        <applies-to chapter="Objects" name="EventLib"/>
+        <arguments>
+          <argument name="element">
+            A string, identifying a HTML Node, of a Node-reference.
+          </argument>
+          <argument name="type">
+            String, identifying the event-type, without the "on" prefix in lowercase.
+          </argument>
+          <argument name="listener">
+            A function-reference.
+          </argument>
+          <return-value>boolean, indicating success (true) or failure (false)</return-value>
+        </arguments>
+      </item>
+      <item name="$createLink">
+        <description>private</description>
+        <applies-to chapter="Objects" name="EventLib"/>
+      </item>
+      <item name="$createEvent">
+        <description>private</description>
+        <applies-to chapter="Objects" name="EventLib"/>
+      </item>
+      <item name="getName">
+        <applies-to chapter="Objects" name="Function"/>
+      </item>
+      <item name="innerFunction">
+        <applies-to chapter="Objects" name="Function"/>
+      </item>
+      <item name="call">
+        <description>
+          Compatibility: call is introduced on IE5.5/Win and absent on IE/Mac.
+          This is a implementation, when the methods is not available.
+        </description>
+        <applies-to chapter="Objects" name="Function"/>
+        <remark>
+          This method only accepts two argument, one for the object-context,
+          and one for passing one argument. So Function.call(this,arg0) is
+          possible, but Function.call(this,arg0,arg1) is not.
+        </remark>
+      </item>
+      <item name="trim">
+        <applies-to chapter="Objects" name="String"/>
+      </item>
+    </chapter>
+    <chapter name="Functions">
+      <item name="ID">
+        <description>
+          Returns a reference to an HTML element, identified by s. This function uses getElementById
+          but is shorter to type. Also, it works in IE4 (using document.all).
+        </description>
+        <arguments>
+          <argument name="s">String</argument>
+          <return-value>null if not found, otherwise a reference to the element pointed out by s</return-value>
+        </arguments>
+      </item>
+      <item name="o2s">
+        <description>
+          Object to string, returns a string, with on each line property-name, colon, property-value
+        </description>
+      </item>
+    </chapter>
+  </chapter>
+  <chapter name="Examples">
+  </chapter>
+</library>

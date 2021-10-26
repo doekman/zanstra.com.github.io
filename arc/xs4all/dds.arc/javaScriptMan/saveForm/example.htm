@@ -1,0 +1,90 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title> New Document </title>
+	<link rel="stylesheet" type="text/css" href="../iframe.css">
+	<meta name="Generator" content="EditPlus">
+	<meta name="Author" content="D Zanstra">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="Example how to use saveForm (saving an HTML-Form to a cookie)">
+	<script language=javascript>
+		function doInit()
+		{	testframe.saveFormInit(window.testingForm)
+		}
+	</script>
+</head>
+
+<body onload="doInit()">
+<H1>saveForm example</h1>
+<IFRAME width=400px height=32px src=saveForm.htm id=testframe scrolling=no></IFRAME>
+
+<form name='testingForm' method=post action=postTool.asp>
+	<TABLE cellpadding=3 cellspacing=0 width=400px style="border: solid black 1pt">
+		<COLGROUP style="font-weight: bold; vertical-align: top; text-align: right">
+		<COLGROUP style="">
+
+		<TR>
+			<TD>Text</TD><TD><input type="text" name=naam value=default></TD>
+		</TR>
+		<TR>
+			<TD>Password</TD><TD><input type="password" name=wachtwoord></TD>
+		</TR>
+		<TR>
+			<TD>Select</TD>
+			<TD><select name=ding1 size=1>
+						<option value=one>Een</option>
+						<option value=two>Twee</option>
+						<option value=three>Drie</option>
+						<option value=four>Vier</option>
+						<option value=five>Vijf</option>
+						<option value=six>Zes</option>
+					</select>
+			</TD>
+		</TR>
+		<TR>
+			<TD>Select multiple</TD>
+			<TD><select name=ding2 size=6 multiple style="width: 150px">
+						<option value=one selected>Een</option>
+						<option value=two>twee</option>
+						<option value=three>drie</option>
+						<option value=four>Vier</option>
+						<option value=five>Vijf</option>
+						<option value=six>Zes</option>
+					</select>
+			</TD>
+		</TR>
+		<TR>
+			<TD>Radiobutton</TD>
+			<TD>
+				<input type="radio" name=radioFault value=ok selected>OK<BR>
+				<input type="radio" name=radioFault value=bug>Bug<BR>
+				<input type="radio" name=radioFault value=feature>Feature<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD>Checkboxes</TD>
+			<TD>
+				<input type="checkbox" name=check1 value=ok>Unexpected behaviour<BR>
+				<input type="checkbox" name=check2 value=bug>I'm angry<BR>
+				<input type="checkbox" name=check3 value=feature>I like this program<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD>Hidden</TD>
+			<TD>
+				<input type=hidden value="hidden input" name='hiddenInp'>
+				<SCRIPT language=javascript>document.write("<TT>"+testingForm.hiddenInp.value+"</TT>");</SCRIPT>
+			</TD>
+		<TR>
+			<TD>Textarea</TD><TD><textarea name=comments cols=30 rows=3></textarea></TD>
+		</TR>
+	<TR>
+		<TD>&nbsp;</TD>
+		<TD>
+			<input type=reset value="Reset" name=resetbtn>&nbsp;
+			<input type=submit value="Submit" name=submitbtn>
+		</TD>
+</table>
+</form>
+</body>
+</html>

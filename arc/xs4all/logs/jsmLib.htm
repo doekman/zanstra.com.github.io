@@ -1,0 +1,153 @@
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>The javascript method library</title>
+<link rel="stylesheet" href="../default.css"/>
+<link rel="stylesheet" href="../xsl/webLog.css"/>
+<script language="javascript" src="../js/menu.js">/*fix*/</script>
+<script language="javascript" src="mindex.js">/*fix*/</script>
+<script language="javascript" src="../js/colorSyntaxJS.js">/*fix*/</script>
+<script language="javascript" type="text/javascript">
+window.onload=function()
+{
+  hiLiteJS("JS");
+  hiLiteJS("JSnr",true);
+}
+        </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100">
+<div style="text-align: center">
+<img src="../img/jsLogo.png"/>
+</div>
+<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+            log.js</div>
+</td><td style="width: 5px"> </td><td>
+<h1>The javascript method library</h1>
+</td></tr><tr><td>
+<script language="javascript">writeMenu();</script>
+</td><td/><td style="border-left: 1px solid black; padding-left: 7px">
+<p>
+					Welcome to the growing collection of javascript methods for
+					it's standard objects. You may <a href="jsmLib.js">download</a>
+					the code in one file here.
+				</p>
+<div class="weblog">
+<h1 style="margin:0px;font-size:18pt">Array</h1>
+<h2 class="title">
+<a name="Array_pop">pop</a>
+</h2>
+				Compatibility.
+			
+					Popped element.
+				<pre class="JS">
+if(!Array.pop) Array.prototype.pop=function()
+{
+  var o=this[this.length-1];
+  this.length--;
+  return o;
+}</pre>
+<h2 class="title">
+<a name="Array_push">push</a>
+</h2>
+				Compatibility.
+			
+					New length of the array
+				<pre class="JS">
+if(!Array.push) Array.prototype.push=function()
+{
+  for(var i=0;i!=arguments.length;i++)
+  {
+    this[this.length]=arguments[i];
+  }
+  return this.length;
+}</pre>
+<h2 class="title">
+<a name="Array_rndItem">rndItem</a>
+</h2>
+				Returns a random item from the given array.
+			
+					Same type as stored in the randomly choosen array property
+				<pre class="JS">
+Array.prototype.rndItem=function Array_rndItem() 
+{ 
+	return this[parseInt(Math.random()*this.length,10)];
+}</pre>
+<h1 style="margin:0px;font-size:18pt">Number</h1>
+<h2 class="title">
+<a name="Number_toFixed">toFixed</a>
+</h2>Compatibility. Returns a string representing a number in fixed-point notation. Requires String.LPadThe number of deciNumber of digits after the decimal point.<pre class="JS">
+if(!Number.prototype.toFixed) {
+  Number.prototype.toFixed=function(n) {
+    if(!n) n=0;
+    var i=parseInt(this);
+    var d=(''+Math.round((this-i)*Math.pow(10,n))).LPad(2,'0');
+    return i+'.'+d;
+  }
+}</pre>
+<h1 style="margin:0px;font-size:18pt">String</h1>
+<h2 class="title">
+<a name="String_ltrim">ltrim</a>
+</h2>
+				Removes leading <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			The trimmed string<pre class="JS">
+String.prototype.ltrim=function String_ltrim() 
+{  
+	return this.replace(/^[ \t\r\n]+/g,'');
+}</pre>
+<h2 class="title">
+<a name="String_multi">multi</a>
+</h2>
+        Multiply a string, and optionaly put a seperator between the strings.
+      Anything that converts to a number. Negative values are made absolute. NaN throws an exception.Optional, anything that converts to a string.The created string<pre class="JS">
+String.prototype.multi=function(number,seperator)
+//--#An extended version of VB's String function
+//--@number;type=number@String multiply factor. Should be positive
+//--@seperator;type=string;optional@optional seperator, handy for lists
+{
+  var a=[];
+  number=Math.abs(parseInt(number,10));
+  if(isNaN(number)) throw new Error('String.multi: number parameter should be an number');
+  while(number-->0)
+  {
+    a.push(this);
+  }
+  return a.join(seperator||'');
+}</pre>
+<h2 class="title">
+<a name="String_rtrim">rtrim</a>
+</h2>
+				Removes trailing <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			The trimmed string<pre class="JS">
+String.prototype.rtrim=function String_rtrim() 
+{  
+	return this.replace(/[ \t\r\n]+$/g,'');
+}</pre>
+<h2 class="title">
+<a name="String_toFixed">toFixed</a>
+</h2>Pads the argument with spaces or characters specifies by s until the length nThe required length of the stringThe padding character, default a spaceThe padded string<pre class="JS">
+String.prototype.LPad=function(n,s) {
+  if(n&lt;0) return;
+  if(typeof s=='undefined') s=' ';
+  var res=this;
+  while(res.length&lt;n) res=s+res;
+  return res;
+}</pre>
+<h2 class="title">
+<a name="String_trim">trim</a>
+</h2>
+				Removes leading and trailing <a href="http://www.w3.org/TR/REC-xml#NT-S">whitespace</a>
+				from string.
+			The trimmed string<pre class="JS">
+String.prototype.trim=function String_trim() 
+{  
+	return this.replace(/^[ \t\r\n]+|[ \t\r\n]+$/g,'');
+}</pre>
+</div>
+<div class="footer">
+<a href="mailto:zanstra@xs4all.nl?subject=jsmLib" title="Send an email">Doeke Zanstra</a>, 2003. 
+          The xml-version can be downloaded <a href="jsmLib.xml">as well</a>.
+         </div>
+</td></tr></table></body>
+</html>

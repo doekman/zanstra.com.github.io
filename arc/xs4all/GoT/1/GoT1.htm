@@ -1,0 +1,291 @@
+<html>
+  <head>
+<!--For GoT1gen-->
+    <style type="text/css">
+.diff { background-color: red; color: white; font-weight: bold } /*for function diff()*/
+#divDiff { font-family: monospace; text-align: right }
+.GoT1gen .menu {
+  margin-bottom: 1em; 
+  font-size: 8pt; font-family: Verdana, sans-serif; 
+}
+.GoT1gen hr { border: 1px solid black; color: silver; height: 1px }
+.GoT1gen td {
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid black
+}
+.GoT1gen .block {
+  cursor: default;
+  padding: 0px 0px 0px 0px
+}
+.GoT1gen .on {
+  background-color: black;
+}
+    </style>
+    <script language="javascript">
+var blnDrag=false;
+function dragStart() { blnDrag=true; toggleBlock(); }
+function dragStop() { blnDrag=false; }
+function dragToggleBlock() { if(blnDrag) toggleBlock(); }
+function toggleBlock() {
+  var o=event.srcElement;
+  if(o.className.indexOf(' on')==-1) o.className+=' on';
+  else o.className=o.className.replace(' on','');
+}
+function ID(s) { return document.getElementById(s); } 
+function create() {
+  var x=parseInt(ID('breedte').value,10);
+  var y=parseInt(ID('hoogte').value,10);
+  var r=parseInt(ID('ribbe').value,10);
+  var s='<table border="1" id="tabelTabel" x="'+x+'" y="'+y+'">\n';
+  for(var i=0; i<x; i++) {
+    s+='<tr>\n  ';
+    for(var j=0; j<y; j++) {
+      s+=' <td class="block" onclick="toggleBlock(this);" id="'+i+'_'+j+'" width="'+r+'" height="'+r+'"'+
+      '><img src="img/1x1.bmp" /></td>\n';
+    }
+    s+='</tr>\n';
+  }
+  s+='</table>';
+  ID('tabel').innerHTML=s;
+  ID('genInvoer').disabled=false;
+}
+function generate() {
+  var o=ID('tabelTabel');
+  var aa=[o.x+' '+o.y];
+//rijen
+  for(var i=0; i<o.x; i++) {
+    var n=0; //current block length
+    var a=[];
+    for(var j=0; j<o.y; j++) {
+      var c=ID(i+'_'+j);
+      if(c.className.indexOf(' on')==-1) {
+        if(n!=0) { a[a.length]=n; n=0; }
+      }
+      else {
+        n++;
+      }
+    }
+    if(n!=0) { a[a.length]=n; }
+    aa.push(a.join(' '));
+  }
+//kolommen
+  for(var i=0; i<o.y; i++) {
+    var n=0; //current block length
+    var a=[];
+    for(var j=0; j<o.x; j++) {
+      var c=ID(j+'_'+i);
+      if(c.className.indexOf(' on')==-1) {
+        if(n!=0) { a[a.length]=n; n=0; }
+      }
+      else {
+        n++;
+      }
+    }
+    if(n!=0) { a[a.length]=n; }
+    aa.push(a.join(' '));
+  }
+  ID('invoer').value=aa.join('\n');
+}
+    </script>
+<!--End GoT1gen-->
+    <style type="text/css">
+.menu {
+  margin-bottom: 1em; 
+  font-size: 10pt; font-family: monospace; 
+  background-color: blue;
+  color: white;
+  padding: 0px 10px 0px 10px;
+  font-weight: bold
+}
+.menu a { color: yellow; text-decoration: none }
+hr { border: 1px solid black; color: silver; height: 1px }
+    </style>
+    <script language="javascript" src="js/Array.js"></script>
+    <script language="javascript" src="GoT1.js"></script>
+    <script language="javascript">
+
+
+//-------------------------------------------------------------
+
+function ID(s) { return document.getElementById(s); }
+
+function diff(s1,s2) {
+  var s3='';
+  for(var i=0; i<s1.length; i++) {
+    if(s1.substr(i,1)==s2.substr(i,1)) {
+      s3+=s1.substr(i,1)=='\n'?'<br>':s1.substr(i,1);
+    }
+    else {
+      s3+='<span class="diff" title="'+s1.substr(i,1)+'">'+s2.substr(i,1)+'</span>';
+    }
+  }
+  return s3;
+}
+
+function test() {
+  var s='';
+  var i,j,k,l;
+  var oGoT1=new GoT1(document.getElementById('invoer').value);
+  var s1=oGoT1.strSol('\n')+'\n';
+  s+=s1;
+/*
+  i=1; j=3;
+  k=oGoT1.zoekKolomBlok(i,j);
+  s+='zoekKolomBlok: '+k+'\n';
+  if(k!=null) {
+    l=oGoT1.zoekRuimteKolom(i,k);
+    s+='zoekRuimteKolom: '+l+'\n';
+    if(l!=null) {
+      s+='vertShift: '+oGoT1.vertShift(i,k,l)+'\n';
+    }
+  }
+  s+=oGoT1.strSol('\n')+'\n';
+*/
+  s+='---[process]----\n';
+  oGoT1.process(); //do it!
+  var s2=oGoT1.strSol('\n')+'\n';
+  s+=s2;
+  document.getElementById('uitvoer').value=s;
+  delete oGoT1;
+  ID('divDiff').innerHTML=diff(s1,s2);
+}
+function pageInit() {
+  ID('opgaven').onchange();
+}
+    </script>
+  </head>
+  <body onload="pageInit()">
+    <div class="menu">
+      [
+      <a href="http://213.239.154.16/~crew/wasigh/gpc/">GPC 2001</a>
+      |
+      <a href="http://gathering.tweakers.net/showtopic.php/333529/1/25">Opgave 1</a>
+      |
+      <a href="http://gathering.tweakers.net/listtopics.php/14">P &amp; W</a>
+      ]
+    </div>
+<table border="0"><tr><td>
+    <form>
+      <div>Invoer <select id="opgaven" onchange="ID('invoer').value=this.options[this.selectedIndex].value;">
+        <option selected value="5 5
+1
+3
+2 2
+3
+1
+1
+3
+2 2
+3
+1">Opgave voobeeld</option>        
+        <option value="4 4
+0
+0
+0
+1
+0
+0
+1
+0">1 blokje</option>
+        <option value="5 5
+1 1
+1 1
+1
+1 1
+1 1
+1 1
+1 1
+1
+1 1
+1 1">Kruis</option>
+        <option value="2 2
+1
+1
+1
+1">(Back)slash 2x2</option>
+        <option value="3 3
+1
+2
+1 1
+3
+1
+1">Kleine letter h</option>
+        <option>25 25
+9
+15
+3 11
+1 4 1 10
+2 4 2 1 7
+2 4 1 1 1 4
+2 4 1 1 3 4
+1 3 2 1 3
+2 2 1 2
+1 1 2
+1 1 3
+1 3 3
+3 2 3
+8 2
+2 1 2 2 1 1
+3 1 3 2 1 1
+13 2 3
+1 2 2 1 2 3
+1 2 2 1 4
+11 4
+11 3
+1 1 2 1 3
+1 1 2 1 4
+1 1 2 1 4
+4 7 7
+4 1 1
+5 10
+3 3 2 1
+6 6
+1 2 5
+2 3 5
+4 2 4 6
+6 3 9
+2 4 2 5 1
+1 1 3 4 2 1
+2 2 4 2 1
+2 1 10
+3 5 1 1
+3 6
+3 3 8
+4 9
+4 5 1
+4 1 1
+5 1 3
+4 1 6
+8 7
+7 11
+6 4 1
+4 5
+2</option>25x25 (http://grum.nl/pics/DSC00012.JPG)</option>
+
+      </select></div>
+      <textarea cols="40" rows="10" id="invoer"></textarea>
+
+      <div>Uitvoer</div>
+      <textarea cols="40" rows="18" id="uitvoer">
+      </textarea>
+
+      <br />
+      <input type="button" value="GoT 1" onclick="test();" style="font-weight: bold" />
+    </form>
+</td><td class="GoT1gen" style="text-align: right; vertical-align: top">
+    <form>
+      Breedte: <input type="text" id="breedte" value="5" size="4" />
+      Hoogte: <input type="text" id="hoogte" value="5" size="4" />
+      Ribbe: <input type="text" id="ribbe" value="25" size="4" />px
+      <input type="button" value="create grid" onclick="create();" />
+      <hr />
+      <div id="tabel">
+      </div>
+      <hr />
+      <input type="button" value="gen invoer" disabled id="genInvoer" onclick="generate();" />
+    </form>
+    <div id="divDiff"></div>
+</td></tr></table>
+  </body>
+</html>

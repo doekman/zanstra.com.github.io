@@ -1,0 +1,168 @@
+<html>
+<head>
+	<title>Home of Doekman: statistieken</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" />
+  <link rel="stylesheet" type="text/css" href="default.css" />
+	<style type="text/css">
+table.stats
+{
+  border-collapse: collapse;
+}
+td.number { text-align: right; }
+select { font-size: 9px }
+option { color:gray }
+option.selected { color:black }
+  </style>
+  <script language="javascript" src="js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="img/iconStats.gif" border="0" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			site.stats<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>Statistieken van deze maand</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <!--script src="jsData/xs2stats.js" language="javascript" type="text/javascript"></script-->
+  <script src="js/qs.js" language="javascript" type="text/javascript"></script>
+  <script src="jsData/xs2stats.js" language="javascript" type="text/javascript"></script>
+  <script src="js/cstats.js" language="javascript" type="text/javascript"></script>
+  <script language="javascript">
+//Code voor de maand-select
+var now=new Date();
+var thisMonth=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+var firstMonth=new Date(2003,2,1); //first month data recorded
+
+function txtOption(text,value,selectValue) 
+{ 
+  //Option is DOM0 object
+  if(typeof value=='undefined') value='';
+  return '<option value="'+value+'"'+(value==selectValue?' class="selected" selected':'')+'>'+text+'</option>';
+}
+function txtMaand(dt)
+{
+  var maanden=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  return maanden[dt.getMonth()]+' '+dt.getFullYear();
+}
+function txtMonthDate(dt) { return dt.getFullYear()+'-'+dt.getMonth(); }
+function createMonthDateArray()
+{
+  var a=[];
+  for(var i=new Date(thisMonth.valueOf()); i>=firstMonth; i.setMonth(i.getMonth()-1))
+  {
+    a[a.length]=txtMonthDate(i);
+  }
+  return a;
+}
+function monthSelect()
+{
+  var a=[];
+  if(firstMonth<thisMonth)
+  {
+    for(var i=new Date(thisMonth.valueOf()); i>=firstMonth; i.setMonth(i.getMonth()-1))
+    {
+      a[a.length]=txtOption(txtMaand(i),txtMonthDate(i),txtMonthDate(thisMonth));
+    }
+  }
+  else
+  {
+    //wrong time
+    a[0]=txtOption('Please adjust your date/time');
+  }
+  return '<select>'+a.join()+'</select>';
+}
+
+//handig voor menu-tjes. Kan helaas geen 2 variabelen tegelijk aan...
+//die location.pathname is speciaal voor Safari (want anders gaat Safari naar het default-document).
+function url(name,value)
+/*--#Maak een nieuwe URL op basis van huidige URL en nieuwe querystring parameter <x>
+Als <x> niet bestaat, wordt deze aan de URL toegevoegd.
+Als <x> wel bestaat, wordt deze waarde vervangen.*/
+{
+  var qs=location.search;
+  var i=qs.indexOf('?'+name+'=');
+  if(i==-1) i=qs.indexOf('&'+name+'=');
+  if(i>=0)
+  {
+    i++; //skip questionmark or ampersand
+    //replace querystring value
+    var j=qs.indexOf('&',i);
+    if(j==-1) qs=qs.substring(0,i)+name+'='+value;
+    else qs=qs.substring(0,i)+name+'='+value+qs.substr(j);
+  }
+  else //x niet gevonden in querystring
+  {
+    if(qs.indexOf('?')==-1) qs='?'+name+'='+value;
+    else if(qs.lastIndexOf('&')+1==qs.length) qs+=name+'='+value;
+    else qs+='&'+name+'='+value;
+  }
+  return location.href.substring(0,location.href.indexOf('?'))+qs;
+}
+function menuItem(anker,tekst,name,value) 
+{ 
+  document.write(anker==true?tekst.link(url(name,value)):tekst.bold());
+}
+
+var call=new CallDefinition();
+call.addArgument('month','enum',false,false,txtMonthDate(thisMonth),createMonthDateArray());
+call.addArgument('select','enum',false,false,'hits',['hits','traffic']);
+call.addArgument('color','enum',false,false,'blue',['blue','red','none']);
+var page=new Interface(call);
+var month=page.aErr.length==0&&typeof page.oArg.month=='string'?page.oArg.month:txtMonthDate(thisMonth);
+var select=page.aErr.length==0&&typeof page.oArg.select=='string'?page.oArg.select:'hits';
+var color=page.aErr.length==0&&typeof page.oArg.color=='string'?page.oArg.color:'blue';
+
+//--| write header
+document.write('<p>');
+/*cummulatief*/
+document.write('Toon (<b>deze maand</b>|<a href="stats-cum.htm">cumulatief</a>).');
+/*sorteren*/
+document.write(' Sorteer op (');
+menuItem(select!='hits','hits','select','hits');
+document.write('|');
+menuItem(select!='traffic','traffic','select','traffic');
+document.writeln(').');
+/*kleur*/
+document.write('Kleur (');
+menuItem(color!='blue','blauw','color','blue');
+document.write('|');
+menuItem(color!='red','rood','color','red');
+document.write('|');
+menuItem(color!='none','geen','color','none');
+document.writeln(').');
+/*einde header*/
+document.write('</p>');
+
+try
+{
+  cstats(select,color,stats);
+}
+catch(ex)
+{
+  alert(ex.description);
+}
+  </script>
+  <p>
+    <br/>
+    Verder zijn er nog de <a href="statistics.html">xs4all gegenereerde</a> statistieken.
+    Daarnaast moet ik nog nadenken over <em>wat</em> ik überhaupt met stats moet/wil/zal doen...
+  </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Home of Doekman" title="Stuur een email">Doeke Zanstra</a>, 
+    2001-2003.
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

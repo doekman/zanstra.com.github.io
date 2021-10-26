@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <title> Image Crop and Resize </title>
+    <style type="text/css">
+.hidden { position: absolute; left:-10000px; }    
+.visible { position: static }    
+    </style>
+    <script type="text/javascript" src="log.js"></script>
+    <script type="text/javascript" src="cookie.js"></script>
+    <script type="text/javascript" src="get.js"></script>
+    <script type="text/javascript" src="ImageData.js"></script>
+    <script type="text/javascript">
+function $(id) { if(typeof id=='string') return document.getElementById(id); else return id; }
+function px(n) { return n+"px"; }
+function pct(n) { return n+"%"; }
+function fromPx(s) { return isPx(s)?+s.replace(/ *px$/,''):+s; }
+function fromPct(s) { return isPct(s)?s.replace(/ *%$/,'')/100:NaN; }
+function isPx(s) { return /^\d+ *px$/.test(s) }
+function isPct(s) { return /^\d+ *%$/.test(s) }
+function posX(id) {
+  if(typeof id=="string") id=$(id);
+  var pos=0;
+  do {
+    pos+=id.offsetLeft;
+    id=id.offsetParent;
+  } while(id);
+  return pos;
+}
+function posY(id) {
+  if(typeof id=="string") id=$(id);
+  var pos=0;
+  do {
+    pos+=id.offsetTop;
+    id=id.offsetParent;
+  } while(id);
+  return pos;
+}
+function toggleHidden(id) {
+  var e=$(id);
+  e.className=e.className=='hidden'?'visible':'hidden';
+}
+function getName(href) { 
+  return href.slice(href.indexOf("#")+1); 
+}
+String.prototype.format=function() {
+  var s=this;
+  for(var i=0; i<arguments.length; i++) {
+    s=s.replace(new RegExp("\\{"+i+"\\}"),arguments[i]);
+  }
+  return s;
+}
+/***************************************************************************/
+var image;
+function SetupImgSize() {
+  image=new ImageData();
+  image.registerObserver("url", function(url) { 
+    $("thumbnail").src=url;
+  });
+  //--| image
+  $("thumbnail").onload=function() { 
+    image.setOrgSize(+this.width, +this.height);
+    fromUrlImgProp();
+    ShowPreview();
+  };
+}
+function ShowPreview() {
+  var a=[];
+  if(image._get("doCrop")) {
+    a.push('<div style="width:{0}px;height:{1}px;overflow:hidden">'.format(
+      image._get("cropWidth"),
+      image._get("cropHeight"))
+    );
+  }
+  a.push('<img src="{0}"\n width="{1}" height="{2}" alt="{3}" title="{4}"'.format(
+    image._get('url'),
+    image._get('width'),
+    image._get('height'),
+    image._get('imgAlt'),
+    image._get('imgTitle'))
+  );
+  if(image._get("doCrop")) {
+    a.push(' style="position:relative;left:-{0}px; top:-{1}px"'.format(
+      image._get('cropX1'),
+      image._get('cropY1'))
+    );
+  }
+  a.push('>');
+  if(image._get("doCrop")) {
+    a.push('</div>');
+  }
+  $("preview").innerHTML=a.join("\n");
+}
+function fromUrlImg() {
+  var qs=new getParameter();
+  if(qs.url) {
+    image.setImage(qs.url,qs.a,qs.t);
+  }
+}
+function fromUrlImgProp() {
+  var qs=new getParameter();
+  if(qs.s) {
+    if(qs.s.indexOf("x")==-1) {
+      image.setLockAsra(true);
+      image.setWidth(+qs.s);
+    }
+    else {
+      var s=qs.s.split("x");
+      image.setWidth(+s[0]);
+      image.setHeight(+s[1]);
+    }
+  }
+  if(qs.cc||qs.cb||qs.cm) {
+    image.setDoCrop(true);
+    if(qs.cc) { //crop coordinates
+      var args=qs.cc.split(',');
+      image.setCropX1(+args[0]);
+      image.setCropY1(+args[1]);
+      image.setCropX2(+args[2]);
+      image.setCropY2(+args[3]);
+    }
+    if(qs.cb) { //crop box
+      var args=qs.cb.split(',');
+      image.setCropX1(+args[0]);
+      image.setCropY1(+args[1]);
+      image.setCropWidth(+args[2]);
+      image.setCropHeight(+args[3]);
+    }
+    if(qs.cm) { //crop margin
+      var args=qs.cm.split(',');
+      image.setCropY1(+args[0]);
+      image.setCropRight(+args[1]);
+      image.setCropBottom(+args[2]);
+      image.setCropX1(+args[3]);
+    }
+  }
+}
+window.onload=function() {
+  SetupImgSize();
+  fromUrlImg();
+}
+    </script>
+  </head>
+  <body>
+    <div onclick="toggleHidden('loader');">
+      <span id="preview"></span>
+    </div>
+    <div class="hidden" id="loader">
+      <hr>
+      <h2>Original image</h2>
+      <img src="about:blank" id="thumbnail">
+    </div>
+  </body>
+</html>

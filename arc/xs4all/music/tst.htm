@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="GuitarNeck.css" />
+    <link rel="stylesheet" href="Keyboard.css" />
+    <style type="text/css">
+    </style>
+    <script language="javascript" src="keys.js"> </script>
+    <script language="javascript" src="GuitarNeck.js"> </script>
+    <script language="javascript" src="Keyboard.js"> </script>
+    <script language="javascript">
+var console;
+function pageInit() {
+}
+function guitar() {
+  if(typeof console!='undefined') delete console;
+  console=new GuitarNeck();
+  console.insertHTML('idConsole');
+}
+function keyboard() {
+  if(typeof console!='undefined') delete console;
+  console=new Keyboard();
+  console.insertHTML('idConsole');
+}
+    </script>
+  </head>
+  <body>
+    <div id="idConsole">
+      hier komt de console
+    </div>
+    <button onclick="guitar();">Gitaar</button>
+    <button onclick="keyboard();">Toetsenbord</button>
+    <br>
+    <input type="text" name="key" value="0">
+    <button onclick="console.pressKeys(key.value);">Key</button>
+    <button onclick="console.pressKeys(key.value,true);">Key high</button>
+    <button onclick="console.releaseAllKeys();">Release</button>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>QR-Code Clock</title>
+    <link rel="stylesheet" href="Barcode/code128.css" type="text/css" media="screen" charset="utf-8">
+		<style>
+			.dead-link { 
+				border-bottom: 2px solid lightblue;
+				cursor:help;
+			}
+		</style>
+    <script src="Barcode/code128.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+(function(imgId, divId) {                                                       
+  var imageElement
+  ,   divElement
+  ,   oldOnLoad = window.onload
+  ;
+  function getTimeString() {
+    var pad = function(n) { return n < 10 ? '0' + n.toString(10) : n.toString(10); }
+    ,   dt = new Date()
+    ;
+    return [pad(dt.getHours()), pad(dt.getMinutes()), pad(dt.getSeconds())].join(':');
+  }
+  function GetImageUrl(string) {
+    return 'http://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=' + encodeURIComponent(string);
+  }
+  function UpdateClock() {
+    var timeText = getTimeString()
+    ,   qrUrl = GetImageUrl(timeText)
+    ;
+    divElement.innerHTML = code128(timeText);
+    imageElement.src = qrUrl;
+    imageElement.title = timeText;
+  }
+  window.onload = function() {
+    imageElement = document.getElementById(imgId);
+    divElement = document.getElementById(divId);
+    UpdateClock();
+    setInterval(UpdateClock, 1000);
+    if (typeof oldOnLoad == 'function') oldOnLoad.apply(this, arguments);
+  }
+})('qrimg', 'div128');
+    </script>
+  </head>
+  <body>
+    <h1>QR-Code Clock</h1>
+    <p>
+      This is a clock with the time coded as a 
+      <a href="http://code.google.com/apis/chart/docs/gallery/qr_codes.html">QR-Code</a>
+      using Google's Chart API.
+    </p>
+    <p style="width:150px;text-align:center">
+      <img src="" id="qrimg" alt="qr time" title="" />
+    </p>
+    <h2>Code 128</h2>
+    <p>
+      And this clock is a <a href="Barcode.html">Code 128</a> barcode
+      using my own javascript library.
+    </p>     
+    <div class="barcode2" id="div128">time...</div>
+    <p>
+       &nbsp;
+    </p>
+    
+    <h2 id="clock_pages">Clock pages</h2>
+    <p>A list of wonderful web-based open standards based clocks.</p>
+    <ul>
+      <li>
+        <span class="dead-link" title="href=http://whatcolourisit.scn9a.org">What colour is it?</span> clock (<a href="clocks\What-colour-is-it.html">archive</a>)
+      </li>
+      <li>
+        <a href="http://www.webkit.org/blog-files/3d-transforms/morphing-cubes.html">Morphing Power Cubes</a>
+        (<a href="clocks/MorphingPowerCubes.html">archive</a>)
+      <li>
+        <span class="dead-link" title="href=http://www.rhtml.nl/@home/html/ITclocks/binaryClock.html">Binary &amp; Hexadecimal Clock</span> 
+        (<a href="clocks\BinHex\BinHexClock.html">archive</a>)
+      </li>
+      <li>
+        <a href="http://jsfiddle.net/doekman/DfqHU/5/embedded/result/">XKCD calendar clock</a>, 
+        I made real-time with HTML5-Canvas and <a href="http://jsfiddle.net">JsFiddle</a> 
+        (<a href="clocks\XKCD\xkcd1179-5.html">archive</a>); maybe update this with the <a href="http://xkcd.com/1350/">XKCD font</a>
+      </li>
+      <li>
+        <a href="http://xkcd.com/1335/">XKCD now clock</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/FoD5/status/843652874684919808/photo/1">123 clock</a> (<a href="clocks/123-clock.jpg">archive</a>)
+      </li>
+      <li>
+        <span class="dead-link" title="href=https://twitter.com/iljagort/status/844505616748101635/photo/1">Math- & 5-clock</span> (<a href="clocks/math-and-5-clock.jpg">archive</a>)
+      </li>
+      <li>
+        <span class="dead-link" title="href=https://twitter.com/ionicasmeets/status/844505991651713026">Binary stacked-clock</span> (<a href="clocks/binary-stacked-clock.jpg">archive</a>)
+      </li>
+      <li>
+        <a href="https://twitter.com/lumatheodoro/status/856179682697412613">Here you have a panel of clocks, which together form a clock</a> (<a href="clocks/Panel-Of-Clocks.mp4">archive</a>)
+      </li>
+      <li>
+				<a href="https://github.com/agarrharr/awesome-macos-screensavers#clocks">A curated list of screensavers for macOS</a>, Clocks-topic.
+			</li>
+    </ul>
+    <p>
+       &nbsp;
+    </p>
+		<script src="ga.js"></script>
+  </body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Sudoku Solver, incarnatie 3.02</title>
+	<style type="text/css" media="screen">
+textarea { display:block; font-family:monospace;}
+#input, #output { overflow:hidden; }
+#dbg { width:100%; }
+
+.right { float:right;}
+#output { clear:right;}
+table.board {
+  border-collapse:collapse;
+  table-layout:fixed;
+  width:300px;height:300px;
+  margin:0 0 1em 1em;
+}
+table.board td {
+  font:bold 26px/100% Verdana, sans-serif;
+  text-align:center;
+  vertical-align:middle;
+}
+table.board td pre {
+  font:normal 10px/100% monospace;
+  letter-spacing:1px;
+  margin:0;
+}
+.board tr { height:11.1111111%;}
+.board td { width:11.1111111%; border:1px solid black;}
+.board tr.a1 td, 
+.board tr.a4 td, 
+.board tr.a7 td { border-top-width:3px;}
+.board tr.a9 td { border-bottom-width:3px;}
+.board td.a1,
+.board td.a4,
+.board td.a7 { border-left-width:3px;}
+.board td.a9 { border-right-width:3px;}
+.board tr.a2 td.a2, .board tr.a2 td.a3, .board tr.a2 td.a4,
+.board tr.a2 td.a6, .board tr.a2 td.a7, .board tr.a2 td.a8 { background-color:#D3D3D3;} 
+.board tr.a3 td.a2, .board tr.a3 td.a3, .board tr.a3 td.a4,
+.board tr.a3 td.a6, .board tr.a3 td.a7, .board tr.a3 td.a8 { background-color:#D3D3D3;} 
+.board tr.a4 td.a2, .board tr.a4 td.a3, .board tr.a4 td.a4,
+.board tr.a4 td.a6, .board tr.a4 td.a7, .board tr.a4 td.a8 { background-color:#D3D3D3;} 
+.board tr.a6 td.a2, .board tr.a6 td.a3, .board tr.a6 td.a4,
+.board tr.a6 td.a6, .board tr.a6 td.a7, .board tr.a6 td.a8 { background-color:#D3D3D3;} 
+.board tr.a7 td.a2, .board tr.a7 td.a3, .board tr.a7 td.a4,
+.board tr.a7 td.a6, .board tr.a7 td.a7, .board tr.a7 td.a8 { background-color:#D3D3D3;} 
+.board tr.a8 td.a2, .board tr.a8 td.a3, .board tr.a8 td.a4,
+.board tr.a8 td.a6, .board tr.a8 td.a7, .board tr.a8 td.a8 { background-color:#D3D3D3;} 
+
+	</style>
+	<script type="text/javascript" charset="utf-8">
+function $(id) { return document.getElementById(id); }
+function forEach(board, fn) {
+  for(var rowpos=0; rowpos<board.length; rowpos++) {
+    var row=board[rowpos];
+    for(var colpos=0; colpos<row.length; colpos++) {
+      fn(row[colpos], rowpos, colpos);
+    }
+  }
+}
+function forEachConstraint(board, x1, y1, x2, y2, fn) {
+  for(var rowpos=x1; rowpos<=x2; rowpos++) {
+    var row=board[rowpos];
+    for(var colpos=y1; colpos<=y2; colpos++) {
+      var res=fn(row[colpos], rowpos, colpos);
+      if(typeof res=="string") row[colpos] = res;
+    }
+  }
+}
+function createBoard(x) {
+  var board = new Array(9);
+  for(var rows=0; rows<9; rows++) {
+    var X = x[rows];
+    var row=board[rows]=new Array(9);
+    for(var cols=0; cols<9; cols++) {
+      var ch= X.charAt(cols);
+      row[cols] = /[1-9]/.test(ch) ? ch : "123456789";
+    }
+  }
+  return board;
+}
+function pad(s,n,ch) {
+  return s+new Array(n+1-s.length).join(ch);
+}
+function board2string(board) {
+  var a = [];
+  for(var i=0; i<board.length; i++) {
+    var line = [], x=board[i];
+    for(var j=0; j<x.length; j++) {
+      line.push("["+pad(x[j], 9, "_")+"]");
+    }
+    a.push(line.join(" "));
+  }
+  return a.join("\n");
+}
+function board2string2(board) {
+  var a = [];
+  for(var i=0; i<board.length; i++) {
+    var line = [], x=board[i];
+    for(var j=0; j<x.length; j++) {
+      var ch=x[j];
+      line.push(ch.length == 1 ? ch : " ");
+    }
+    a.push(line.join(""));
+  }
+  return a.join("\n");
+}
+function count(board) {
+  var count=0; forEach(board, function(ch, x, y) { if(ch.length==1) count++; });
+  return count;
+}
+function solve(board, x1, y1, x2, y2) {
+  // find known cells within the constraint
+  var known=""; forEachConstraint(board, x1, y1, x2, y2, function(ch) { if(ch.length==1) known+=ch; });
+  if(known) {
+    // if there are any known cells (with only one figure), remove the known value from the other cells within the constraint
+    var re=new RegExp("["+known+"]", "g");
+    forEachConstraint(board, x1, y1, x2, y2, function(ch) { if(ch.length!=1) return ch.replace(re,""); });
+  }
+  // check if a number is used more then once
+  var usageCount = [0,0,0,0,0,0,0,0,0];
+  forEachConstraint(board, x1, y1, x2, y2, function(ch) { 
+    for(var pos=0; pos<ch.length; pos++); usageCount[+ch.charAt(pos)-1]++;
+  });
+  for(var i=0; i<usageCount.length; i++) {
+    // if a number is only used once within the constraint...
+    if (usageCount[i]==1) {
+       forEachConstraint(board, x1, y1, x2, y2, function(ch) {
+         // find it, and mark it solved
+         var number = String(i+1);
+         if (ch.indexOf(number)!=-1) ch = number; 
+       });
+    }
+  }
+}
+function solveRow(board) {
+  for(var row=0; row<=8; row++) {  
+    solve(board, row, 0, row, 8);
+  }
+}
+function solveCol(board) {
+  for(var col=0; col<=8; col++) {
+    solve(board, 0, col, 8, col);
+  }
+}
+function solveBlock(board) {
+  for(var i=0; i<=2; i++) { for(var j=0; j<=2; j++) {
+    var row=i*3, col=j*3;
+    solve(board, row, col, row+2, col+2);
+  }}
+}
+function solveGray(board) {
+  for(var i=0; i<=1; i++) { for(var j=0; j<=1; j++) {
+    var row=i*3+1*(i+1), col=j*3+1*(j+1);
+    solve(board, row, col, row+2, col+2);
+  }}
+}
+function boarditems(board) {
+  var res=0;
+  forEach(board,function(ch) { res+=ch.length; });
+  return res;
+} 
+function createGrid(ch) {
+  var res="<pre>";
+  for(var i=1; i<=9; i++) {
+    res += ch.indexOf(i)>=0 ? i : " ";
+    if (i==3 || i==6) res += "\n";
+  }
+  return res+"</pre>";
+}
+function fillBoard(board) {
+  var tbl = document.getElementsByTagName("TABLE")[0];
+  forEach(board, function(ch, x, y) {
+    tbl.rows[x].cells[y].innerHTML = ch.length==1 ? ch : createGrid(ch);
+  });
+}
+function dolog(s) { $("dbg").value+=s+'\n';}
+function doSolve() {
+  var lines = $("input").value.split(/\n/, 9);
+  var board = createBoard(lines);
+  dolog("Known items: "+count(board)+", chaos="+boarditems(board));
+  var i=0;
+  do {
+    var preItems = boarditems(board);
+    solveRow(board);
+    dolog("After solveRow: "+boarditems(board));
+    solveCol(board);
+    dolog("After solveCol: "+boarditems(board));
+    solveBlock(board);
+    dolog("After solveBlock: "+boarditems(board));
+    solveGray(board);
+    dolog("After solveGray: "+boarditems(board));
+    var postItems = boarditems(board);
+  } while(preItems > postItems);
+  $("output").value = board2string(board);
+  $("input").value = board2string2(board);
+  fillBoard(board);
+  if (postItems != 9*9) alert('Puzzel kan niet door dit algoritme opgelost worden.')
+}
+var zaterdag28juli2007=[" 4     2 ",
+ "16  3  4 ",
+ "  7  8   ",
+ "  8      ",
+ "         ",
+ "         ",
+ "6 9     3",
+ "   2  7  ",
+ "3    1   "];
+var donderdag27juli2007=[" 92 5 3  ",
+ "  36   2 ",
+ "6 4     7",
+ "         ",
+ "1        ",
+ "  937 5 2",
+ "   8 37  ",
+ " 6   9   ",
+ "   4    6"];
+ var zaterdag11autustus2007=["   3     ",
+ "4 1    9 ",
+ "    12   ",
+ " 68     3",
+ "         ",
+ "     5   ",
+ " 59   4  ",
+ " 2     3 ",
+ "    8    "];
+ var zaterdag11december2010=[
+ "  8   23 ",
+ "       4 ",
+ " 94   5  ",
+ "    7    ",
+ "2       1",
+ "   6     ",
+ "      7  ",
+ "8  7    9",
+ " 7   8   "];
+	</script>
+</head>
+<body>
+  <table class="board right">
+    <tr class="a1">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a2">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a3">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a4">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="5">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a6">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a7">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a8">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+    <tr class="a9">
+      <td class="a1"> </td>
+      <td class="a2"> </td>
+      <td class="a3"> </td>
+      <td class="a4"> </td>
+      <td class="a5"> </td>
+      <td class="a6"> </td>
+      <td class="a7"> </td>
+      <td class="a8"> </td>
+      <td class="a9"> </td>
+    </tr>
+  </table>
+  <h1>Sudoku Solver, incarnatie 3.02</h1>
+  <p>
+    NRC Handelsblad formaat (3x3)x3 met extra grijze vlakken (zie rechts).
+  </p>
+  <form onsubmit="return false;">
+    <textarea id="input" rows="9" cols="9">
+</textarea>
+Laad:
+<a href="?" onclick="$('input').value=donderdag27juli2007.join('\n');return false;">donderdag27juli2007</a>
+<a href="?" onclick="$('input').value=zaterdag28juli2007.join('\n');return false;">zaterdag28juli2007</a>
+<a href="?" onclick="$('input').value=zaterdag11autustus2007.join('\n');return false;">zaterdag11autustus2007</a>
+<a href="?" onclick="$('input').value=zaterdag11december2010.join('\n');return false;">zaterdag11december2010</a>
+    <input type="button" value="los op" onclick="doSolve();">
+    <textarea id="output" cols="108" rows="10"></textarea>
+    <textarea id="dbg" rows="15"></textarea>
+  </form>
+  <script src="ga.js"></script>
+</body>
+</html>

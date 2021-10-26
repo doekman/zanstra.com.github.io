@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <title>QR-Code Clock</title>
+    <link rel="stylesheet" href="Barcode/code128.css" type="text/css" media="screen" charset="utf-8">
+    <script src="Barcode/code128.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+(function(imgId, divId) {                                                       
+  var imageElement
+  ,   divElement
+  ,   oldOnLoad = window.onload
+  ;
+  function getTimeString() {
+    var pad = function(n) { return n < 10 ? '0' + n.toString(10) : n.toString(10); }
+    ,   dt = new Date()
+    ;
+    return [pad(dt.getHours()), pad(dt.getMinutes()), pad(dt.getSeconds())].join(':');
+  }
+  function GetImageUrl(string) {
+    return 'http://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=' + encodeURIComponent(string);
+  }
+  function UpdateClock() {
+    var timeText = getTimeString()
+    ,   qrUrl = GetImageUrl(timeText)
+    ;
+    divElement.innerHTML = code128(timeText);
+    imageElement.src = qrUrl;
+    imageElement.title = timeText;
+  }
+  window.onload = function() {
+    imageElement = document.getElementById(imgId);
+    divElement = document.getElementById(divId);
+    UpdateClock();
+    setInterval(UpdateClock, 1000);
+    if (typeof oldOnLoad == 'function') oldOnLoad.apply(this, arguments);
+  }
+})('qrimg', 'div128');
+    </script>
+  </head>
+  <body>
+    <h1>QR-Code Clock</h1>
+    <p>
+      This is a clock with the time coded as a 
+      <a href="http://code.google.com/apis/chart/docs/gallery/qr_codes.html">QR-Code</a>
+      using Google's Chart API.
+    </p>
+    <p style="width:150px;text-align:center">
+      <img src="" id="qrimg" alt="qr time" title="" />
+    </p>
+    <h2>Code 128</h2>
+    <p>
+      And this clock is a <a href="Barcode.html">Code 128</a> barcode
+      using my own javascript library.
+    </p>     
+    <div class="barcode2" id="div128">time...</div>
+    <p>
+       &nbsp;
+    </p>
+		<!--#include file="ga.html"-->		
+  </body>
+</html>

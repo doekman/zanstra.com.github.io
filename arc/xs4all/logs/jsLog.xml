@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="../xsl/webLog.xsl"?>
+<log title="Javascript weblog" xml:lang="en">
+  <topics>
+    <topic category="js" created="2005-10-15" id="ScrollIntoView">
+      <title>ScrollIntoView</title>
+      <p>
+        There are a number of problem's with IE's <a href="http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/reference/methods/scrollintoview.asp">scrollIntoView</a> method. Not all browsers support it (Safari 2.0 doesn't support it, but it's already implemented in <a href="http://webkit.opendarwin.org">WebKit</a> in <a href="http://www.opendarwin.org/pipermail/webkit-changes/2005-July/000379.html">July 2005</a>. The second problem is the binarity of all: you see it or you don't. I would like to apply a margin: if the element is for example 100 pixels or less from the border, scroll it.
+    </p>
+    <p class="note">
+      There's no support for vertical scrolling, because I don't need it (a note here: vertical scrolling is <strong>bad</strong>. You don't need it and it is not good. Don't use it, don't argue). Another issue: no support for scrolling of <code>overflow</code> elements yet.
+    </p>
+    <p>
+      <updated/> The code has been tested and is working in: Safari 2.0, IE/Win 6.0, IE/Mac 5, Opera/Mac 8, FireFox/Mac 1.5 beta 2 and FireFox/Win 1.0.7 (all both quirks and compliant-mode).
+    </p>
+    <p>
+      <updated/> I used this function for my gmail <a href="../dzLib/chknav.htm">checkbox keyboard navigator</a> clone.
+    </p>
+    <code-block type="application/x-javascript"><![CDATA[
+function InView(element,margin) {
+  if(!margin) margin=0;
+  var Top=GetTop(element), ScrollTop=GetScrollTop();
+  return !(Top&lt;ScrollTop+margin||
+    Top&gt;ScrollTop+GetWindowHeight()-element.offsetHeight-margin);
+}
+function ScrollIntoView(element,bAlignTop,margin) {
+  if(!margin) margin=0;
+  var posY=GetTop(element);
+  if(bAlignTop) posY-=margin;
+  else posY+=element.offsetHeight+margin-GetWindowHeight();
+  window.scrollTo(0, posY);
+}
+function GetWindowHeight() {
+  return window.innerHeight||
+    document.documentElement&&document.documentElement.clientHeight||
+    document.body.clientHeight||0;
+}
+function GetScrollTop() {
+  return window.pageYOffset||
+    document.documentElement&&document.documentElement.scrollTop||
+    document.body.scrollTop||0;
+}
+function GetTop(element) {
+  var pos=0;
+  do pos+=element.offsetTop
+  while(element=element.offsetParent);
+  return pos;
+}]]></code-block>
+    </topic>
+    <topic category="js" created="2005-05-29" id="funcReplace">
+      <title>Using functions with String.replace</title>
+      <p>
+        Introduced in Javascript 1.3 (NN 4.06+, including FF) and JScript 5.5 (IE5.5+/Win).
+        Not in: Safari 1.3.
+        NOTE: still doesn't work in IE5.2/Mac (RegExp.$0), no submatches?
+      </p>
+      <p>You can test the code: <run>TestPcFormat()</run>.</p>
+      <code-block type="application/x-javascript" exec="true"><![CDATA[
+var PcFormat=/^\d{4} ?[a-z]{2}$/i;
+function FormatPc(match) {
+  return match.replace(/\s+/,'').toUpperCase();
+}
+FormatPc.toString=function() {
+  return FormatPc(RegExp.$0);
+}
+//--| Test function |---------------------------------------
+function TestPcFormat() {
+  var s=prompt("Please supply a Dutch postcode","9711 pl");
+  if(s) {
+    if(PcFormat.test(s)) {
+      s=s.replace(PcFormat,FormatPc);
+      alert("The postcode is: "+s);
+    }
+    else { 
+      alert("Wrong format. Use 4 digits and two letters, \
+optionally seperated by a space");
+    }
+  }
+}]]></code-block>
+    </topic>
+    <topic category="js" created="2005-04-15" id="weekNr">
+      <title>Week number</title>
+      <p>
+        Grouping events per week can be very handy, so I wrote a javascript method to do so. I followed the <a href="http://www.iso.org/iso/en/prods-services/popstds/datesandtime.html">ISO-8601</a> standard (<a href="http://en.wikipedia.org/wiki/Week">see</a> <a href="http://www.cl.cam.ac.uk/~mgk25/iso-time.html">more</a> <a href="http://www.mcs.vuw.ac.nz/technical/software/SGML/doc/iso8601/ISO8601.html">here</a>). Test todays week number: <run>alert(new Date().getWeekNr()+1)</run>.
+      </p>
+      <code-block type="application/x-javascript" exec="true"><![CDATA[
+//Like valueOf(), only resolution in days, not ms.
+Date.prototype.valueInDays=function() {
+  return parseInt(new Date(this.getFullYear(),
+    this.getMonth(),
+    this.getDate()).valueOf()/(24*60*60*1000));
+}
+//Day of week, zero-based (monday=0, sunday=6)
+Date.prototype.getWeekDay=function() {
+  return this.getDay()==0 ? 6 : this.getDay()-1;
+}
+//Week number according to ISO-8601, zero-based (1 is 2nd week).
+Date.prototype.getWeekNr=function() {
+  var x = new Date(this.getFullYear(),0,1); 
+  x.setDate([0,0,0,0,3,2,1][x.getWeekDay()]+x.getDate());
+  if(this.valueInDays() < x.valueInDays()) 
+    return new Date(this.getFullYear()-1,12-1,31).getWeekNr();
+  else 
+    return parseInt((this.valueInDays()-x.valueInDays()+x.getWeekDay())/7,10);
+}]]></code-block>
+    </topic>
+    <topic category="js" created="2005-10-22" id="Flushed2004" comments="closed">
+      <title>Archived</title>
+      <p>The topics from 2004 and older have been <a href="jsLog-2004.htm">archived here</a>.</p>
+    </topic>
+  </topics>
+  <categories>
+    <category name="js">Javascript</category>
+  </categories>
+</log>

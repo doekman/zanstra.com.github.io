@@ -1,0 +1,83 @@
+td { vertical-align: top }
+th { text-align: left; vertical-align: top }
+body, td, th, p { font-family: Verdana, sans-serif; font-size: 10pt; color: black }
+body { overflow-x: clip }
+p { margin: 0px 0px 1em 0px }
+ul { 
+  margin: 0px 0px 1em 15px; 
+  padding: 0px 0px 0px 0px;
+} 
+ol { 
+  margin: 0px 0px 1em 0px; 
+  padding:0px 0px 0px 0px; 
+}
+ul li { 
+  list-style-type: circle  
+}
+ol li {
+  margin-left: 6mm;
+}
+h1 { font-size: 24pt; letter-spacing: -1.7pt; text-align: left }
+h2 { margin: 1ex 0px 2px 0px; font-size: 13pt }
+h3 { margin: 1ex 0px 2px 0px; font-size: 10pt; letter-spacing: 1px }
+img { border: 0px }
+a,a:link,a:visited { color: Black }
+a:hover {color: Blue }
+a.extern {font-weight: bold } /*to another site*/
+div.footer, 
+div.footer a, 
+div.footer a:visited,
+div.footer a:link { font-size: 7pt; color: gray; margin-top: 4em; clear: both }
+hr { height: 1px; color: Black }
+acronym { color: darkblue }
+/*for one-liner*/
+pre.code { 
+  font-family: monospace; 
+  background-color: lightgrey; 
+  border: 1px solid black; 
+  padding-left: 4px; margin: 2px 2px 2px 10px 
+}
+div.insertHTML { border: 1px solid black; border-left: 6px solid black; border-right: 6px solid black; padding-left: 4px; margin: 1em 2px 4px 10px;  }
+/*for one-liner visual code*/
+a.code, a.code:visited, a.code:link { font-family: monospace; color: Blue }
+a.code:active, a.code:hover {background-color: yellow}
+input.textbox { border: 1x solid blue }
+/*for inline window (plaatje bij middenstandspoezie*/
+div.inlineWindow { position: absolute; display: none; border: 2px solid lightgray; background-color: white }
+div.buttonBar { text-align: center; border-top: 1px solid gray; background-color: lightgrey }
+/*for use in menu (index and js/oneliners.htm)*/
+.menu { border: 1px solid lightgrey; padding-bottom: 1em }
+.titel { background-color: blue; color: yellow; font-weight: bold; font-size: 10pt; padding-left: 2px;}
+.titel a, div.titel a:visited { color: yellow; }
+.titel a:hover { text-decoration:none; color: white; }
+.item { 
+  border-bottom: 1px solid lightgrey; border-left: 1px solid lightgrey; border-right: 1px solid lightgrey; 
+  font-size: 10pt; padding-left: 1ex; 
+}
+.item a { text-decoration: none }
+.item a:hover { background-color: yellow; text-decoration: none }
+.selected { font-weight: bold }
+/*for use for anchors, for showing/hiding div's*/
+a.toggle, a.toggle:link, a.toggle:visited, a.toggle:hover {
+  font-style: italic;
+  color: blue;
+  background-color: transparent;
+}
+a.attention {
+  background-color: yellow;
+}
+/*for smileys*/
+.smiley {
+  vertical-align:bottom;
+  width:15px;
+  height:15px;
+}
+@media print {
+  table.pageLayout col.menu {
+    display: none;
+  }
+  pre.code {
+    width: 95%;
+  }
+}
+.help { cursor:help }

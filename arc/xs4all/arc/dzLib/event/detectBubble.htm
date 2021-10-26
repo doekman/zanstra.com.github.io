@@ -1,0 +1,146 @@
+<!--!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN"-->
+<html>
+  <head>
+    <style type="text/css">
+div { color: blue }
+span { color: red }
+    </style>
+    <script language="javascript">
+var CAPTURING_PHASE=1, AT_TARGET=2, BUBBLING_PHASE=3;
+var aEventPhase=['CAPTURING_PHASE','AT_TARGET', 'BUBBLING_PHASE'];
+//capturing phase undefined
+
+function yes(obj,e)
+{
+  var type, eventPhase;
+  if(window.event)
+  {
+    type=event.type;
+    if(obj==e.srcElement) eventPhase=AT_TARGET;
+    else eventPhase=BUBBLING_PHASE;
+  }
+  else if(e)
+  {
+    //mozilla
+    type=e.type;
+    if(e.target==obj) eventPhase=AT_TARGET
+    else eventPhase=BUBBLING_PHASE;
+  }
+  alert( 'Tag: '+obj.tagName+'\nType: '+type+'\neventPhase: '+aEventPhase[eventPhase-1]);
+}
+
+function yes2(obj,e)
+{
+  var eventPhase;
+  var type;
+/*
+  if(e&&e.eventPhase)
+  {
+    eventPhase=e.eventPhase; //Mozilla
+    type=e.type;
+    e.mozBubble=true;
+  }
+*/
+  if(e&&e.eventPhase)
+  {
+    if(e.mozBubble)
+    {
+      eventPhase=BUBBLING_PHASE;
+    }
+    else
+    {
+      eventPhase=AT_TARGET;
+    }
+    type=e.type;
+  }
+  else if(event.returnValue==true||event.macBubble==true)
+  {
+    eventPhase=BUBBLING_PHASE; //IE mac and win
+    type=event.type;
+  }
+  else
+  {
+    eventPhase=AT_TARGET;
+    type=event.type;
+  }
+  alert( 'Tag: '+obj.tagName+'\nType: '+type+'\neventPhase: '+aEventPhase[eventPhase-1]);
+  if(window.event) event.macBubble=event.returnValue=true;
+  if(e) e.mozBubble=true;
+}
+
+//--| Call this function in all bubbling events
+//--| at top-level only, and after all registered events
+//--| on that element.
+function cleanUpMacBubble()
+{
+  if(window.event&&window.event.macBubble) delete event.macBubble;
+}
+
+function o2s(o)
+{
+  var s='';
+  for(var i in o)
+  {
+    s+=i+':'+o[i]+'\n';
+  }
+  return s;
+}
+    </script>
+  </head>
+
+<body onclick="yes(this,event);cleanUpMacBubble();" id="normal_body">
+  <h1>detect bubble in IE (and AT_TARGET in Mozilla)</h1>
+  <p>
+    In IE, there's no property if the event is in the event is AT_TARGET or
+    in BUBBLING_PHASE. The event-object is not expando (can't create properties),
+    but the event.returnValue property is redundant, and we might abuse the true
+    value, indicating the event is bubbling.
+  </p>
+  <p>
+    This works for IE6/Win, but not on IE5.2/Mac. The event properties are not 
+    persistent during an event (an event-property changed AT_TARGET, will not have
+    this value at the upper-element bubble). That's no problem: IE/Mac supports
+    expando on the event-object. However, the property is not removed at the end
+    of the bubble :-( 
+  </p>
+  <p>
+    Possible solution (but I don't like it): register event-handlers at top (body?)
+    and remove the property (implemented here).
+  </p>
+  <p>
+    Hmm, mozilla always think, an event is bubbling (according to <code>event.eventPhase</code>.
+    Luckily, mozilla also supports persistent event expando :-) And even better,
+    Moz doesn't remember properties from previous events (as IE/Mac does).
+  </p>
+  <h2>Problem</h2>
+  <p>
+    This system only works if the event is initiated from a element with an event-handler.
+    Click on text in the document, with no handler, but the body.onclick has a handler,
+    the eventPhase is at the moment seen as AT_TARGET :-(
+  </p>
+  <h2>Partially solutions</h2>
+  <p>
+    I've got an simpler solution: IE you just check <code>this==event.srcElement</code>. 
+    This means in DOM/2 terms: <code>event.currentTarget==event.target</code>. Works in
+    both IE/Win as IE/Mac. 
+  </p>
+  <p>
+    Problem: now I know why Mozzy always supplies event.eventPhase==3. In Mozilla, 
+    the event.target is on an DIV or SPAN is a <code>TextNode</code>. On a BUTTON,
+    it is the button. Grrrrr.
+  </p>
+  <h2>Test</h2>
+  <p>
+    The red SPAN, blue DIV and normal BODY have an onclick registered. Try to click...
+  </p>
+  <div onclick="yes(this,event);" id="blue_div">
+    this is the div 
+    <span onclick="yes(this,event);" id="red_span">this is the span</span>
+    this is the div again
+  </div>
+  <p id="hoi">
+    Navigating to 
+    <a href="http://www.xs4all.nl/~zanstra/" onclick="event.returnValue=false;">this link (home of doekman)</a>
+    should be cancelled by javascript
+</body>
+</html>

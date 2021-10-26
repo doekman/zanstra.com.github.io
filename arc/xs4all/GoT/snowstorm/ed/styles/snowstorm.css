@@ -1,0 +1,21 @@
+/* basic */
+body, div, td, p {
+	color:black; font-family:tahoma,verdana,arial,helvetica; font-size:9pt;
+}
+img { border-width: 0px }
+/* classes */
+
+
+/* elements */
+#mapClipper		{
+	position:absolute; left:150; top:100; width:640; height:480;
+	overflow:hidden; clip:rect(0,640,480,0);
+}
+#tilePallet     {position:absolute; left:10; top:100; width: 134; height: 480; overflow: auto }
+.tileActive     {border-left: 3px solid Black; border-right: 3px solid Black; background-color: yellow }
+.tile           {border-left: 3px solid lightgrey; border-right: 3px solid lightgrey; }
+#mapContainer	{position:absolute; left:-64; top:-32; visibility:hidden;}
+#mapContentA	{position:absolute; left:0; top:0;}
+#mapContentB	{position:absolute; left:64; top:32;}
+
+#saveText	    {position:absolute; left: 150px; top:10px; width: 640px; height: 70px; }

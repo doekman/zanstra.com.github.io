@@ -1,0 +1,190 @@
+<html lang="en">
+<head>
+	<title>inTec: Safari suggestions</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+.solved {
+  text-decoration: line-through;
+}
+h3  {
+  font-family: Arial, sans-serif;
+  font-size: 9pt;
+  font-weight: bold;
+  margin: 0.5em 0px 0px 0px;
+  padding: 0px;
+  border-bottom:1px dotted gray;
+}
+code.date {
+  color: gray;
+  font-weight: bold;
+  background-color: white;
+}
+code {
+  background-color: #ffffee;
+}
+li.solved {
+  text-decoration: line-through;
+}
+li {
+  margin-bottom: 0.5em;
+}
+a.testcase {
+  font-family: monospace;
+  font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center"><img src="../img/compass.png" style="width:32px" title="When you get a gray shading around the compass, your browser sucks" /></div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			Safari<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1 title="Internet Technologies">inTec: Safari buglist</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <p>
+    Find my collection of Safari bugs here. I've tested on Safari 1.1 (v125).
+    <a href="http://diveintomark.org/safari/">Dive into mark</a> has an
+    excellent lists of bugs in Safari. And Apple has a document on
+    <a href="http://developer.apple.com/internet/css/safari_css.html">CSS
+    support in Safari</a>. The
+    <a href="http://weblogs.mozillazine.org/hyatt/">Surfin' Safari</a>
+    weblog reports on Safari's progress.
+  </p>
+  <h3>Other</h3>
+  <ul>
+    <li>
+      <a name="urlNormalization"></a><code class="date">30-08-2003</code>:
+      Links with both a forward and back slash in the URL,
+      cause Safari not to resolve links on the page correctly (back slash 
+      characters are seen as literals in this case). Workaround, always
+      use forward slashes. (<a href="safariIdea/urlNormalization.htm" class="testcase">testcase</a>).
+    </li>
+  </ul>
+
+  <h3>Javascript/DOM</h3>
+  <ul>
+    <li>
+      <a name="documentWrite"></a><code class="date">01-01-2004</code>: <code>var w=document.write; w('&lt;p&gt;bla bla&lt;/p&gt;');</code> doesn't work (doesn't in mozilla either, DOES work in IE though). Handy for multi-environment libraries. Work around: <code>function w(s){document.write(s)}</code>.
+    </li>
+    <li>
+      <a name="selectedStylesheetSet"></a><code class="date">30-09-2003</code>: 
+      Safari crashes when accessing the <code>selectedStylesheetSet</code>
+      property of the <code>Document</code> object
+      created with <code>document.implementation.createDocument</code>. 
+      (<a href="safariIdea/selectedStylesheetSet.htm" class="testcase">testcase</a>).
+    </li>
+    <li>
+      <div>Solved with 1.2 (well, <code>XMLHttpRequest</code> is implemented, and that's almost the same thing)</div>
+			<div class="solved"><a name="documentLoad"></a><code class="date">30-09-2003</code>:
+      Safari doesn't implement 
+      <a href="http://www.mozilla.org/newlayout/xml/#load">document.load</a>.
+      From <em>standards</em> point of view, it's logical. The <code>load</code> method
+      is part of the <a href="http://www.w3.org/TR/DOM-Level-3-LS/Overview.html">DOM 
+      3 Load and Save Specification</a>.
+      From the <em>javascript-usage-out-there</em> perspective, web-developers tend 
+      to test only on availability of the <code>document.implementation</code>
+      object and <code>createDocument</code> method (like on
+      <a href="http://developer.apple.com/internet/javascript/jstests.html#import">Developer
+      Connection</a> of Apple).
+      Web-developers assume the <code>createDocument</code> method availability
+      implicates the <code>load</code> method is implemented.
+      (<a href="safariIdea/documentLoad.htm" class="testcase">testcase</a>).</div>
+    </li>
+    <li>
+      <a name="script"></a><code class="date">28-9-2003</code>: Can't load <code>script</code>-tags
+      dynamically. (<a href="safariIdea/script.htm" class="testcase">testcase</a>).
+    </li>
+    <li>
+      <div>Solved with 1.2</div>
+			<div class="solved"><a name="setTimeout"></a><code class="date">30-08-2003</code>: <code>windows.setTimeout</code>
+      doesn't take a function-type as first parameter, only string-type parameters. 
+      Same goes for <code>windows.setInterval</code>. Workaround: use a string.
+      (<a href="safariIdea/setTimeout.htm" class="testcase">testcase</a>).</div>
+    </li>
+  </ul>
+  <h3>CSS</h3>
+  <ul>
+    <!--li>
+      <code class="date">28-08-2003</code>: overflow property is not
+      implemented useful (doesn't work for me).
+    </li-->
+    <li>
+      <a name="textareaoverFlowVisible"></a><code class="date">01-03-2004</code>: The <code>textarea</code> element doesn't support the CSS overflow:visible property. Just try the testcase under Internet Explorer (no support at Mozilla either)... (<a href="safariIdea/textareaOverflowVisible.htm" class="testcase">testcase</a>)
+    <li>
+      <a name="iframeDisplayNone"></a><code class="date">28-08-2003</code>: IFRAME elements with the CSS property 
+      <code>display:none</code> can't be posted to (with attribute target is
+      iframe's name. Workaround: use visiblity:hidden, and make sure it's
+      at the end of the document, or use a width and height of 0px. 
+      (<a href="safariIdea/iframeDisplayNone.htm" class="testcase">testcase</a>).
+    </li>
+    <li>
+			<div>Solved in 1.2</div>
+      <div class="solved"><code class="date">28-11-2003</code>: There's some problem with the CSS <code>:hover</code> pseudo-class. See <a href="http://www.letselplein.nl/~exemplarisch/tweakers/frontpage.html">"remake" of tweakers.net</a>. The first menuline works perfect (CSS only) but in the second menu line, the popup's won't go away. <acronym title="To be analyzed">tba</acronym>.</div>
+    </li>
+  </ul>
+
+  <h3>User-interface</h3>
+  <ul>
+    <li><a name="windowOpenWidth"></a><code class="date">25-10-2003</code>: Specifying
+      the <code>width</code> feature of the <code>window.open</code> method wrong,
+      can/will lead to misrendering of the google search entry in the addressbar
+      (<a href="safariIdea/windowOpenWidth.htm" class="testcase">testcase</a>).
+    </li>
+    <li>Brushed Metal interface <img src="../img/smileyHappy.gif" alt=";)"/>.
+      Workaround: Interface Builder.</li>
+  </ul>
+  
+  <h3>Feature requests/ideas</h3>
+  <ul>
+    <li>
+      <a name="langDetectSpellCheck"></a><code class="date">26-10-2003</code>: <strong>Language detection for the spelling checker</strong>. At lots of sites you can post messages. Because I post both Dutch and English messages, I must constantly switch languages (the language option should also be availble on the context menu of course). It's reasonable the reply language is the same as page itself, so the <code>lang</code> and <code>xml:lang</code> attribute could be used for this. It's even a <a href="http://www.w3.org/TR/html4/struct/dirlang.html#adef-lang">w3c suggestion</a>. The downside however, I haven't seen a site I post to, specifying the content language :-( (<a href="safariIdea/textarea_lang.htm" class="testcase">testcase</a>).
+    </li>
+    <li>
+      <a name="muteKnob"></a><code class="date">25-10-2003</code>: <strong>A mute knob</strong>, to silence all those flashy flash advertisements with soundeffects to attract your attention and those really irritating, but well meant midi background music on bad  home pages.
+    </li>
+    <li>
+      <a name="noSound"></a><code class="date">25-10-2003</code>: No sound from pages loaded in background-tabs. OK, this is a difficult one: why not disable sound on background-windows? So this is not a feature request, but a problem.</li>
+  </ul>
+
+  <h2><a name="original">Safari suggestions (original)</a></h2>
+	<p>
+    On his <a href="http://www.mozillazine.org/weblogs/hyatt/">weblog</a>, Dave Hyatt is 
+    asking for <acronym title="understatement">some</acronym> feedback on Apple's 
+    browser, <a href="http://www.apple.com/safari/">Safari</a>. Because everybody is 
+    tired of the TAB-like discussions, I'll only suggest not yet mentioned features.
+	</p>
+  <ul>
+    <li>HTTPRequest and DOMDocument object support in javascript, like IE and Gecko-likes. 
+      OK, not really an UI feature, but I couldn't think another place to express this 
+      opinion. Especially for Web Applications, this technique is 
+      <acronym title="in my humble opinion">imho</acronym> pretty important.
+    </li>
+    <li>Bookmarks have the tendency to grow beyond limits. Create some tools to
+      help keep it organized.
+      Ideas: Keep statistics like Last Clicked 
+      (like iTunes' Last Played), Number of times clicked. Add a command, to check if all bookmarks
+      are still valid.
+    </li>
+  </ul>
+  <!--Summary:
+  Safari should add HTTPRequest javascript objects, and provide tools to keep bookmarks organized.
+  -->
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Safari suggestions" title="Stuur een email">Doeke Zanstra</a>, 
+    2003, Content is licensed under a <a href= "http://creativecommons.org/licenses/by/1.0/"> Creative Commons License </a>. (Some rights reserved).
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

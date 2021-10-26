@@ -1,0 +1,271 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<link rel="stylesheet" type="text/css" href="piano.css" />
+		<script language="JavaScript" src="get.js"> </script>
+		<script language="JavaScript">
+var oGET=new getParameter();
+
+var intStartKey=0;
+var intEndKey=12*4;
+
+var intKeyNotation=(typeof oGET.keyNotation=='undefined')?0:oGET.keyNotation; /*index of arrKey*/
+var intKey=(typeof oGET.key=='undefined')?0:oGET.key; /*index of arrKey[].arr*/
+var arrKey=[
+	{name:'- #', arr:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'] },
+	{name:'-is', arr:['C','Cis','D','Dis','E','F','Fis','G','Gis','A','Ais','B'] },
+	{name:'- b', arr:['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'] },
+	{name:'-es', arr:['C','Des','D','Es','E','F','Ges','G','As','A','Bes','B'] }
+];
+
+var intScale = (typeof oGET.scale=='undefined')?0:oGET.scale; /*index of arrScale*/
+var arrScale = [
+	{name:'MAJEUR', arrAfstand:[] },
+	{name:'ionisch (majeur)', arrAfstand:[2,2,1,2,2,2,1] },
+	{name:'lydisch (F)', arrAfstand:[2,2,2,1,2,2,1] },
+	{name:'myxolidisch (G)', arrAfstand:[2,2,1,2,2,1,2] },
+
+	{name:'MINEUR', arrAfstand:[] },
+	{name:'dorisch (D)',arrAfstand:[2,1,2,2,2,1,2] },
+	{name:'phrygisch (E)', arrAfstand:[1,2,2,2,1,2,2] },
+	{name:'aeolisch (A)', arrAfstand:[2,1,2,2,1,2,2] },
+	{name:'mineur harmonisch (A)', arrAfstand:[] },
+	{name:'mineur melodisch (A)', arrAfstand:[] },
+	{name:'locrisch (B)', arrAfstand:[1,2,2,1,2,2,2] },
+
+	{name:'OVERIGE', arrAfstand:[] },
+	{name:'blues',  arrAfstand:[3,2,1,1,3,2] },
+	{name:'chromatisch', arrAfstand:[1,1,1,1,1,1,1,1,1,1,1,1] }
+];
+
+var intChord = (typeof oGET.chord=='undefined')?0:oGET.chord; /*index of arrChord*/
+var arrChord = [
+	{name:'Oktaaf', arrAfstand:[0] },
+	{name:'Majeur', arrAfstand:[0,4,3] },
+	{name:'Mineur', arrAfstand:[0,3,4] },
+	{name:'Septiem', arrAfstand:[0,4,3,3] }
+];
+
+function checkScales() {
+	var intTotal, arr;
+	for(var i=0; i<arrScale.length; i++) {
+		intTotal=0;		arr=arrScale[i].arrAfstand;
+		for(var j=0; j<arr.length; j++) {
+			intTotal+=arr[j];
+		}
+		if(intTotal!=12&&arrScale[i].arrAfstand.length!=0) {
+			//als de opgetelde afstanden samen ongelijk aan 12 zijn
+			//en als er elementen in het array staan, klopt er iets niet.
+			alert('De "toonladder" '+arrScale[i].name
+				+' is geen toonladder. De som van de afstanden is ongelijk aan 12 (som is '+intTotal
+				+'). \n\nOp deze pagina kunnen alleen 12-tonige ladders gebruikt worden.'
+			);
+		}
+	}
+}
+
+/***functions for modifying the keyboard*****************************************************/
+
+var arrKeyboard=[[],[],[],[],[],[],[],[],[],[],[],[]]; 
+/*array 0..11 where 0=C, 1=C#, ..., 11=B
+  arrKeyboard[0] keeps an array of id's (string) of all keys (eg C1, C2, C3)*/
+
+function pressKeys(n,blnHigh) {
+//press the keys n (n=0, press all C's)
+	var o;
+	if(typeof blnHigh=='undefined') {
+		blnHigh=false;
+	}
+	n=parseInt(n,10)%12;
+	for(var j=0; j<arrKeyboard[n].length; j++) {
+		o=eval(arrKeyboard[n][j]);
+		if(blnHigh) {
+			o.style.color='red';//o.className=='whiteKey'?'red':'red';
+		}
+		else {
+			o.style.color=o.className=='whiteKey'?'black':'white';
+		}
+	}
+}
+
+function releaseAllKeys() {	var arr;
+	for(var i=0; i<arrKeyboard.length; i++) {		arr=arrKeyboard[i];
+		for(var j=0; j<arr.length; j++) {
+			o=eval(arrKeyboard[i][j]);
+			o.style.color=o.className=='whiteKey'?'white':'black';
+		}
+	}
+}
+function setLen(s,n) { while(s.length<n) s+=' '; return s }
+function divByTwo(n) {
+	var nn=parseInt(n/2,10);
+	var s='';
+	if(nn>0) s+=nn;
+	if(n%2==1) s+='½';
+	return s;
+}
+
+function inChord(intOrgKey, intKey) {
+	var intChord=parseInt(document.frmControls.chord.value,10);
+	var arrA=arrChord[intChord].arrAfstand;
+	var n=(intKey-intOrgKey)%12;
+	var intDeltaChord=0;
+
+	for(var i=0; i<arrA.length; i++) {
+		intDeltaChord+=arrA[i];
+		if(n==intDeltaChord) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function showScale() {
+	var intKey=parseInt(frmControls.key.value,10);
+	var intOrgKey=intKey;
+	var intScale=parseInt(frmControls.scale.value,10);
+	var arrA=arrScale[intScale].arrAfstand;
+
+	var intKeyNotation=parseInt(frmControls.keyNotation.value,10);
+	var strLadder='', strAfstanden=' ';
+
+	releaseAllKeys();
+	for(var i=0; i<arrA.length; i++) { 
+		pressKeys(intKey,inChord(intOrgKey, intKey));
+		strLadder+=setLen(arrKey[intKeyNotation].arr[intKey%12],3);
+		strAfstanden+=setLen(divByTwo(arrA[i]),3);
+		intKey+=arrA[i];
+	}
+	strLadder+=setLen(arrKey[intKeyNotation].arr[intKey%12],3);
+//	frmControls.afstanden.value=arrScale[frmControls.scale.value	].arrAfstand.join('--');
+	frmControls.toonladder.value=strLadder.replace(/^\ /g,'');
+	frmControls.afstanden.value=strAfstanden.replace(/\ $/g,'');
+}
+
+function goUp(n) {
+	var nKey; 
+	nKey=parseInt(frmControls.key.value, 10)+parseInt(n,10);
+	if(nKey<0) nKey+=12;
+	frmControls.key.value=nKey%12;
+	showScale();
+}
+
+/****functions for creating HTML**********************************************************/
+function insertKeyboard() {
+//function returns HTML text representing the keyboard
+	var s=''; /*keyboard html*/
+	var i, j, strClass, deltaShiftLeft=0;
+
+	for(i=intStartKey; i<intEndKey; i++) {
+		j=i%12;
+		switch(j) {
+			case 0: case 5: 
+				strClass='whiteKey';
+				deltaShiftLeft--; //get rid of one border
+				break;
+			case 2: case 4: case 7: case 9: case 11:
+				strClass='whiteKey';
+				deltaShiftLeft-=7; 
+				break;
+			case 1: case 3: case 6: case 8: case 10:
+				strClass='blackKey';
+				deltaShiftLeft-=7; //border width + half size of a white key
+				break;
+			default:
+				break;
+		}
+		s+='<span id="key'+i+'" class="'+strClass+'" style="left: '+deltaShiftLeft+'px">o</span>';		var arr=arrKeyboard[j];		arr[arr.length]='key'+i; //push
+	}
+	return s;
+}
+
+/***page initializor*****/
+
+function init() {
+	checkScales();
+	showScale();
+}
+		</script>
+	</head>
+	<body onload="init();">
+		<div class="title">Toonladdertijd</div>
+		<div id="divKeyboard">
+			<script language="javascript"> document.writeln( insertKeyboard() ); </script>
+		</div>
+		<div id="controls">
+			<form method="get" id="frmControls" name="frmControls">
+				<table cellspacing="0">
+					<tr>
+						<td class="column0">Kwintencirkel</td>
+						<td class="column1">Toonsoort</td>
+						<td class="column2">Toonladder</td>
+						<td class="column3">Akkoord</td>
+					</tr>
+					<tr>	
+						<td class="column0">
+							<input type="button" id="kwintOmlaag" name="kwintOmlaag" class="updown" 
+							 value="kwint omlaag" onclick="goUp(-7);" title="Kwint omlaag"><br />
+							<input type="button" id="kwintOmhoog" name="kwintOmhoog" class="updown" 
+							 value="kwint omhoog" onclick="goUp(7);" title="Kwint omhoog">
+						 <hr>
+							 <label for="afstanden">Afstanden:</label><br />
+							 <input type="text" name="toonladder" id="toonladder" readonly>
+							 <input type="text" name="afstanden" id="afstanden" readonly>
+						 <hr>
+							<label for="keyNotation">Notatie:</label><br />
+							<select id="keyNotation" name="keyNotation"  class="column1" onchange="frmControls.submit();">
+								<script language="javascript"> 
+									for(i=0; i<arrKey.length; i++) {
+										document.write  ('<option value="'+i+'"');
+										document.write  (i==intKeyNotation?' selected':'');
+										document.writeln('>'+arrKey[i].name+'</option>');
+									}
+								</script>
+							</select>
+						</td>
+						<td class="column1"><!--Toonsoort---->
+							<select id="key" name="key" size="12" class="column1" onchange="showScale()">
+								<script language="javascript"> 
+									for(var i=0; i<12; i++) {
+										document.write  ('<option value="'+i+'"'+(i==intKey?' selected':''));
+										document.writeln('>'+arrKey[intKeyNotation].arr[i]+'</option>');
+									}
+								</script>
+							</select>
+						</td>
+						<td class="column2">
+							<select id="scale" name="scale" size="12" class="column2" onchange="showScale()">
+								<script language="javascript"> 
+									for(i=0; i<arrScale.length; i++) {
+										document.write  ('<option value="'+i+'"');
+										document.write  (i==intScale?' selected':'');
+										document.write  ('>');
+										if(arrScale[i].arrAfstand.length!=0) {
+											document.write  ('&nbsp;&nbsp;'); //inspringen
+										}
+										document.writeln(arrScale[i].name+'</option>');
+									}
+								</script>
+							</select>
+						</td>
+						<td class="column3">
+							<select id="chord" name="chord" size="12" class="column3" onchange="showScale()">
+								<script language="Javascript"> 
+									for(i=0; i<arrChord.length; i++) {
+										document.write  ('<option value="'+i+'"');
+										document.write  (i==intChord?' selected':'');
+										document.write  ('>');
+										document.writeln(arrChord[i].name+'</option>');
+									}
+								</script>
+							</select>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div style="font: bold 8pt Arial, sans-serif; color: gray">
+			&copy; 2001 by <a href="mailto:doeke@zanstra.net?subject=toonladders" style="color: darkblue">Doeke Zanstra</a>
+		</div>
+	</body>
+</html>

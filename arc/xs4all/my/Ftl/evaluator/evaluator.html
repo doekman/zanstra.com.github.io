@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE> New Document </TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<META NAME="Author" CONTENT="">
+<META NAME="Keywords" CONTENT="">
+<META NAME="Description" CONTENT="">
+<script type="text/javascript" src="Evaluator.js" ></script>
+<script type="text/javascript" src="RunEvent.js" ></script>
+</HEAD>
+
+<BODY onload="test()">
+   <script>
+		var evaluator;
+		function $(id)
+		{ 
+			return document.getElementById(id);
+		}
+
+		function debug(str)
+		{
+			$("calcList").innerHTML+=str+'<BR/>';
+		}
+
+		function test()
+		{
+			evaluator=new Evaluator();
+			evaluator.addNode('brand',['pop:computer']);
+			evaluator.addNode('pop:computer',['computer']);
+			evaluator.addNode('computer',[]);
+			evaluator.prepare();
+			evaluator.addCalcEventListener(RunEvent.calc);
+			evaluator.calc(null,true);
+		 }
+
+		function Fill_computer(callback)
+		{
+			$('computer').options.length=0;
+			if ($('brand').value=='Apple')
+			{
+				var oOption = document.createElement("OPTION");
+				oOption.text="Imac";
+				oOption.value="4";
+				$('computer').appendChild(oOption);
+				var oOption = document.createElement("OPTION");
+				oOption.text="Powerbook";
+				oOption.value="5";
+				$('computer').appendChild(oOption);
+			}
+			else if ($('brand').value=='Dell')
+			{
+				var oOption = document.createElement("OPTION");
+				oOption.text="Dimension";
+				oOption.value="4";
+				$('computer').appendChild(oOption);
+				var oOption = document.createElement("OPTION");
+				oOption.text="PowerEdge";
+				oOption.value="5";
+				$('computer').appendChild(oOption);
+			}
+			 callback();
+		}
+   </script>
+   <p>Brand:
+   <select name="brand" id="brand" onchange="RunEvent(this)">
+		<option value="Apple">Apple</option>
+		<option value="Dell">Dell</option>
+   </select>
+   </p>
+   <p>Computer:
+   <select name="computer" id="computer" onchange="RunEvent(this)">
+   </select>
+   </p>
+   <hr/>
+   <div id="calcList"></div>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<title>Test maxlength attribute for the textarea (IE5+)</title>
+		<script type="text/javascript">
+function guardMaxLength()
+{
+	var ta=event.srcElement;
+	if(ta.value.length>=ta.maxlength) 
+	{
+		//strategy 1
+		event.returnValue=false; //cancel event
+	}
+}
+function ensureMaxLength()
+{
+	if(window.event.propertyName=='value')
+	{
+		var ta=window.event.srcElement;
+		if(ta.value.length>ta.maxlength) {
+			ta.value=ta.value.substr(0,ta.maxlength);
+		}
+		window.status='Length: '+ta.value.length+' ('+window.event.type+')';
+	}
+}
+function setTextareaMaxLengthHandler()
+{
+	var tas=document.getElementsByTagName('textarea');
+	for(var i=0; i<tas.length; i++)
+	{
+		var ta=tas[i];
+		if(ta.maxlength) 
+		{
+			ta.maxlength=parseInt(ta.maxlength,10);
+			if(!isNaN(ta.maxlength)) 
+			{
+				//
+				ta.attachEvent('onkeypress', guardMaxLength);
+				//ensure the length is never exceeded (handle a paste "attack")
+				ta.attachEvent('onpropertychange', ensureMaxLength);
+			}
+		}
+	}
+}
+function showInfo()
+{
+	var o=document.getElementById('test');
+	alert('length:'+o.value.length+'\nmaxlength:'+o.maxlength+(o.value.length<=parseInt(o.maxlength,10)?'\nOK':'\nFAIL'));
+}
+window.attachEvent&&window.attachEvent('onload',setTextareaMaxLengthHandler);
+		</script>
+	</head>
+	<body>
+		<h1>test maxlength attribute for the textarea (Win/IE5+)</h1>
+		<div >versie 0.1</div> 
+		<p>
+			Deze library introduceert de <code>maxlength</code> property voor de <code>textarea</code> tag. Deze versie werkt alleen in Internet Explorer 5.0+ op Windows (alleen getest op 6.0). Er wordt geprobeerd het gedrag van de <code>input type=text</code> zoveel mogelijk te benaderen. 
+		</p>
+		<form>
+			<pre>&lt;input type="text" maxlength="10" name="input" value=""&gt;</pre>
+			<input type="text" maxlength="12" name="input" value="1234567890"/>
+			<pre>&lt;textarea maxlength="35" id="test" name="textarea" cols="25" rows="5"&gt;
+12345678901234567890
+1234567890&lt;/textarea&gt;</pre>
+			<textarea maxlength="35" id="test" name="textarea" cols="25" rows="5">
+12345678901234567890
+1234567890</textarea>
+			<input type="button" value="show length" onclick="showInfo();"/>
+			<input type="submit" value="GO"/>
+		</form>
+		<h2>Valkuilen</h2>
+		<ul>
+			<li>De maxlength property op een <code>input type=text</code> dwingt de initiele waarde niet af. Bij vulling kunnen er dus meer tekens in staan dan toegestaan. Daarom is dit gedrag bij de <code>textarea</code> overgenomen.</li>
+			<li>Op Windows bestaat een nieuwe regel uit twee tekens (CR en LF), op Macintosh en UNIX is het één teken (de ene doet CR en de andere LF). In javascript wordt de OS conventie aangehouden, maar als de data gepost wordt, dan wordt de Windows conventie aangehouden (HTTP gebruikt zelf ook CR LF). Dit gedrag is bij Safari (1.2.4), Firefox (1.0) en Internet Explorer (5.2) op de Mac geconstateerd. Opera 7.5.1 op de Mac gebruikt in beide gevallen CR LF. Dus als er in een <code>textarea</code> een nieuwe regel komt te staan, dan is de lengte client side anders dan server side. Dit gedrag wordt in een nieuwe versie gerepareerd (deze versie werkt toch alleen voor Win/IE5+).</li>
+	</body>
+</html>

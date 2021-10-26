@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>base2inspect</title>
+		<style type="text/css" media="screen">
+.branch { 
+	background-image:url(base2inspect/branch.png);
+	background-repeat:no-repeat;
+	background-position:97% 50%; 
+}	
+option { padding-right: 15px;}
+div { font-family: sans-serif;}
+#browser {
+	white-space: nowrap;
+	overflow: auto;
+	border: 1px solid gray;
+	background-color: lightgrey;
+	padding: 6px;
+}
+div.path { margin: 0 0 2px 2px; font-size: 13px;}
+div.path code { font-size: 13px; font-weight: bold;}
+		</style>
+		<script src="base2/base2-legacy-p.js" type="text/javascript" charset="utf-8"></script>
+		<script src="base2/base2-dom-fp.js" type="text/javascript" charset="utf-8"></script>
+		<script src="base2inspect/base2inspect.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+function $(id) { return document.getElementById(id); }		
+window.onload=function() {
+	eval(base2.namespace);
+	var node=new DOC.Node("base2","[root]",DOC.getNamespaceNodes);
+	var browser=new DOC.ColumnControl(4,18,node,$("browser"));
+}			
+		</script>
+	</head>
+	<body>
+		<h1>base2inspect</h1>
+		<div id="browser"></div>
+		<p>Some <a href="base2inspect/ontwerp.txt">design and some notes</a> (half Dutch, half English, mostly cryptic).</p>
+		<!--#include file="ga.html"-->		
+	</body>
+</html>

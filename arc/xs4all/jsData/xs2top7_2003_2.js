@@ -1,0 +1,3 @@
+/*stats, powered by toSource; (c) Cats Deep 2003*/
+var lastUpdate=new Date(2003,5-1,24,23,8,40,997);
+var top7stats=['<a href=\"http://www.xs4all.nl/~zanstra/fotos/index.htm\">fotos/index.htm</a> (304x)','<a href=\"http://www.xs4all.nl/~zanstra/index.htm\">index.htm</a> (180x)','<a href=\"http://www.xs4all.nl/~zanstra/dzLib/telNr.htm\">dzLib/telNr.htm</a> (120x)','<a href=\"http://www.xs4all.nl/~zanstra/jsPrj/oneliners.htm\">jsPrj/oneliners.htm</a> (83x)','<a href=\"http://www.xs4all.nl/~zanstra/statistics.html\">statistics.html</a> (40x)','<a href=\"http://www.xs4all.nl/~zanstra/captainsLog.htm\">captainsLog.htm</a> (39x)','<a href=\"http://www.xs4all.nl/~zanstra/dzLib/toSource.htm\">dzLib/toSource.htm</a> (38x)'];

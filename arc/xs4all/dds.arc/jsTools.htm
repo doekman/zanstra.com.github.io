@@ -1,0 +1,170 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="jsTools.css">
+	<style type="text/css">
+		.even {
+			background-color: #000044;
+		}
+	</style>
+	<SCRIPT language="javascript" type="text/javascript">
+
+function checkBrowser(){
+	//stolen from http://www.bratta.com, thanks!
+	this.ver=navigator.appVersion
+	this.dom=document.getElementById?1:0
+	this.ie5=(this.ver.indexOf("MSIE 5")>-1 && this.dom)?1:0;
+	this.ie4=(document.all && !this.dom)?1:0;
+	this.ie4mac=this.ie4 && navigator.userAgent.indexOf("Mac")>-1
+	this.ns5=(this.dom && parseInt(this.ver) >= 5) ?1:0;
+	this.ns4=(document.layers && !this.dom)?1:0;
+	this.bw=(this.ie5 || this.ie4 || this.ns4 || this.ns5) && !this.ie4mac
+	return this
+}
+bv=new checkBrowser(); //get browser version
+
+function resetFormat(objTable,intLo,intHi) {
+	for(var i=intLo; i<=intHi; ++i) {
+		objTable.rows[i].className=objTable.rows[i].className.replace(/even\b/g,"");
+		objTable.rows[i].className=objTable.rows[i].className.replace(/odd\b/g,"");
+		objTable.rows[i].className+=(i%2>=1?"odd":"even");
+	}
+}
+function funDefaultCompare(a,b) {
+	if(a.toLowerCase()>b.toLowerCase())
+		return 1;
+	else if(a.toLowerCase()<b.toLowerCase())
+		return -1;
+	else
+		return 0;
+}
+var intLastColumn=-1;
+var blnAscending=true;
+
+function sortTable(objTable,intColumn,intLo,intHi) {
+	var intMax;
+	var funCmp=funDefaultCompare;
+	if(!bv.ie5) {
+		alert('Sorry, sorting capabilities only available for Internet Explorer 5');
+		return;
+	}
+//switch between ascending and descending sorting, but only if not changed from column.
+//also make it generic, so a new sorted column can be added easily
+	if(intLastColumn==intColumn) {
+		blnAscending=!blnAscending;
+	}
+	intLastColumn=intColumn;
+
+	for(var i=intHi; i>intLo; --i) {
+		intMax=i;
+		for(var j=i-1; j>=intLo; --j) {
+			strCellA=objTable.rows[j].cells[intColumn].innerText;
+			strCellB=objTable.rows[intMax].cells[intColumn].innerText;
+			if(blnAscending) {
+				if(funCmp(strCellA,strCellB)>0) {
+					intMax=j;
+				}
+			} else {
+				if(funCmp(strCellA,strCellB)<0) {
+					intMax=j;
+				}
+			}
+			if(intMax!=i) {
+				objTable.rows[i].swapNode(objTable.rows[intMax]);
+			}
+		}
+	}
+	resetFormat(objTable,intLo,intHi);
+}
+	</SCRIPT>
+</head>
+
+<body>
+	<h1>jsTools</h1>
+	<hr size=1 style="border-color: #0000ff">
+	<input type=text name=objectString value="document" style="width: 95%" onkeypress='if(event.keyCode==13) okAnchor.click();'>
+	<br>
+	<a href="#" name=okAnchor onclick="doBrowse(objectString.value)" class='label'>OK</a>
+	<a href="#" onclick='obWin.innerHTML=""' class='label'>Clear</a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options
+	<input type=checkbox checked id=noEvents>
+	<a href='#' onclick='noEvents.click()' class='label'>No events</a>
+	<input type=checkbox checked id=asText>
+	<a href='#' onclick='asText.click()' class='label'>Values as text</a>
+	<input type=checkbox checked id=notNull>
+	<a href='#' onclick='notNull.click()' class='label'>No empty properties</a>
+	<br>
+	<hr size=1 style="border-color: #0000ff" id=lijn>
+	<span id=obWin></span>
+	<hr size=1 style="border-color: #0000ff">
+	<textarea name=htmlEle style="width: 95%" rows=3 ondblclick='this.rows==3?this.rows=20:this.rows=3'>&lt;textarea name=test&gt;</textarea>
+	<br>
+	<A href='#' onclick='obElement.innerHTML+=htmlEle.value' class='label'>Create HTML element</A>
+	&nbsp;
+	<A href='#' onclick='eval(htmlEle.value)' class='label'>Run JS Code</A>
+	&nbsp;
+	<select name=macros onchange='htmlEle.innerText=this.options[this.selectedIndex].value'>
+		<option value="">--Choose an insert-macro</option>
+		<option value="<TABLE id=idtable><TR><TD>One</TD><TD>Two</TD></TR><TR><TD>1</TD><TD>2</TD></TR></TABLE>">Table 2x2</option>
+		<option value="var s='String'; alert(s);">Alert test</option>
+		<option value="<textarea id=idtextarea>This is an textarea</textarea>">Textarea</option>
+	</select>
+	<br>
+	<span id=obElement></span>
+	<script>
+function doBrowse(strObj)
+{	obWin.innerHTML=browseObject(strObj);
+	tabBrowser.rows[0].cells[0].style.width='200px';
+}
+function fmtObjPath(strObj) {
+	var arr=strObj.split('.');
+	var res='';
+	var curCtx; //current context
+	for(var i=0; i<arr.length; i++) {
+		curCtx='';
+		for(var j=0; j<=i; j++) 
+			curCtx += arr[j] + (j<i?".":""); //add a point (.), if it's not the last element.
+		curCtx = curCtx.replace(/[.]([0-9]+)/i,"[$1]");  //rename aap.12 to aap[12]
+		res+='<a href="#" onclick="doBrowse(\''+curCtx+'\')" class=label>'+arr[i]+'</A>'+(i<arr.length-1?".":"");
+	}
+	return res;
+}
+function TAG(tag,attrs,str) { return "<"+tag+(attrs==null||attrs==""?"":" "+attrs)+">"+str+"</"+tag+">" };
+
+function browseObject(strObj)
+{	var obj=eval(strObj);
+	var str="";
+	var i=0, row;
+	strObj=strObj.replace(/\[([0-9]+)\]/g,".$1");
+	str=TAG("TR","", TAG("TH","",TAG("A","href='#' onclick='sortTable(tabBrowser,0,1,tabBrowser.rows.length-1)'","Property")) + TAG("TH","",TAG("A","href='#' onclick='sortTable(tabBrowser,1,1,tabBrowser.rows.length-1)'","Value") ) );
+	for(o in obj)
+	{	if(noEvents.checked && o.indexOf("on")==0)
+			continue; //skip
+		row="";
+		if(notNull.checked && (""+obj[o])=="")
+			continue; //skip
+
+		if((""+obj[o])=="[object]")
+			row=TAG("TD",null,"<a href='#' onclick='doBrowse(\""+(strObj+"."+o).replace(/[.]([0-9]+)/i,"[$1]")+"\")' class=label>"+o+"</a>");
+		else
+			row=TAG("TD",null,o);
+		sTmp=""+obj[o];
+		if(asText.checked)
+		{	sTmp=sTmp.replace(/</g,"&lt;");
+			sTmp=sTmp.replace(/>/g,"&gt;");
+		}
+		if(sTmp.length>100)
+			row+=TAG("TD",null,"<textarea rows=3 style='width: 100%; background-color: transparent; color: yellow' ondblclick='this.rows==3?this.rows=20:this.rows=3'>"+sTmp+"</textarea>");
+		else
+			row+=TAG("TD",null,sTmp);
+		str+=TAG("TR","class=" + (i++%2>=1?"odd":"even"),row );
+	}
+	str="<COLGROUP class='tableLabel' style='width: 200px'><COLGROUP>"+str;
+	str=TAG("TABLE","id=tabBrowser cellpadding=0 cellspacing=0 cols=2",str);
+	str="<DIV style='margin-bottom: 5px'>Browsing: <code>"+fmtObjPath(strObj)+"</code></DIV>"+str;
+	return str;
+}
+	</script>
+</body>
+</html>

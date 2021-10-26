@@ -1,0 +1,81 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title> New Document </title>
+  <style type="text/css">
+#CURSOR { color: blue }
+  </style>
+	<script language="javascript">
+var blnCursorOn=true;
+var oCursor;
+function doCursor()
+{
+  CURSOR.style.visibility=blnCursorOn?'hidden':'visible';
+  window.setTimeout(doCursor,blnCursorOn?350:500);
+  blnCursorOn = !blnCursorOn;
+}
+
+function handleInput() 
+{
+  var ch=String.fromCharCode(event.keyCode);
+  var x=oCursor.previousSibling;
+  x.data+=ch;
+}
+
+function handleControl()
+{
+  window.status='event.keyCode='+event.keyCode+' ('+String.fromCharCode(event.keyCode)+')';
+  switch(event.keyCode)
+  {
+    case 8: //backspace
+      var x=oCursor.previousSibling;
+      if(typeof x=='undefined'||typeof x.data=='undefined')
+      {
+        //no previous text-node, so add one
+        //...
+      }
+      if(x.data.length>0)
+        x.data=x.data.substr(0,x.data.length-1);  
+      break;
+    case 37: //left-cursor
+      var x=oCursor.previousSibbling;
+      var y=oCursor.nextSibling;
+//      if(typeof y=='undefined')
+      {
+        //add textnode
+        y=document.createTextNode(x.data.substr(x.data.length-1,1));
+        x.parentNode.addChild(y);
+        x.data=x.data.substr(0,x.data.length-1);
+      }
+
+      break;
+  }
+}
+
+function initEditor(sID)
+{
+  //Create the cursor SPAN node
+  var o=document.getElementById(sID);
+  oCursor=document.createElement('SPAN');
+  oCursor.id='CURSOR';
+  oCursor.innerText='|';
+  o.appendChild(oCursor);
+  //let it blink
+  doCursor();
+  //initialize event-handlers
+  document.body.onkeypress=handleInput;
+  document.body.onkeydown=handleControl;
+}
+
+function initPage()
+{
+  initEditor('editor');
+}
+	</script>
+</head>
+
+<body bgcolor="#FFFFFF" onload="initPage();">
+	<h1>HTML Editor</h1>
+  <p id="editor">Dit kun je bewerken</p>
+</body>
+</html>

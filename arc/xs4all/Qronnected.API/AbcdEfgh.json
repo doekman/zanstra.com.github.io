@@ -1,0 +1,49 @@
+{ "responseCode": 200
+, "data":
+  { "show": 
+    { "name": "Brigitte Kaandorp"
+    , "code": "AbcdEfgh"
+    , "startsAt": "2013-12-01T20:15:00.000Z"
+    , "location": "Oosterpoort"
+    , "attributes": ["Vak", "Rij", "Stoel", "Type"]
+    , "revision": 1
+    , "message": null
+    , "ticketRevision": 124
+    , "tickets": 
+      [ { "ticketCode": "123456"
+        , "attributes": [1, 21, 23, "NORMAAL"]
+        , "customerId": "10121797"
+        , "scanDate": null 
+        , "revision": 123
+        }
+      , { "qrCode": "123457"
+        , "attributes": [1, 21, 24, "NORMAAL"]
+        , "customerId": "10121797" 
+        , "scanDate": null 
+        , "revision": 123
+        }
+      , { "qrCode": "123458"
+        , "attributes : [1, 21, 25, "NORMAAL"]
+        , "scanDate": "2013-12-01T19:14:15.123Z" 
+        , "revision": 124
+        }
+      , { "qrCode": "123459"
+        , "attributes": [1, 21, 25, "SUPER"]
+        , "customerId": "12345678"
+        , "scanDate": null 
+        , "revision": 123
+        }
+      ]
+    , "customers":
+      { "10121797": 
+        { "name": "Jan Jaap van Weringh"
+        , "address": "Vredenwoldlaan 21\n9727 DH Groningen"
+        }
+      , "12345678": 
+        { "name": "Doeke Zanstra"
+        , "address": "Willemstraat 51\n9725 JB Groningen"
+        }
+      }
+    }
+  }  
+}

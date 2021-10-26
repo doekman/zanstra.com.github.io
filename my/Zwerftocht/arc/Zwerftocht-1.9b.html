@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title> Hortusbuurt: Culinaire Zwerftocht (v1.9b 2013)</title>
+    
+    <style type="text/css">
+@media print {
+  .butbar, .ver { display:none; } 
+  pre { margin-top:6em;}
+}
+* { color: black }
+h1, p, div { font-family: "Ecofont Vera Sans"; }    
+.hidden { display:none }   
+label { display:block; width:125px; float:left;}
+#page3 label { width:275px;}
+p { clear:left }
+.breed { width:50%;}
+.dingdong { font-family:sans-serif; font-size:12px;}
+big { font-weight:bold;}
+.ver { color:lightgrey; font-size:60%}
+.stamp { float:right; color:lightgrey;}
+.warning { color:#F79D00; font-weight:bold;}
+.sel { font-weight:bold; }
+    </style>          
+    <script type="text/javascript">
+var db, K=function(k) { return k; }, Undefined=function(){};
+function showError(tx, error) {  
+  var msg="SqlError("+error.code+"): "+error.message;
+  console.error(msg);
+  alert(msg);
+}
+function setupDatabase() {
+  db.transaction(function(tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS Restaurants(naam TEXT UNIQUE,nrPlaatsen INTEGER DEFAULT 100,nrVoorgerechten INTEGER DEFAULT 0,nrHoofdgerechten INTEGER DEFAULT 0,nrNagerechten INTEGER DEFAULT 0)', [], function(tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS Groepen(naam TEXT UNIQUE,nrPersonen INTEGER,timestamp REAL)', [], Undefined, showError);
+    }, showError);
+  });
+}
+function showPage1Data() {
+  db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM Restaurants', [], function(tx, rs) {
+      console.log('rs.rows.length: '+rs.rows.length);
+      var a=[];
+      for(var i=0; i<rs.rows.length; i++) {
+        var row=rs.rows.item(i);
+        a.push([row['naam'],row['nrPlaatsen'],row['nrVoorgerechten'],row['nrHoofdgerechten'],row['nrNagerechten']].join(','));
+      }
+      $('page1_data').value = a.join('\r\n');
+	    tx.executeSql('SELECT naam, nrPersonen, timestamp FROM Groepen', [], function(tx, rs) {
+	      console.log('rs.rows.length: '+rs.rows.length);
+	      var a=[];
+	      for(var i=0; i<rs.rows.length; i++) {
+	        var row=rs.rows.item(i);
+	        a.push([row['naam'],row['nrPersonen'],row['timestamp']].join(','));
+	      }
+	      $('page1_groepen').value = a.join('\r\n');
+	    }, showError);
+    }, showError);
+  });
+}
+function updateRestaurants() {
+  var data=$('page1_data').value.replace(/^\s+|\s+$/g, '');
+  data = data=='' ? [] : data.split(/\r\n|\n|\r/);
+  db.transaction(function(tx) {
+    tx.executeSql('DELETE FROM Restaurants');
+    for(var i=0; i<data.length; i++) {
+      var rij = data[i].split(',');
+      if(rij.length==1) rij.push('10');
+      if(rij.length==2) rij.push('0');
+      if(rij.length==3) rij.push('0');
+      if(rij.length==4) rij.push('0');
+      tx.executeSql('INSERT INTO Restaurants(naam,nrPlaatsen,nrVoorgerechten,nrHoofdgerechten,nrNagerechten) VALUES(?,?,?,?,?);', rij, Undefined, showError);
+    }
+  });
+  return true;
+}     
+function updateInitialGroups() {
+  var data=$('page1_groepen').value.replace(/^\s+|\s+$/g, '');
+  data = data=='' ? [] : data.split(/\r\n|\n|\r/);
+  db.transaction(function(tx) {
+    tx.executeSql('DELETE FROM Groepen');
+    for(var i=0; i<data.length; i++) {
+      var rij = data[i].split(',');
+      if(rij.length==1) rij.push('1');
+      if(rij.length==2) rij.push(new Date().getTime());      
+      tx.executeSql('INSERT INTO Groepen(naam,nrPersonen,timestamp) VALUES(?,?,?);', rij, Undefined, showError);
+    }
+  });
+  return true;
+}     
+
+
+function getLoadBalancedColumn(columnName, f, skip, nrPersonen) {
+  if(skip.length!=2) throw new Error("skip moet 2 lang zijn");
+  console.log("skipping:["+skip.join(',')+']');
+  db.transaction(function(tx) {
+    //bepaal minimum
+    var sql = 'SELECT * FROM Restaurants';
+    tx.executeSql(sql, [], function(tx,rs) {
+      var min = Infinity; // minimaal aantal gereserveerde plaatsen waar het nog past.
+      /*vet misbruiken als lus*/sqlWhere(rs, function(rec) {
+        if(rec.nrPlaatsen-rec[columnName] >= nrPersonen && rec.naam!=skip[0] && rec.naam!=skip[1]) {
+          min = Math.min(min, rec[columnName]);
+        }
+      });
+      if (min == Infinity) {
+      	showError(null, {code:0,message:"Niet voldoende plaatsen meer beschikbaar."});
+      }
+      else {
+		  //bepaal de restaurants die in aanmerking komen
+		  sql='SELECT * FROM Restaurants';
+		  tx.executeSql(sql, [], function(tx, rs) { 
+			var rs2 = sqlWhere(rs, function(rec) {
+			  return rec.nrPlaatsen-rec[columnName] >= nrPersonen && rec[columnName]==min && rec.naam!=skip[0] && rec.naam!=skip[1];
+			});
+			var rowNr = Math.floor(Math.random()*rs2.length);
+			console.log("Getting recordnr"+rowNr+" of "+rs2.length+" items balanced.");
+			f(rs2[rowNr].naam);
+		  }, showError);
+      }
+    }, showError);
+  });
+}           
+function getColumn(columnName, f, skip, nrPersonen) {
+  if(skip.length!=2) throw new Error("skip moet 2 lang zijn");
+  db.transaction(function(tx) {
+    var sql = 'SELECT * FROM Restaurants'; 
+    tx.executeSql(sql, [], function(tx, rs) {
+      var rs2 = sqlWhere(rs, function(rec) {
+        return rec.nrPlaatsen-rec[columnName] >= nrPersonen && rec.naam!=skip[0] && rec.naam!=skip[1];
+      });
+      var rowNr = Math.floor(Math.random()*rs2.length);
+      console.log("Getting recordnr "+rowNr+" of "+rs2.length+" items non-balanced.");
+      f(rs2[rowNr].naam);
+    }, showError);
+  });
+}
+function o2s(o) {
+  var a=[];
+  for(var p in o) {
+    if(o.hasOwnProperty(p)) a.push(p+":"+o[p]);
+  }                                            
+  return "{"+a.join(',')+"}";
+}
+function sqlWhere(rs,f) { 
+  var result=[];
+  for(var i=0; i<rs.rows.length; i++) {
+    var item = rs.rows.item(i);
+    console.log(o2s(item));
+    if(f(item)) result.push(item);
+  }
+  return result;
+}
+function getNewRestaurants(balanced) {
+  var nrPersonen = +$("aantalPersonen").innerHTML;
+  var getter = balanced ? getLoadBalancedColumn : getColumn;
+  getter("nrVoorgerechten", function(voor) { 
+    $('resvoor').innerHTML = voor; 
+    getter("nrHoofdgerechten", function(hoofd) { 
+      $('reshoofd').innerHTML = hoofd; 
+      getter("nrNagerechten", function(na) { 
+        $('resna').innerHTML = na;
+        maakKopies();
+      }, [voor, hoofd], nrPersonen);
+    }, [voor,''], nrPersonen);
+  }, ['',''], nrPersonen);
+} 
+function maakKopies() {  
+  var org = $('origineel').innerHTML.replace(/\s+id=\"[^"]*\"/g, "").replace('<p class="sel"><label>Nagerecht', '<p><label>Nagerecht');
+  $('kopie1').innerHTML = org.replace("<p><label>Hoofdgerecht", '<p class="sel"><label>Hoofdgerecht');  
+  $('kopie2').innerHTML = org.replace("<p><label>Voorgerecht", '<p class="sel"><label>Voorgerecht');  
+}
+function deBoelOpslaanEnTerug() {       
+  var nrPersonen = +$("aantalPersonen").innerHTML;
+  db.transaction(function(tx) {
+    tx.executeSql('UPDATE Restaurants SET nrVoorgerechten = nrVoorgerechten+? WHERE naam=?',
+      [nrPersonen, $('resvoor').innerHTML], function(tx, rs) {
+        tx.executeSql('UPDATE Restaurants SET nrHoofdgerechten = nrHoofdgerechten+? WHERE naam=?',
+          [nrPersonen, $('reshoofd').innerHTML], function(tx, rs) {
+            tx.executeSql('UPDATE Restaurants SET nrNagerechten = nrNagerechten+? WHERE naam=?',
+              [nrPersonen, $('resna').innerHTML], function(tx, rs) {
+                tx.executeSql('INSERT INTO Groepen(naam,nrPersonen,timestamp) VALUES(?,?,?)',
+                  [$('groeptekst').innerHTML,+$('aantalPersonen').innerHTML,new Date().getTime()], function(tx, rs) {
+                    terugNaarGroepjes();
+                  }, showError);
+              }, showError);
+          }, showError);
+      }, showError);
+  }); 
+}
+function naarGroepjes() {
+  hide('page1');
+  display('page2'); 
+  $("groepnaam").focus();
+  updateGroepen();
+}
+function naarRestaurants() {
+  display('page1');
+  hide('page2');
+}
+function kiesEnToonRestaurants() {
+  db.transaction(function(tx) {
+    tx.executeSql("SELECT * FROM Groepen WHERE naam=?", [$('groepnaam').value], function(tx, rs) {
+      if(rs.rows.length>0) {
+        setGMsg("Deze groepnaam bestaat reeds; probeer wat anders");
+      } 
+      else {
+        if(personenCheck($('nrPersonen'))) {
+          hide('page2');
+          display('page3');
+          //update data
+          $('groeptekst').innerHTML = $('groepnaam').value;
+          var aantal = $('nrPersonen').value;
+          $('aantalPersonen').innerHTML = aantal;
+          $('aantalPersonenSuffix').innerHTML = aantal==1 ? 'persoon' : 'personen';
+          getNewRestaurants(true); 
+        }
+      }
+    }, showError);
+  });
+}
+function updateGroepen() {
+  db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM Groepen ORDER BY timestamp DESC', [], function(tx,rs) {
+      var a=[];
+      if(rs.rows.length==0) {
+        a.push('<li><em>Er zijn nog geen groepen ingevoerd</em></li>');
+      } 
+      else {                               
+        for(var i=0; i<rs.rows.length; i++) {
+          var row=rs.rows.item(i);
+          a.push("<li>"+row.naam+" ("+(row.nrPersonen==1?"1 persoon":row.nrPersonen+" personen")+")</li>");
+        } 
+      }
+      $("groepen").innerHTML = a.join('');
+      tx.executeSql('SELECT sum(nrPersonen) AS totaal FROM Groepen', [], function(tx, rs) {  
+        var totaal=rs.rows.item(0).totaal;
+        $('TotaalAantalPersonen').innerHTML = totaal==null ? "0" : totaal;
+      }, showError);
+    }, showError);
+  });
+} 
+function terugNaarGroepjes() {
+  display('page2');
+  hide('page3');
+  $("groepnaam").focus();
+  updateGroepen();
+}
+function printenEnOpslaan() {
+  print();
+  if(confirm("De boel opslaan?")) {
+    deBoelOpslaanEnTerug();
+  }
+}
+function personenCheck(invoer) {
+  setPMsg();
+  setGMsg();
+  if(!/^[1-9][0-9]*$/.test(invoer.value)) {
+    setPMsg("Oepsie: hier moet een positief getal staan...");
+    invoer.select();
+    return false;
+  }
+  if(invoer.value>6 && !confirm("Hmmm, is dit niet een iets te grote groep?")) {
+    invoer.select();
+    return false;
+  }
+  return true;
+}
+function setPMsg(s) { $('nrPersonenMsg').innerHTML = s || ''; }       
+function setGMsg(s) { $('groepnaamMsg').innerHTML = s || ''; }       
+function $(id) { return document.getElementById(id); }
+function display(id) { $(id).style.display='block'; }
+function hide(id) { $(id).style.display='none'; }
+window.onload = function() {
+  if(window.openDatabase) {
+    db = openDatabase('Zwerftocht', '1.0', 'Hortusbuurt Culinaire Zwerftocht', 200000);
+    if(!db) {
+      alert("Failed to open the database on disk.  This is probably because the version was bad or there is not enough space left in this domain's quota");
+    }
+    else {
+      hide('initial');
+      display('page1');
+      setupDatabase();
+      showPage1Data();
+    }
+  } 
+};
+</script>
+  </head>
+
+  <body>
+  <h1><span class="stamp">2013</span>Hortusbuurt: Culinaire Zwerftocht <span class="ver">(v1.9b)</span></h1>
+  <div id="initial" style="display: none; ">
+    <p>Dit programma werkt alleen met <a href="http://www.apple.com/safari/">Safari 3.1+</a>, <a href="http://www.google.com/chrome/">Chrome</a> of met een browser met <a href="http://www.whatwg.org/specs/web-apps/current-work/#sqltransaction">HTML5 database storage</a> ondersteuning.</p>
+    <p>Javascript moet overigens ook ingeschakeld staan.</p>
+  </div>
+  <div id="page1" class="hidden" style="display: none; ">
+    <form>
+      <p>
+        <label>&nbsp;</label>
+        <span class="dingdong">Restaurantnaam,aantal plaatsen(, nrVoorgerechten, nrHoofdgerechten, nrNagerechten)</span>
+      </p>  
+      <p>
+        <label>Restaurants<br>
+          <input type="button" onclick="updateRestaurants();" value="Save"><br>
+          <select onchange="document.getElementById(&#39;page1_data&#39;).value = this.options[this.selectedIndex].value;">
+            <option>--prefill--</option>
+            <option value="Bij Buurman,12
+Bla Bla,12
+Eetcafé 73-2,12
+Eetwaar,12
+Fortuna, 12
+Golden Palace, 12
+Het HeerenHuis, 12
+House of Spice, 12
+Macedonië, 12
+Rigoletto, 12
+Stalhouderij, 12
+Zevende Hemel, 12">2011</option>
+            <option value="Bla Bla,17
+House of Spice,17
+Eetcafé 73-2,17
+Macedonië,17
+Eetwaar,17
+Rigoletto,17
+Fortuna,17
+Stalhouderij,17
+Golden Palace,17
+Zevende Hemel,17
+Het HeerenHuis,17">2012</option>
+            <option value="Bla Bla,13
+Eetcafé 73-2,13
+Macedonië,13
+Eetwaar,13
+Rigoletto,13
+Fortuna,13
+Stalhouderij,13
+Het HeerenHuis,13
+Brasserie Het Paleis,13">2013</option>
+          </select>
+        </label>
+				<textarea id="page1_data" rows="14" class="breed"></textarea>
+      </p>
+      <p>
+        <label>&nbsp;</label>
+        <span class="dingdong" title="De timestamp (een getal) is optioneel">Groep Naam,aantal personen(,timestamp)</span>
+      </p>  
+      <p>
+        <label>Groepen<br><input type="button" onclick="updateInitialGroups();" value="Save"></label>
+				<textarea id="page1_groepen" rows="5" class="breed"></textarea>
+      </p>
+      <p>
+        
+        <input type="button" onclick="naarGroepjes();" value="Volgende -&gt;">
+      </p>   
+      <h2>Cursus SQL</h2>
+      <p>Wijzigen van één rij data (de kolom <em>naam</em> moet uniek zijn)</p>
+      <pre>UPDATE Restaurants SET nrPlaatsen=12 WHERE naam='De Kleine Mogul'</pre>
+      <p>Wijzigen van meerdere rijen data</p>
+      <pre>UPDATE Restaurants SET nrPlaatsen=10 WHERE nrPlaatsen=100</pre>  
+      <p>Wijzigen van <b>alle</b> rijen data</p>
+      <pre>UPDATE Restaurants SET nrPlaatsen=10</pre>
+        
+      <p>Verwijderen alle rijen van een tabel</p>
+      <pre>DELETE FROM Groepen</pre>
+      <p>Verwijderen bepaalde data</p>
+      <pre>DELETE FROM Restaurants WHERE nrPlaatsen&gt;=10</pre>  
+             
+    </form>
+  </div>
+  <div id="page2" class="hidden" style="display: none; ">
+    <p>
+      <label>Groepnaam</label>
+      <input type="text" id="groepnaam" class="breed" value="Test groep">
+    </p>
+    <p><label>&nbsp;</label><span id="groepnaamMsg" class="warning"></span></p>
+    <p>
+      <label>Aantal personen</label>
+      <input type="text" id="nrPersonen" class="small" value="1"> <span id="nrPersonenMsg" class="warning"></span>
+    </p>
+    <p>
+      <input type="button" onclick="naarRestaurants();" value="&lt;- Vorige">
+      <input type="button" onclick="kiesEnToonRestaurants();" value="Kies restaurants -&gt;">
+    </p>
+    <h2>Geregistreerde groepen <span>(laatst geregistreerden bovenaan)</span></h2>
+    <p>Er doen totaal <strong id="TotaalAantalPersonen">0</strong> personen mee</p>
+    <ul id="groepen"><li><em>Er zijn nog geen groepen ingevoerd</em></li></ul>
+  </div>
+  <div id="page3" class="hidden">
+	<p>
+		Volg ons op Twitter onder <a href="http://twitter.com/#!/hortusbuurt">@hortusbuurt</a>, 
+		op FaceBook op <a href="https://www.facebook.com/profile.php?id=100001782445055">Bewoners Hortusbuurt Ebbingekwartier</a>
+		of gewoon op <a href="http://www.hortusbuurt.nl/">http://www.hortusbuurt.nl/</a>.
+		<br />
+		Dit jaar geen evaluatieformulieren. U kunt uw evaluatie sturen naar <a href="Penningmeester@hortusbuurt.nl">Penningmeester@hortusbuurt.nl</a>. Geprint met <a href="http://www.ecofont.com/en/products/green/font/download-the-ink-saving-font.html">Ecofont</a>.
+	</p>
+    <div id="origineel">
+      <pre class="onlyprint">------8&lt;-------------------------------------------------------------------</pre>
+      <p>
+        Groep <big id="groeptekst">Groep Martin</big> met <big id="aantalPersonen">2</big> <span id="aantalPersonenSuffix">personen</span>
+      </p>
+      <p><label>Voorgerecht (18:30 ‑ 19:30):</label>    <span id="resvoor">Eetwaar</span>
+      </p>  
+      <p><label>Hoofdgerecht (19:30 ‑ 21:00):</label>   <span id="reshoofd">Zevende Hemel</span>
+      </p>
+      <p class="sel"><label>Nagerecht (21:00 ‑ 22:00):</label>      <span id="resna">Macedonië</span>
+      </p>
+      <!-- p>Borrel (22:00+)</p -->
+    </div>
+    <p class="butbar">
+      <input type="button" onclick="terugNaarGroepjes();" value="&lt;- Vorige">
+      <input type="button" onclick="getNewRestaurants(false);" value="Ander restaurant">
+      <input type="button" onclick="printenEnOpslaan();" value="Printen en opslaan">
+    </p>
+    <div id="kopie1" class="onlyprint">
+      <pre class="onlyprint">------8&lt;-------------------------------------------------------------------</pre>
+      <p>
+        Groep <big>Groep Martin</big> met <big>2</big> <span>personen</span>
+      </p>
+      <p><label>Voorgerecht (18:30 ‑ 19:30):</label>    <span>Eetwaar</span>
+      </p>  
+      <p class="sel"><label>Hoofdgerecht (19:30 ‑ 21:00):</label>   <span>Zevende Hemel</span>
+      </p>
+      <p><label>Nagerecht (21:00 ‑ 22:00):</label>      <span>Macedonië</span>
+      </p>
+      <!-- p>Borrel (22:00+)</p -->
+    </div>
+    <div id="kopie2" class="onlyprint">
+      <pre class="onlyprint">------8&lt;-------------------------------------------------------------------</pre>
+      <p>
+        Groep <big>Groep Martin</big> met <big>2</big> <span>personen</span>
+      </p>
+      <p class="sel"><label>Voorgerecht (18:30 ‑ 19:30):</label>    <span>Eetwaar</span>
+      </p>  
+      <p><label>Hoofdgerecht (19:30 ‑ 21:00):</label>   <span>Zevende Hemel</span>
+      </p>
+      <p><label>Nagerecht (21:00 ‑ 22:00):</label>      <span>Macedonië</span>
+      </p>
+      <!-- p>Borrel (22:00+)</p -->
+    </div>
+  </div>
+  
+
+</body></html>

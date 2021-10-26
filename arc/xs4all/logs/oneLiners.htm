@@ -1,0 +1,348 @@
+<html>
+<head>
+	<title>Javascript: one-liners</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+/*for use for the menu generate script*/
+.toc1 { padding-left: 0mm }
+.toc2 { padding-left: 5mm }
+.toc3 { padding-left: 10mm }
+.toc4 { padding-left: 15mm }
+.toc5 { padding-left: 20mm }
+.toc6 { padding-left: 25mm }
+
+.comment {
+  color: blue; 
+}
+	</style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+function ID(s) { return document.getElementById(s); }
+function toggleDisplay(o) {
+  if(typeof o=='string') o=ID(o);
+  if(o!=null&&o.style!=null) {
+    o.style.display=o.style.display=='none'?'block':'none';
+  }
+}
+function showScript(strName) {
+//with this function, I only have to state script once
+//and the client can run it, AND view it.
+  var oScript, oPre;
+  oPre=document.getElementById('idPre'+strName);
+  oScript=document.getElementById('idScript'+strName);
+  //oPre.innerText: .innerHTML messes up new-lines and white-space, which is a shame, so I can't use HTML in javascript comments :-(
+  if(window.showModalDialog) //IE
+  {
+    oPre.innerText=oScript.innerHTML.replace(/^\s*/,'');
+  }
+  else //mozilla
+  {
+    oPre.innerHTML=oScript.innerHTML.replace(/^\s*/,'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  
+}
+function pageInit() {
+  var arrScripts=['QueryString','Trim','DaysInMonth','Max','Biggest','RndItem','AutoChapter','InsertTOC','ValidatePC','Obj2Str'];
+  for(var i=0; i<arrScripts.length; i++) {
+    showScript(arrScripts[i]);
+  }
+  setDemoGrootste(document.getElementById('demoGrootsteA'),'biggest');
+  setDemoGrootste(document.getElementById('demoGrootsteB'),'max');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="110"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    oneLiners.js
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>One-liners</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+  &nbsp;
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <p>
+    In de traditie van de Binair pagina's in <a href="http://www.kijk.nl">KIJK</a> van Nico Baaijens hier
+    een (groeiende) verzameling one-liners. De code in de grijze vakken wordt rechtstreeks gekopieerd uit
+    de &lt;script&gt; tags, dus deze pagina is 
+    <a href="javascript: void toggleDisplay('WYSIWYR')" class="toggle">WYSIWYR</a>!
+      <div style="display: none" id="WYSIWYR" class="insertHTML">
+        <p>
+          What you See is What you Run. Nooit meer fouten in de code op het scherm,
+          omdat er snel nog wat gewijzigd is. Verminderen van redundantie is niet alleen een mooi streven,
+          maar het is ook dankbaar werk :-O
+        </p>
+        <p>
+          Hoe werkt het? Neem een script blok en een pre blok:
+          <pre class="code">&ltscript language="javascript" id="idScript"&gt; alert('hoi'); &lt;/script&gt;
+&lt;pre id="idPre"&gt;&lt;/pre&gt;</pre>
+          en voer de volgende code uit:
+          <pre class="code">idPre.innerText=idScript.innerHTML</pre>
+          Notities: 
+        </p>
+        <ul>
+          <li>
+            Bij de <code>PRE</code> neem ik innerText, ipv innerHTML, omdat er anders opmaak verloren gaat
+            (new-lines kun je vervangen door <code>&lt;BR&gt;</code>, maar het inspringen gaat verloren).
+            Het gebruik van innerText heeft als nadeel dat je geen TAG's kunt verstoppen in javascript-comments.</li>
+          <li>
+            Bovenstaande code is <strong>niet</strong> WYSIWYR.</li>
+          <li>
+            <code>.replace(/^\s*/,'')</code> plak ik er nog even aanvast, om de eerste linebreak weg te krijgen</li>
+          <li>
+            Dit werkt alleen met <em>inline</em> script. Als er een <code>SRC</code> attribuut gebruikt wordt,
+            kun je volgens mij niet de code als tekst eruit krijgen</li>
+        </ul>
+      </div>
+
+  </p>
+
+<!-------------------------------------------------------------------------------->
+  <h2><a name="qs"></a>QueryString</h2>
+  <p>
+    Hoe vraag ik de waarde van een <a href="?naam=Doeke%20Zanstra">querystring</a> variabele op?<br>
+    <a href="javascript: void alert(QueryString(document.getElementById('idQS').value));" class="code">
+    alert(QueryString(<input type="text" id="idQS" value="naam" class="textbox" style="width: 150px" onclick="return false;"
+    >));</a>
+  </p>
+<script language="javascript" id="idScriptQueryString">
+function QueryString(s) {
+  var res=new RegExp("(\\?|&)"+s+"=([^&]*)(&|$)","i").exec(location.search);
+  return res?decodeURIComponent(res[2]):null;
+}
+</script>
+<pre class="code" id="idPreQueryString"> </pre>
+<!-------------------------------------------------------------------------------->
+  <h2><a name="trim"></a>Trim</h2>
+  <p>
+    Hoe trim je een string in javascript?<br>
+    <a href="javascript: void alert('['+document.getElementById('idString').value.trim()+']');" class="code">
+    alert('['+<input type="text" id="idString" value="  trim me   " class="textbox" style="width: 150px" onclick="event.cancelBubble=true;"
+    >.trim()+']');</a>
+  </p>
+<script language="javascript" id="idScriptTrim">
+String.prototype.trim=function String_trim() {
+  return this.replace(/^ +| +$/g,'');
+}
+</script>
+<pre class="code" id="idPreTrim"> </pre>
+<!-------------------------------------------------------------------------------->
+  <h2><a name="daysInMonth"></a>Knokkelregel, of, aantal dagen in een maand</h2>
+  <p>
+    Met een handigheidje gemakkelijk het aantal dagen van een maand bepalen (maand is 0-gebaseerd, dag is 1-gebaseerd).<br>
+    <a href="javascript: void alert(numberOfDays(parseInt(idDIMYear.value,10),parseInt(idDIMMonth.options[idDIMMonth.selectedIndex].value,10)));" class="code">
+    alert(numberOfDays(<input type="text" id="idDIMYear" value="2001" class="textbox" style="width: 50px" onclick="event.cancelBubble=true;"
+    >,<select id="idDIMMonth" onclick="event.cancelBubble=true;" class="textbox" style="width: 110px">
+      <option value="0">0 (januari)</option>
+      <option value="1">1 (februari)</option>
+      <option value="2">2 (maart)</option>
+      <option value="3">3 (april)</option>
+      <option value="4">4 (mei)</option>
+      <option value="5">5 (juni)</option>
+      <option value="6">6 (juli)</option>
+      <option value="7">7 (augustus)</option>
+      <option value="8">8 (september)</option>
+      <option value="9">9 (oktober)</option>
+      <option value="10">10 (november)</option>
+      <option value="11">11 (december)</option>
+    </select>));</a>
+  </p>
+<script language="javascript" id="idScriptDaysInMonth">
+function numberOfDays(nYear,nMonth) {
+  return new Date(nYear,nMonth+1,0).getDate();
+}
+</script>
+<pre class="code" id="idPreDaysInMonth"> </pre>
+<!-------------------------------------------------------------------------------->
+  <h2><a name="biggest"></a>Grootste</h2>
+  <p>
+    Retouneer de grootste van 3 parameters.
+    <a class="toggle code" href="javascript: void toggleDisplay('mathMaxWerktNiet');" title="Klik voor meer uitleg"
+    >Math.max</a> werkt nl. niet altijd (jou browser is
+    <script language="javascript">
+document.writeln((Math.max(1,2,3)==3?'OK':'<strong>niet OK</strong>')+
+                ': <code>Math.max(1,2,3)=='+Math.max(1,2,3)+'</code>).');
+    </script>
+    <br>
+    <a href="javascript: void 0" onclick="demoGrootste(this,'biggest');" class="code" id="demoGrootsteA">alert(biggest(1,4,2));</a>.
+    <br>
+    
+    <div style="display: none" id="mathMaxWerktNiet" class="insertHTML">
+      <p><em>Samenvatting</em>: Math.max met meer als 2 argumenten werkt waarschijnlijk pas vanaf IE5.5.</p>
+      <p>
+      Math.max bestaat sinds javascript 1.0 (en JScript 1.0). Echter, bij die versie kun je slechts
+      2 argumenten meegeven. In de nieuwste MS documentatie, staat dat je ook meer argumenten kunt gebruiken.
+      Volgens mij is die optie er sinds JScript 5.5 ingekomen (in mijn documentatie t.m. JScript 4.0 zit het
+      er nog niet in (JScript 3.0: IE4/IIS4/WSH1/Outlook98, JScript 4.0: Visual Studio 6).
+      </p>
+      <p>
+      De volgende versie werkt vanaf JScript 2.0 (IE3.01?, IE4, IIS1), en ondersteunt n-argumenten (in dit voorbeeld 0 tot 12). 
+      <a href="javascript: void 0" onclick="demoGrootste(this,'max');" class="code" args="6" id="demoGrootsteB">alert(max(1,4,2));</a>
+      <pre class="code" id="idPreMax"></pre>
+      </p>
+    </div><!--mathMaxWerktNiet-->
+  </p>
+<script language="javascript">
+var arrDemoGrootste={};
+function setDemoGrootste(o,f) {
+  var intMaxArgs=3;
+  if(f=='max') {
+    intMaxArgs=parseInt(Math.random()*parseInt(o.args,10)*2,10);
+  }
+  arrDemoGrootste[f]=[];
+  for(var i=0; i<intMaxArgs; i++)
+    arrDemoGrootste[f][i]=parseInt(Math.random()*25,10);
+    o.innerHTML='<nobr>alert('+f+'('+arrDemoGrootste[f].join(',')+'));</nobr>';
+}
+function demoGrootste(o,f) {
+  alert( eval(f+'('+arrDemoGrootste[f].join(',')+')') );
+  setDemoGrootste(o,f);
+}
+</script>
+<script language="javascript" id="idScriptBiggest">
+function biggest(a,b,c) { 
+  return a>b?a>c?a:c:b>c?b:c;
+} 
+</script>
+<script language="javascript" id="idScriptMax">
+function max() {
+  var res=Number.NEGATIVE_INFINITY;
+  for(var i=0; i<arguments.length; i++) {
+    if(res<arguments[i]) {
+      res=arguments[i];
+  } }
+  return res;
+}
+</script>
+<pre class="code"><span class="comment">/*<a class="toggle" href="javascript: void toggleDisplay('biggestBeslisBoom');" 
+title="Klik voor meer uitleg">Beslisboom</a><span id="biggestBeslisBoom" style="display: none"
+>------------------------
+       a  &gt; b
+    T/        \F
+   a &gt; c      b &gt; c
+  T/   \F    T/   \F
+  [a]  [c]   [b]  [c]
+------------------------</span>*/</span></pre>
+<pre class="code" id="idPreBiggest"></pre>
+<!-------------------------------------------------------------------------------->
+  <h2><a name="randomElement"></a>Willekeurig element uit een Array</h2>
+  <p>
+    Gemakkelijk een willekeurig element uit een array halen.<br>
+    <a href="javascript: void alert(['Tien','Boer','Vrouw','Heer','Aas'].rndItem());" class="code">
+    alert(['Tien','Boer','Vrouw','Heer','Aas'].rndItem());</a>
+  </p>
+<script language="javascript" id="idScriptRndItem">
+Array.prototype.rndItem=function Array_rndItem() {
+	return this[parseInt(Math.random()*this.length,10)];
+}
+</script>
+<pre class="code" id="idPreRndItem"></pre>
+<!-------------------------------------------------------------------------------->
+  <h2>Hoofdstukken</h2>
+<!-------------------------------------------------------------------------------->
+  <h3><a name="nrChapters"></a>Auto-nummer hoofdstukken</h3>
+  <p>
+    Eindelijk geen hoofdstukken meer nummeren met de hand:
+    <a href="javascript: numberHeaders()" class="code">numberHeaders();</a>
+  </p>
+<script language="javascript" id="idScriptAutoChapter">
+function numberHeaders() {
+	var arrNr=[0,0,0,0,0,0]; //chapter count array
+  var o, nLevel, strNumber;
+
+	for(var i in document.all) {
+    o=document.all[i];
+    if(/H[1-6]/i.test(o.tagName)) {
+      nLevel=parseInt(o.tagName.substr(1,1),10)-1; //0=h1, 1=h2
+      arrNr[nLevel]++; //increase level-counter
+      for(var j=nLevel+1; j<9; j++) {
+        arrNr[j]=0; //reset lower levels
+      }
+      strNumber=arrNr.slice(0,nLevel+1).join('.');
+      o.innerText=strNumber+' '+o.innerText;
+} } }
+</script>
+  <pre class="code" id="idPreAutoChapter"></pre>
+<!-------------------------------------------------------------------------------->
+  <h3><a name="insertTOC"></a>Genereer Inhoudsopgaaf</h3>
+  <p>
+    Dit script genereert een inhoudsopgaaf. Benedenstaande links demonstreren een
+    lijst van alle &lt;h1&gt; en &lt;h2&gt; tags. Voor het genereren van de hyperlinks 
+    zijn twee MS-Methodes nodig, <code>uniqueID</code> en <code>scrollIntoView</code>. <br>
+    <a href="javascript: void(0);" onclick="idTOC.innerHTML=insertTOC(1,3)" class="code">idTOC.innerHTML=insertTOC(1,3);</a> en
+    <a href="javascript: void(0);" onclick="alert(insertTOC(1,3))" class="code">alert(insertTOC(1,3));</a>
+  </p>
+  <div id="idTOC" class="insertHTML">
+    &lt;div id="idTOC"&gt;Hier wordt de inhoudsopgaaf geplaatst&lt;/div&gt;
+   </div>
+  <script language="javascript" id="idScriptInsertTOC">
+  function insertTOC(nMinDepth,nMaxDepth) {
+  var o, strTOC='';
+  for(var i=0; i<document.all.length; i++) {
+    o=document.all[i];
+    if(/H[1-6]/i.test(o.tagName)) {
+      var nLevel=parseInt(o.tagName.substr(1,1),10);
+      if(nLevel>=nMinDepth&&nLevel<=nMaxDepth) {
+        strTOC+='<a class="toc'+nLevel
+           +'" href="javascript: '+o.uniqueID+'.scrollIntoView()">'
+           +o.innerText+'</a><br>\n';
+  } } }
+  return strTOC;
+}
+</script>
+  <pre class="code" id="idPreInsertTOC"></pre>
+<!-------------------------------------------------------------------------------->
+  <h2><a name="validatePC"></a>Valideer Postcode</h2>
+  <p>
+    Nederlandse postcode valideren (eerst 4 cijfers, waarvan de eerste geen 0 mag zijn,
+    gevolgd door een optionele spatie, en dan twee letters):
+    <a href="javascript: void 0" class="code" onclick="alert('Postcode is '+(validatePostalCode(idValidatePC.value)?'OK':'NIET OK'));"
+    >validatePostalCode(<input type="text" id="idValidatePC" value="9711pl" class="textbox" style="width: 50px" onclick="event.cancelBubble=true;">)</a>
+  </p>
+  <script language="javascript" id="idScriptValidatePC">
+function validatePostalCode(strPC) {
+  return typeof strPC=='string'
+    ?strPC.match(/[1-9][0-9]{3} ?[a-zA-Z]{2}/)==strPC
+    :false;
+  //Met optimalisaties van Henk KH
+}
+</script>
+  <pre class="code" id="idPreValidatePC"></pre>
+
+<!-------------------------------------------------------------------------------->
+  <h2><a name="obj2str"></a>Object to String (showObject)</h2>
+    <p>
+    Snel de properties van een object bekijken. 2e Parameter een optionele reguliere expressie,
+    om de lijst te filteren:<br>
+    <a href="javascript: void 0" class="code" onclick="alert(obj2str(eval(idShowObject.value),eval(idRegExp.value)));"
+    >alert(<input
+    type="text" id="idShowObject" value="window" class="textbox" style="width: 50px" onclick="event.cancelBubble=true;">,<input
+    type="text" id="idRegExp" value="/^[^o][^n]/i" class="textbox" style="width: 75px" onclick="event.cancelBubble=true;">);</a>
+  </p>
+<script language="javascript" id="idScriptObj2Str">
+function obj2str(o,r) {
+  var s=''; 
+  for(var i in o) { 
+    if(!r||r.test(i)) {
+      s+=i+': '+o[i]+'\n'; 
+  } }
+  return s;
+}
+</script>
+<pre class="code" id="idPreObj2Str"></pre>
+  <div class="footer">
+    Doeke Zanstra, 2001-2003, <a href="../index.htm">index</a>
+    -
+  </div>
+</td></tr></table><!--end columns--></body>
+</html>

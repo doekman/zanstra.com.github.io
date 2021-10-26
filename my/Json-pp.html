@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title> Pretty Print JSON with a Twist </title>
+		<style>
+			h1, .button-bar {
+				height: 1em;
+			}
+			textarea {
+				width: 100%;
+				height: calc(100% - 5em );
+			}
+			textarea, button {
+				font-size: 125%;
+				font-family: monospace;
+			}
+		</style>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	</head>
+	<body>
+		<h1>Pretty Print JSON with a Twist</h1>
+		<form onsubmit="return false;">
+			<div>
+				<textarea>{"type":"pedant","enabled":true,"tags":["nag","prick","pin"],"data":{"test":123,"cooperate":null}}</textarea>
+			</div>
+			<div class="button-bar">
+				<span style="float:right; margin-top:0.5em">
+					<a href="https://blog.zanstra.com/2020/10/05/Pretty-printing-JSON-with-a-twist.html">see blog article</a>
+					|
+					<a href="/my/">my projects</a>
+				</span>
+				<button>Minify</button>
+				<select>
+					<option>1
+					<option selected>2
+					<option>3
+					<option>4
+					<option>8
+				</select>
+				<select>
+					<option>space
+					<option>tab
+					<option>-
+					<option>*
+					<option>→
+					<option>␉
+				</select>
+				<button>Pretty Print</button>
+				<button>Show last valid JSON</button>
+			</div>
+		</form>
+	</body>
+	<script>
+		let json_stringify = (function() {
+			// From: https://code.google.com/archive/p/base2/
+			var _RESCAPE = /([\/()[\]{}|*+-.,^$?\\])/g;           // safe regular expressions
+			function rescape(string) {
+				// Make a string safe for creating a RegExp.
+				return String(string).replace(_RESCAPE, "\\$1");
+			};
+			function _json_stringify(obj, indent) {
+				if (typeof(indent)=='object') indent = indent[1].repeat(indent[0]);
+				if (typeof(indent)!='string') indent = ' '.repeat(indent);
+				let json = JSON.stringify(obj, null, indent);
+				r_indent = rescape(indent)
+				if (indent[0]=='\t') {
+					r_indent0 = '';
+					r_indent1N = r_indent;
+				}
+				else {
+					r_indent0 = rescape(indent.substring(0,1));
+					r_indent1N = rescape(indent.substring(1));
+				}
+				rx = new RegExp('([,{[]) *\n((?:' + r_indent + ')*)' + r_indent0 + '(' + r_indent1N + ')', 'g');
+				result = json.replace(rx, '\n$2$1$3')
+				return result[0]=='\n' ? result.substring(1) : result;
+			};
+			return _json_stringify;
+		})();
+
+		window.onload = function(e) {
+			let buttons = document.querySelectorAll('button');
+			let selects = document.querySelectorAll('select');
+			let textareas = document.querySelectorAll('textarea');
+			let last_json = textareas[0].value;
+			buttons[0].onclick = function(e) {
+				try {
+					var json = JSON.parse(textareas[0].value);
+					last_json = textareas[0].value
+				}
+				catch(ex) {
+					alert("That's not JSON.\n\n"+ex);
+					return;
+				}
+				textareas[0].value = JSON.stringify(json);
+			}
+			buttons[1].onclick = function(e) {
+				let indent_size = +selects[0].value;
+				let indent_char = selects[1].value;
+				if (indent_char=='space') indent_char=' ';
+				if (indent_char=='tab') indent_char='\t';
+				try {
+					var json = JSON.parse(textareas[0].value);
+					last_json = textareas[0].value
+				}
+				catch(ex) {
+					alert("That's not JSON.\n\n"+ex);
+					return;
+				}
+				textareas[0].value = json_stringify(json, [indent_size,indent_char]);
+				
+			}
+			buttons[2].onclick = function(e) {
+				textareas[0].value = last_json;
+			}
+		};
+	</script>
+</html>

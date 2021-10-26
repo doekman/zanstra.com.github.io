@@ -1,0 +1,125 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>Cosinus-regel</title>
+	<meta name="Generator" content="EditPlus">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<style type="text/css">
+		A,P,TD
+		{	font-family: Arial
+		;	font-size: 10pt
+		}
+		H1 
+		{	font-family: Arial
+		}
+		A.label, A:visited.label 
+		{	text-decoration: none
+		;	font-weight: bold
+		;	color: black
+		}
+		A:hover.label 
+		{	color: red
+		}
+		.hoek
+		{	position: relative
+		;	z-index: 10
+		}
+		#hoekAlpha
+		{	left: 20px
+		;	top: -30px
+		}
+		#hoekBeta
+		{	left: 200px
+		;	top: -30px
+		}
+		#hoekGamma
+		{	left: 40px
+		;	top: -90px
+		}
+	</style>
+</head>
+
+<body bgcolor="#FFFFFF">
+<script>
+	function rondAf(getal) {
+			var nFactor=Math.pow(10,paramForm.nauwkeurigheid.value);
+			return Math.round(getal*nFactor)/nFactor;
+	}
+/* Beslissingsboom:
+          a  > b
+			 T/        \F
+		 a > c        b > c
+		T/   \F      T/   \F
+	 [a]   [c]    [b]   [c]
+*/
+	function biggest(a,b,c) { 
+		return a>b?a>c?a:c:b>c?b:c
+	} 
+
+	function calcCos() {
+		with(document.cosForm) {
+			var A=parseFloat(a.value);
+			var B=parseFloat(b.value);
+			var C=parseFloat(c.value);
+			var hoek;
+			if(A+B+C<=2*biggest(A,B,C)) {
+			/* niet kleinste(a,b,c)+eenNaKleinste(a,b,c) > grootste(a,b,c) ==>
+			   niet a+b+c-grootste(a,b,c) > grootste(a,b,c) ==>
+				 a+b+c<=2*grootste(a,b,c)	*/
+				alert('Geen geldige driehoek (som twee kortste lijnstukken moet groter zijn dan het langste lijnstuk)');
+				return;
+			}
+
+			hoek = rondAf(Math.acos((A*A - B*B - C*C) / (-2*B*C))/Math.PI*180);
+			hoekAlpha.innerHTML = hoek + "&ordm;";
+			hoek = rondAf(Math.acos((B*B - A*A - C*C) / (-2*A*C))/Math.PI*180);
+			hoekBeta.innerHTML = hoek + "&ordm;";
+			hoek = rondAf(Math.acos((C*C - B*B - A*A) / (-2*B*A))/Math.PI*180);
+			hoekGamma.innerHTML = hoek + "&ordm;";
+		}
+	}
+function floatInput(objInput) {
+	if( (event.keyCode>=48&&event.keyCode<=57)||event.keyCode==46) { //'0'..'9'|'.'
+		event.returnValue=true;
+	}
+	else if (event.keyCode==44) { //',' (translate comma to point
+		event.keyCode=46;
+		event.returnValue=true;
+	}	
+	else {
+		event.returnValue=false;
+	}
+	if(event.keyCode==46&&objInput.value.indexOf('.')!=-1) { //make sure there's only one point in the figure
+		event.returnValue=false;
+	}
+}
+</script>
+
+<h1><script>document.write(document.title);</script></h1>
+<P>a&sup2; = b&sup2; + c&sup2;  - 2bc&middot;cos&alpha;
+<img src="cosinus-regel.bmp" style="display: block">
+<span id=hoekAlpha class=hoek>&alpha; &ordm;</span>
+<span id=hoekBeta class=hoek>&beta; &ordm;</span>
+<span id=hoekGamma class=hoek>&gamma; &ordm;</span>
+<form name=cosForm>
+	A
+	<input type=text size=10 name=a onkeypress='floatInput(a)'>&sup2;
+	=
+	B
+	<input type=text size=10 name=b>&sup2;
+	+
+	C
+	<input type=text size=10 name=c>&sup2;
+	-
+	2bc&middot;cos&alpha;
+	&nbsp;&nbsp;
+	<input type=button value=Calc onclick="calcCos()">
+	<input type=reset value=Reset>
+</form>
+<form name=paramForm>
+<a class=label href="javascript:void(0)" onclick="paramForm.nauwkeurigheid.focus()"># cijfers achter de komma</a>&nbsp;<input type=text name=nauwkeurigheid size=3 value=1>
+</form>
+</body>
+</html>

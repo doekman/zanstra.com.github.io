@@ -1,0 +1,156 @@
+<html lang="en" xml:lang="en">
+<head>
+	<title>inTec</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+pre {
+  border: 1px solid lightgrey;
+  background-color: #E0E0E0;
+  margin: 0 0 0.5em 0;
+  padding: 4px;
+}
+.footer { clear: both }
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    &nbsp;<!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			&nbsp;<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1 title="Internet Technologies">OS X.iii addressbook phone numbers</h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+    The Address Book applicaton on Mac OS X 10.3 (Panther or X.iii) has a new feature for auto formating phone numbers. However, in The Netherlands the area codes of phone numbers can be 3 or 4 digits in length (the regional and mobile numbers always are 10 digits, area code inclusive).
+  </p>
+  <p>
+    Below you'll find an instruction to easily let Address Book make this distinction. The number <code>0101234567</code> will be shown as <code>(010) 12 34 567</code> and <code>0515123456</code> will show up as <code>(0515) 123 456</code>. I listed all three-digit area codes and assumed other numbers must have four-digits area codes. This tip is also available <a href="telefoonNummer.htm" hreflang="nl">in Dutch</a>
+  </p>
+  <ol>
+    <li>
+      Quit the Address Book application
+    </li>
+    <li>
+      Locate the file <code>~/Library/Preferences/com.apple.AddressBook.plist</code>
+      (the ~ sign, or tilde, is the place holder of your home-directory).
+    </li>
+    <li>
+      Make a backup of this file, and open the original with for example TextEdit.
+    </li>
+    <li>
+      Search for the following XML tags (the content the array tags may be different on your computer)
+<pre>&lt;key&gt;ABPhoneFormat-Enabled&lt;/key&gt;
+&lt;true/&gt;
+&lt;key&gt;ABPhoneFormat-PhoneFormatter&lt;/key&gt;
+&lt;array&gt;
+ &lt;!--Dutch phone numbers--&gt;
+ &lt;!--3 digit area codes--&gt;
+ &lt;string&gt;(010) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(013) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(015) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(020) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(023) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(024) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(026) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(030) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(033) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(035) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(036) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(038) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(040) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(043) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(045) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(046) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(050) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(053) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(055) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(058) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(070) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(071) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(072) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(073) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(074) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(075) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(076) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(077) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(078) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(079) ## ## ###&lt;/string&gt;
+ &lt;!--cell phone numbers--&gt;
+ &lt;string&gt;(06) ### ## ###&lt;/string&gt;
+ &lt;!--Dutch phone numbers--&gt;
+ &lt;!--3 digit area codes with +31 prefix--&gt;
+ &lt;string&gt;(+31-10) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-13) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-15) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-20) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-23) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-24) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-26) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-30) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-33) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-35) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-36) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-38) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-40) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-43) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-45) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-46) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-50) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-53) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-55) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-58) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-70) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-71) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-72) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-73) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-74) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-75) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-76) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-77) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-78) ## ## ###&lt;/string&gt;
+ &lt;string&gt;(+31-79) ## ## ###&lt;/string&gt;
+ &lt;!--cell phone numbers--&gt;
+ &lt;string&gt;(+31 6) ### ## ###&lt;/string&gt;
+ &lt;!--otherwise assume 4-digit area code with +31 prefix--&gt;
+ &lt;string&gt;(+31 ###) ### ###&lt;/string&gt;
+ &lt;!--otherwise assume 4-digit area code--&gt;
+ &lt;string&gt;(0###) ### ###&lt;/string&gt;
+&lt;/array&gt;</pre>
+    </li>
+    <li>
+      Save the file, quit the editor and open Address Book.
+    </li>
+  </ol>
+  <p>
+    Directions for customization: the number sign (#) is replaced with the next digit you entered in your addres book entry. All other chatacters are shown as typed.
+  </p>
+  <p>
+    A lot of countries have a standard ("RFC") for representation of phone numbers. You can choose your own favorite of course. However, using more than three digits in a group is not advisable.
+  </p>
+  <p>
+    <img src="../img/AddressBookPrefs.png" style="width:359px;height:388px; float:right" alt="Screen shot Address Book preferences"/>
+    Small changes can also be performed from Address Book (see screen shot on the right). Choose <code>Preferences</code> from the Address Book menu, the <code>Phone</code> option and click the down-arrow symbol (on the right of the <code>Formats</code> dropdown list) to see your customized list. You also can change order by dragging the entries.
+  </p>
+  <p>
+    This feature is new to 10.3, you won't find it in 10.2 (Jaguar).
+  </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=Address Book TelNr[en]" title="Send an email">Doeke Zanstra</a>, 
+    2003, Content is licensed under a <a href= "http://creativecommons.org/licenses/by/1.0/"> Creative Commons License </a>. (Some rights reserved).
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

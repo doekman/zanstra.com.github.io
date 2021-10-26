@@ -1,0 +1,200 @@
+<html xmlns:dz="http://zanstra.net/csc">
+  <head>
+    <title> Client-side control </title>
+    <style type="text/css">
+.progress-bar
+{
+  background-color: #EAEAEA;
+  bgcolor2: rgb(0,128,255);
+  border: 1px solid black;
+  font-size:0px; /*to allow specify height of less then 11pt*/
+}
+    </style>
+    <script language="text/javascript" type="text/javascript">
+var strOnload;
+/***| progress-bar control |*********************************/
+if(window.attachEvent) window.attachEvent('onload',progressBar_init);
+else strOnload='progressBar_init();'+(strOnload?strOnload:'');
+
+function progressBar_init() 
+{
+  var o=document.getElementsByTagName('progress-bar');
+  if(o.length==0)
+  {
+    o=document.getElementsByTagName('DZ:PROGRESS-BAR');
+  }
+  for(var i=0; i<o.length; i++)
+  {
+    progressBar_initItem(o[i]);
+  }
+}
+
+function progressBar_initItem(p)
+{
+  //--| replace dz:progressbar by div (needed in compliance mode).
+  //--| in compatiblity mode, the namespace is not even necessary,
+  //--| but the tagName will be in uppercase.
+  //--| 
+  var r=document.createElement('div');
+  r.value=p.value;
+  r.id=p.id;
+  r.className=p.className;
+  r.style.width=p.style.width;
+  r.style.height=p.style.height;
+  if(p.replaceNode)
+  {
+    p.replaceNode(r);
+  }
+  else
+  { 
+    // ie5.2/Mac doesn't support .replaceNode (though MSDN says it does)
+    var q=p.parentElement;
+    q.replaceChild(r,p);
+  }
+  //create colored bar
+  var q=document.createElement('div');
+  with(q.style)
+  {
+    backgroundColor=r.currentStyle.bgcolor2; //copy progress-bar color 
+    width=parseInt(contentWidth(r)*parseInt(r.value,10)/100,10)+'px';
+    height=(parseInt(r.style.height,10)-2)+'px'; //minus border????
+  }
+  r.appendChild(q);
+  //--| make value changable
+  r.setValue=progressBar_setValue;
+} 
+
+function progressBar_setValue(val) 
+{
+  var p=this.childNodes(0);
+  val=parseInt(val,10);
+  if(isNaN(val)||val<0||val>100)
+  {
+    return false;
+  }
+  this.value=val;
+  p.style.width=parseInt(contentWidth(this)*parseInt(val,10)/100,10)+'px';
+  return true;
+}
+
+/*----progress-bar control----------------------------------*/
+function ID(s) { return document.getElementById(s); }
+function setProg(bln)
+{
+  var o=ID('size');
+  var v=parseInt(o.value,10);
+  if(isNaN(v)) 
+  {
+    alert('Je MOET een getal invullen.');
+    o.focus();
+    return;
+  }
+  if(v<0||v>100)
+  {
+    alert('Het getal moet tussen 0 en 100 liggen (inclusief).');
+    o.focus();
+    return;
+  }
+  if(bln)
+  {
+    runTo(v);
+  }
+  else
+  {
+    ID('prog').setValue(v);
+  }
+}
+
+var nn,up;
+function runTo(n)
+{
+  var o=ID('prog');
+  if(n) 
+  {
+    nn=n;
+    up=n>parseInt(o.value,10);
+  }
+  var v=parseInt(o.value,10);
+  if(up) v+=1; else v-=1;
+  if(v>=nn&&up || v<=nn&&!up)
+  {
+    o.setValue(nn);
+  }
+  else
+  {
+    o.setValue(v);
+    window.setTimeout('runTo();',25); // ie5.2/Mac doesn't support function references...
+  }
+}
+function isCSS()
+{
+  var w3c=true;
+  if(navigator.appVersion.indexOf('MSIE')>=0)
+  {
+    w3c=false; //never trust mickeysoft
+    if(document.compatMode&&document.compatMode=='CSS1Compat') w3c=true;
+  }
+  return w3c;
+}
+function contentWidth(x)
+/**
+Fix an IE bug: in compatibility-mode, the width of an element
+is including the padding and border widths. 
+Not handy for a progressbar.
+In CSS mode, a <dz:progress-bar> with width 200 and border 1, will be 
+in fact 202px wide, and in IE mode, 200px.
+But the control will not resize, with this function!!!
+**/
+{
+  if(isCSS())
+  {
+    return parseInt(x.style.width,10); //width should be specified in pixels
+  }
+  else
+  {
+    with(x.currentStyle)
+    {
+      return toInt(width) -
+             toInt(paddingLeft) -
+             toInt(paddingRight) -
+             toInt(borderLeftWidth) -
+             toInt(borderLeftWidth);
+    }
+  }
+}
+function toInt(v)
+{
+  if(v)
+  {
+    return parseInt(v,10);
+  }
+  else
+  { 
+    return 0;
+  }
+}
+//window.onload=pageInit;
+function pageInit()
+{
+  if(strOnload) eval(strOnload);
+  ID('size').focus();
+}
+    </script>
+
+  </head>
+<body onload="pageInit();">
+  <h1>Client-side control: progressbar</h1>
+  <p>
+    Doesn't work in Mozilla yet :-( but does work correctly in IE, in both CSS-mode, and in IE-mode.
+    <strong>AND does work on ie5.2/Mac</strong>
+  </p>
+  <dz:progress-bar value="20" id="prog" class="progress-bar" style="width:200px;height:8px"/>
+  <hr/>
+  <form>
+    <label for="size">Size (0-100):</label>
+    <input type="text" id="size" value="10">
+    <button onclick="setProg(false);">Set</button>
+    <button onclick="setProg(true);">Run To</button>
+  </form>
+</body>
+</html>

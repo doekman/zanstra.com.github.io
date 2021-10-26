@@ -1,0 +1,128 @@
+
+<html>
+
+<head>
+<title>Doekman's Homepage</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="description" content="Doekman's Homepage">
+
+
+<script language="JavaScript" type="text/javascript">
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v3.0
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+</script>
+<style type="text/css">
+body
+{  font-family: "Courier New", Courier, mono
+;  font-size: 10pt
+;  font-style: normal
+;  line-height: 20pt
+;  font-weight: normal
+;  color: #000066
+;  background-color: #FFFF66
+;  margin: 0px 0px 0px 0px
+}
+A
+{ color: #3300CC
+}
+A:visited
+{ color: #000066
+}
+A:active
+{ color: #6666FF
+}
+A:hover
+{ color: black
+}
+</style>
+</head>
+
+<body onLoad="doInit()">
+<script language="javascript" type="text/javascript">
+function doInit() {
+  MM_preloadImages('images/mouseover_r2_c1.gif','images/mouseover_r3_c1.gif','images/mouseover_r4_c1.gif','images/mouseover_r5_c1.gif');
+  menu('about');
+}
+function menu(str) { 
+  about.style.display="none";
+  stories.style.display="none";
+  friends.style.display="none";
+  contact.style.display="none";
+
+  if(str=="about") {
+  	  about.style.display="block";
+  } else if(str.indexOf("stories")!=-1) {
+	  stories.style.display="block";
+  } else if(str=="friends") {
+	  friends.style.display="block";
+  } else if(str=="contact") {
+	  contact.style.display="block";
+  } else {
+  	alert("Wrong menu call.\n\nYou should call the help of Doekman");
+  }
+}
+</script>
+  <img name="doekman_r1_c1" src="images/doekman_r1_c1.gif" width="138" height="100" border="0">
+<div id="doekmanr1c2" style="position:absolute; left:138px; top:0px;width:245px; height:100px;z-index:2; visibility:visible"><img name="doekman_r1_c2" src="images/doekman_r1_c2.gif" width="245" height="100" border="0"></div>
+<div id="doekmanr1c3" style="position:absolute; left:383px; top:0px;width:302px; height:100px;z-index:3; visibility:visible"><img name="doekman_r1_c3" src="images/doekman_r1_c3.gif" width="302" height="100" border="0"></div>
+<div id="doekmanr2c1" style="position:absolute; left:0px; top:100px;width:138px; height:56px;z-index:4; visibility:visible"><a href="javascript: menu('about')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('about doekman','','images/mouseover_r2_c1.gif',1)"><img name="about doekman" border="0" src="images/doekman_r2_c1.gif" width="138" height="56" alt="about doekman"></a></div>
+<div id="doekmanr3c1" style="position:absolute; left:0px; top:156px;width:138px; height:52px;z-index:5; visibility:visible"><a href="javascript: menu('stories')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('stories of doekman','','images/mouseover_r3_c1.gif',1)"><img name="stories of doekman" border="0" src="images/doekman_r3_c1.gif" width="138" height="52" alt="stories of doekman"></a></div>
+<div id="doekmanr4c1" style="position:absolute; left:0px; top:208px;width:138px; height:61px;z-index:6; visibility:visible"><a href="javascript: menu('friends')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Friends','','images/mouseover_r4_c1.gif',1)"><img name="Friends" border="0" src="images/doekman_r4_c1.gif" width="138" height="61" alt="doekman's friends"></a></div>
+<div id="doekmanr5c1" style="position:absolute; left:0px; top:269px;width:138px; height:49px;z-index:7; visibility:visible"><a href="javascript: menu('contact')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('contact doekman','','images/mouseover_r5_c1.gif',1)"><img name="contact doekman" border="0" src="images/doekman_r5_c1.gif" width="138" height="49" alt="contact doekman"></a></div>
+<div id="doekmanr6c1" style="position:absolute; left:0px; top:318px;width:138px; height:17px;z-index:8; visibility:visible"><a href="huizen.dds.nl/%7Eolrik"><img name="doekman_r6_c1" src="images/doekman_r6_c1.gif" width="138" height="17" border="0"></a></div>
+
+
+<!--about-->
+<div id="about" style="display: none">
+<div id="about1" style="position:absolute; width:222px; height:231px; z-index:9; left: 148px; top: 106px"> 
+  <p>This is the website of Doekman, a famous superhero who is known for his heroic 
+    deeds in the kitchen, and beyond....</p>
+</div>
+<div id="about2" style="position:absolute; width:297px; height:235px; z-index:10; left: 384px; top: 103px"> 
+  <p><img src="images/doekman.jpg" width="240" height="218"><br>
+    <i>he seems sound asleep, but...</i> </p>
+</div>
+</div>
+<!--stories-->
+  <div id="stories" style="position:absolute; width:223px; height:232px; z-index:3; left: 148px; top: 106px"> 
+    <p>At first, Doekman was sound asleep, but...<br>
+      he finally woke up, and was ready to fly into the world, wrapping it up 
+      with his Doek. A bit of Doek and a bit of Man.<br>
+      DoekMan rocks, he's so cool.</p>
+</div>
+<!--friends-->
+  <div id="friends" style="position:absolute; width:223px; height:232px; z-index:3; left: 148px; top: 106px">
+    <ul><strong>Friends</strong>
+       <li>2CV-Man (duckman)</li>
+       <li>soeperman</li>
+       <li>bananenman</li>
+    <ul>
+  </div>
+<!--contact-->
+  <div id="contact" style="position:absolute; width:223px; height:232px; z-index:3; left: 148px; top: 106px">
+    <p>Whenever you're in trouble deep, <br>and if you can find him, <br>you should hire<p>
+    <p><big><big>Doekman!</big></big></p>  
+  </div>
+</body>
+
+</html>
+

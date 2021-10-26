@@ -1,0 +1,22 @@
+<html lang="en" xml:lang="en">
+  <head>
+    <title> Safari testcase | textarea with spellingchecker</title>
+  </head>
+  <body>
+    <h1> Safari testcase | textarea with spellingchecker</h1>
+    <p>
+      Safari could use the lang-attribute for selecting the right spelling checker dictionary, 
+			when editing text in a textarea. Thus try the Edit&rarr;Spelling menu and see what dictionary is choosen.
+    </p>
+		<form onsubmit="return false">
+			<textarea rows="7" cols="60">
+This is English (defined in the html tag with the lang attribute).</textarea>
+			<textarea rows="7" cols="60" lang="nl" xml:lang="nl">
+Maar het kan ook in het Nederlands (zie de lang attribuut op dit textarea-element).</textarea>
+		</form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

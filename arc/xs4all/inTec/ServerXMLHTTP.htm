@@ -1,0 +1,185 @@
+<html>
+<head>
+	<title>inTec: Msxml2.ServerXMLHTTP40</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+pre.code { margin-bottom: 1em }
+em.update { color: blue }
+p.inzet { 
+  border: 1px solid lightgrey;
+  background-color: #EBEBEB;
+  padding: 0.5em
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript">
+  </script>
+</head>
+<body>
+<table cellpadding="0" border="0" class="pageLayout">
+  <colgroup>
+    <col class="menu"/>
+    <col class="sep"/>
+    <col class="content"/>
+  </colgroup>
+  <tr><td width="100" class="col1"><!--column 1a-->
+  <div style="text-align: center">
+    &nbsp;<!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			&nbsp;<!--filename-->
+  </div>
+</td><td style="width: 5px" class="col2"><!--column 2a-->
+&nbsp;
+</td><td class="col3"><!--column 3a-->  
+	<h1 title="Internet Technologies">Msxml2.ServerXMLHTTP</h1>
+</td></tr><tr><td class="col1"><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td class="col2 colBorder"><!--column 2b-->
+  &nbsp;
+</td><td class="col3"><!--column 3b-->  
+  <p>
+    <em class="update">Update:</em> added information on Kerberos.
+  </p>
+	<p>
+		When using <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/xmlsdk/htm/sdk_intro_6g53.asp">MSXML</a>
+    server-side to get XML documents (with ServerXMLHTTP of course, XMLHTTP is for 
+    <a href="http://support.microsoft.com/default.aspx?scid=kb;EN-US;q237906">client-side usage</a>),
+    I found a potential performance issue. 
+	</p>
+  <p>
+    I am investigating inter-server communciation with XML over HTTP,
+    so this article should be interpreted from that perspective. My solution may not 
+    be the preferred choice to your specific situation.
+  </p>
+  <h2>Summary</h2>
+  <p>
+    With Microsoft's ServerXMLHTTP class, the programmer can't specify a preferred 
+    authentication mechanism. The workaround is to specify a custom header manually.
+  </p>
+  <h2>HTTP authentication</h2>
+  <p>
+    When retrieving an HTTP resource, either with <a href="http://www.faqs.org/rfcs/rfc2617.html">Basic</a>,  <a href="http://www.faqs.org/rfcs/rfc2617.html">Digest</a> or <a href="http://www.innovation.ch/java/ntlm.html">NTLM</a> (also called Challenge Response) authentication, an HTTP request is issued without any <acronym title="Username/password stuff">credentials</acronym>. Then the  server responds with an <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">401 Not Authorized</a> response including one or more <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.47">WWW-authenticate</a> response headers. Then the client can pick its preferred authentication method. 
+  </p>
+  <p class="inzet">
+    Windows 2000 (and XP, 2003) adds an extra authentication sub-scheme to Integrated Security, named Kerberos. This would be perfect for our situation, but good old NT4 doesn't support it. At <a href="http://www.iisfaq.com/?View=A478">IIS Faq</a> you can read more about authentication models.
+  </p>
+  <p>
+    This is a powerful mechanism, also referred to as negotiation: the client doesn't need to know beforehand which authentication mechanism to use. Server and client should at least share one common authentication method, of course.
+  </p>
+  <h2>Our situation</h2>
+  <p>
+    The http-calls we issue are between servers or on the same server, depending configuration. This means, we control the authentication scheme.
+  </p>
+  <p>
+    The NTLM authentication method is a proprietry authentication mechanism. It uses a 4-way handshake to authenticate. Considering that fact plus it's only slightly safer than Basic authentication, we dismissed this scheme.
+  </p>
+  <p>
+    Digest authentication is also dismissed, because we run Windows NT4, so that's not an option either. So that leaves us with Basic authentication
+  </p>
+  <h2>Getting the XML</h2>
+  <p>
+    Our XML requests are generated from within ASP pages.
+    The code is straightforward, we get an HTTP resource synchronously (blocking)
+    with API provided authentication. The code below just copies the received XML
+    to the HTTP response.
+  </p>
+  <pre class="code">
+&lt;%
+'VBScript
+Dim objSrvHTTP: Set http = Server.CreateObject("MSXML2.ServerXMLHTTP")
+
+http.open "GET","http://url.local/page.asp", False, "username", "password"
+http.send
+Response.ContentType = "text/xml"
+http.responseXML.save Response
+%&gt;</pre>
+    <p>
+      Each time above script is ran, two HTTP requests and responses are generated (as explained in the HTTP authentication introduction above). In a client-side situation (ie your browser) that's perfect,  because for the next call, the client remembers the supported scheme. In a server environment, the ASP page directly forgets the authentication scheme when it has finished running. 
+    </p>
+    <p>
+      This is bad for two reasons. Response times drop (latency), caused by the extra request and response. There is also extra load, because the <code>401 Not Authorized</code> response also contains HTML for a user-readable explanation. Default configuration on IIS is a 4KB document, using four (4) TCP/IP packets. 
+    </p>
+    <h2>The solution</h2>
+    <p> 
+      The most logical solution is to tell <code>MSXML2.ServerXMLHTTP</code> directly to send an authentication header with the initial request. But unfortunately, the authentication scheme negotiation of the component can't be influenced (it actually favours NTLM over Basic authentication, when the server supports both).
+    </p>
+    <p>
+      Fortunately, the Basic authentication scheme is fairly simple. Below I include the code to directly use the Basic authentication scheme. Notice I still specify the username and password parameters on the <code>open</code>, so NTLM-only servers are still supported.
+      The <code>setRequestHeader</code> method call should be <em>after</em> the <code>open</code>
+      call.
+    </p>
+    <p>
+      The code should run in VB without modification. Robert Graham has written 
+      a <a href="http://www.robertgraham.com/tools/base64coder.html">javascript implementation</a>.
+    </p>
+    <pre class="code">
+Dim http: Set http = Server.CreateObject("MSXML2.ServerXMLHTTP")
+
+'Always specify username/password here, for fail safety
+http.open "GET", "http://url.local/page.asp", _
+  False,"username","password"
+http.setRequestHeader "Authorization", _
+  "Basic " & Base64Encode("username:password")
+http.send
+
+Response.ContentType = "text/xml"
+http.responseXML.save Response
+
+Function Base64Encode(inData)
+'ripped from: 
+'<a href="http://www.pstruh.cz/tips/detpg_Base64Encode.htm">http://www.pstruh.cz/tips/detpg_Base64Encode.htm</a>
+  'rfc1521
+  '2001 Antonin Foller, PSTRUH Software, http://pstruh.cz
+  Const Base64 = _
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Dim sOut, I
+  
+  'For each group of 3 bytes
+  For I = 1 To Len(inData) Step 3
+    Dim nGroup, pOut
+    
+    'Create one long from this 3 bytes.
+    nGroup = &H10000 * Asc(Mid(inData, I, 1)) + _
+      &H100 * MyASC(Mid(inData, I + 1, 1)) + _
+      MyASC(Mid(inData, I + 2, 1))
+    
+    'Oct splits the long To 8 groups with 3 bits
+    nGroup = Oct(nGroup)
+    
+    'Add leading zeros
+    nGroup = String(8 - Len(nGroup), "0") & nGroup
+    
+    'Convert To base64
+    pOut = Mid(Base64, CLng("&o" & Mid(nGroup, 1, 2)) + 1, 1) + _
+      Mid(Base64, CLng("&o" & Mid(nGroup, 3, 2)) + 1, 1) + _
+      Mid(Base64, CLng("&o" & Mid(nGroup, 5, 2)) + 1, 1) + _
+      Mid(Base64, CLng("&o" & Mid(nGroup, 7, 2)) + 1, 1)
+    
+    'Add the part To OutPut string
+    sOut = sOut + pOut
+    
+  Next
+  Select Case Len(inData) Mod 3
+    Case 1: '8 bit final
+      sOut = Left(sOut, Len(sOut) - 2) + "=="
+    Case 2: '16 bit final
+      sOut = Left(sOut, Len(sOut) - 1) + "="
+  End Select
+  Base64Encode = sOut
+End Function
+
+Function MyASC(OneChar)
+  If OneChar = "" Then MyASC = 0 Else MyASC = Asc(OneChar)
+End Function</pre>
+    <p>
+      Data on performance gain will be posted here, when we have ran the tests.
+    </p>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=ServerXMLHTTP" title="Send an email"> Doeke Zanstra</a>, 2003, Content is licensed under a <a href= "http://creativecommons.org/licenses/by/1.0/"> Creative Commons License </a>. (Some rights reserved).
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

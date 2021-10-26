@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<dates>
+  <months>
+    <month id="1">
+      <name xml:lang="nl">januari</name>
+      <short xml:lang="nl">jan</short>
+      <name xml:lang="en">January</name>
+      <short xml:lang="en">Jan</short>
+    </month>
+
+    <month id="2">
+      <name xml:lang="nl">februari</name>
+      <short xml:lang="nl">feb</short>
+      <name xml:lang="en">February</name>
+      <short xml:lang="en">Feb</short>
+    </month>
+
+    <month id="3">
+      <name xml:lang="nl">maart</name>
+      <short xml:lang="nl">mrt</short>
+      <name xml:lang="en">March</name>
+      <short xml:lang="en">Mar</short>
+    </month>
+
+    <month id="4">
+      <name xml:lang="nl">april</name>
+      <short xml:lang="nl">apr</short>
+      <name xml:lang="en">April</name>
+      <short xml:lang="en">Apr</short>
+    </month>
+
+    <month id="5">
+      <name xml:lang="nl">mei</name>
+      <short xml:lang="nl">mei</short>
+      <name xml:lang="en">May</name>
+      <short xml:lang="en">May</short>
+    </month>
+
+    <month id="6">
+      <name xml:lang="nl">juni</name>
+      <short xml:lang="nl">jun</short>
+      <name xml:lang="en">June</name>
+      <short xml:lang="en">Jun</short>
+    </month>
+
+    <month id="7">
+      <name xml:lang="nl">juli</name>
+      <short xml:lang="nl">jul</short>
+      <name xml:lang="en">Juloy</name>
+      <short xml:lang="en">Jul</short>
+    </month>
+
+    <month id="8">
+      <name xml:lang="nl">augustus</name>
+      <short xml:lang="nl">aug</short>
+      <name xml:lang="en">August</name>
+      <short xml:lang="en">Aug</short>
+    </month>
+
+    <month id="9">
+      <name xml:lang="nl">september</name>
+      <short xml:lang="nl">sept</short>
+      <name xml:lang="en">September</name>
+      <short xml:lang="en">Sep</short>
+    </month>
+
+    <month id="10">
+      <name xml:lang="nl">oktober</name>
+      <short xml:lang="nl">okt</short>
+      <name xml:lang="en">October</name>
+      <short xml:lang="en">Oct</short>
+    </month>
+
+    <month id="11">
+      <name xml:lang="nl">november</name>
+      <short xml:lang="nl">november</short>
+      <name xml:lang="en">November</name>
+      <short xml:lang="en">Nov</short>
+    </month>
+
+    <month id="12">
+      <name xml:lang="nl">december</name>
+      <short xml:lang="nl">dec</short>
+      <name xml:lang="en">December</name>
+      <short xml:lang="en">Dec</short>
+    </month>
+  </months>
+</dates>

@@ -1,0 +1,212 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 2em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+.tabButton {
+  margin-bottom: 0px; 
+}
+.edit {
+  background-color: lightgrey;
+  width: 100%; height: 250px;
+  border: 1px solid black;
+  margin: 3px; padding: 2px; margin-top: 0px
+}
+a img {
+  border: 0px;
+}
+blockquote.code, blockquote.quote {
+  font-size: 8pt;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+hr.code {
+  color: black;
+  height: 1px;
+}
+pre.code {
+  margin: 0px;
+  font-size: 10pt;
+  font-family: Courier New, monospace;
+  overflow: visible;
+}
+div.msg, div.quote {
+  font-size: 10pt;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+span.me {
+  color: red
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+	<script language="javascript" src="../js/ubbParser.js"> </script>
+  <script language="javascript">
+function HTMLEncode(s) {
+	return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showTab(n) {
+  var oEdit=ID('editor'); //textarea
+  var oSource=ID('sourceDiv');
+
+  switch(n) {
+    case 0: //editor
+			oSource.style.display='none';
+			oEdit.style.display='block';
+      break;
+    case 1: //preview as Text, fall through
+    case 2: //preview as HTML
+      var oParser=new Parser(document.forms.frm.dbg.checked);
+			oEdit.style.display='block';
+			var html=oParser.ubbParse(oEdit.value);
+			if(n==1) oSource.innerHTML=HTMLEncode(html);
+      else oSource.innerHTML=html;
+			oEdit.style.display='none';
+			oSource.style.display='block';
+      oSource.style.visibility='visible';
+      break;
+  }
+  
+  ID('tab0').style.color=n==0?'red':'black';
+  ID('tab1').style.color=n==1?'red':'black';
+  ID('tab2').style.color=n==2?'red':'black';
+}
+
+function pageInit() {
+  pre2div('preSampleCode','divSampleCode');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Javascript UBB-parser
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+      UBB-tags provide a method to
+			forum-users, to use simple mark-up for their messages. This library provides a way to
+			convert these tags to HTML, client-side that is.</p>
+    <p>
+			The parser is in beta-stadium however. It seems everything is working allright. The
+			todo-list includes: the [list] tag (at the moment, all tags need a closing-tag), 
+			smiley-support and generic syntax highlighting (like: [code=js]). 
+			<br>
+			Currently supported tags: <code>b, i, u, s, sub, sup, url, email, image/img, me, quote</code> and <code>code</code>.</p>
+		<p>
+    <em>Download</em>:
+    <a href="../js/ubbParser.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/ubbParser.js" title="IE propriety mode">view-source</a>.
+    <br />
+    <em>Targetted</em>: <code>all</code>
+    <br />
+    <em>Tested on</em>: <code><b>win32</b>: ie6</code>, <code><b>OS X</b>: ie5.1</code>
+		<br />
+		<em>Links</em>: <a href="http://headwize.powerpill.org/ubb/ubbcode.html">What are UBB tags</a>,
+		<a href="http://phpbb.sourceforge.net/phpBB2/posting.php?mode=newtopic&f=2">Open Source UBB editor</a>,
+    <a href="http://negotiator.xs2chat.nl/composer/">GoT composer</a>
+    </ul>
+	</p>
+  <h2>
+    Usage
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode"> 
+/*Sample code*/
+//--| Create a new parser, no debugging
+var oParser=new Parser(false);
+alert( oParser.ubbParse('Some [b]marked-up[/b] strings with [i]emphasis[/i]') );
+  </pre>
+  <h2>
+    Live Demo
+  </h2>
+    <form name="frm">
+      These buttons are TAB's &rarr;
+      <input type="button" class="tabButton" id="tab0" value="Input" onclick="showTab(0)" style="color: red" />
+      <input type="button" class="tabButton" id="tab1" value="Preview Text" onclick="showTab(1)" />
+      <input type="button" class="tabButton" id="tab2" value="Preview HTML" onclick="showTab(2)" />
+			<br />
+      <textarea class="edit" name="invoer" id="editor">
+[b]Vet[/b]
+      </textarea>
+      <div id="sourceDiv" class="edit" style="overflow-y: scroll; display:none">
+        Preview pane
+      </div>
+
+      <select name="sample">
+        <option value="[b]Bold[/b] [i]Italic[/i] [u]Underlined[/u] [s]Strike-out[/s]. Drink more C[sub]2[/sub]H[sub]6[/sub]O and opp.=&pi; r[sup]2[/sup] I feel [image]http://www.xs4all.nl/~zanstra/img/smileyHappy.gif[/image]. [url]http://www.tweakers.net[/url] and [url=http://gathering.tweakers.net]GoT[/url]. You can email me at [email]doeke@zanstra.net[/email][code]if(a==null) alert('a is undefined');
+else a*=(a/a);[/code][me=Doekman]Citeert[/me][quote][b]Vorige eeuw zei Bill Gates[/b]
+640k ought to be enough for everybody[/quote]">All Tags</option>
+      </select>
+      <input type="button" value="macro" onclick="with(document.forms.frm) invoer.value=sample.options[sample.selectedIndex].value; showTab(0);" />
+      <input type="checkbox" name="dbg" id="dbg">
+      <label for="dbg">Debug</label> (this option will window.confirm you for every step)
+    </form>
+	<h2>Update history</h2>
+	<ul>
+		<li>1.01 (2005-01-24): Fixed a new-line bug for Firefox and Safari (thankx Ron Rademaker)</li>
+		<li>1.00 (2002-02-25): Initial</li>
+	</ul>
+    <!--pre>
+      To <span style="color: red">Do</span>:
+       -Nadenken over de [*] van list. Special case? [*] closed vorige, [/list] closed vorige?
+       -Nadenken over text-parser, types text: 
+         -smileys
+         -code (CRLF is BR, [code])
+         -js-code (CRLF is BR, syntax high-lighting, [code=js])
+      Done:
+			-Newline bug voor Safari/Firefox opgelost
+      -Manier bedenken om gevonden informatie naar HTML om te zetten (via switch)
+      -Onbekende tags behandelen als tekst
+      -Robuust maken:
+       +geen sluit tag (stack gebaseerd sluiten, dan collapsen als text)
+       +verkeerd geneste tags (idem.)
+       +hoe om te gaan met de [] tag. (tagname moet uit letters bestaan, anders is het text)
+       =oplossing: voor tagNames een teken-set definieren? [a-zA-Z*], anders tekst? (ja dus)
+       =oplossing: aan het einde collapsen van de stack? (YEP)
+       -een object van maken (en dan met members werken) (done)
+       -[img] alias van [image] maken
+       -[img] parameters: [img=x,y] plus http afdwingen
+       -Nadenken over text-parser, types text: 
+         -alinea's (CRLF+CRLF is nieuwe alinea, CRLF is BR)
+         :Nieuwe alinea kan alleen als er geparst wordt naar een boomstructuur (en dat bied 
+          me niet voldoende voordelen). CRLF is gedaan met 1 lookhead.
+        Dan moet op de plekken waar bijv. niet herkende tags, code gewijzigd worden naar "unget"
+        chars (i terugzetten, en dan nState wijzigen?)
+         :Unget: Done
+       -[quote] en [me=x] tags implementeren (en kijken welke we nog nodig hebben)
+      Didn't Do:
+      -Robuust maken:
+       +de / vergeten (dus twee keer een open tag), behandelen als sluit-tag?
+        (Nee, problemen als de [list] geimplementeerd gaat worden???
+       -de listReplace inbouwen voor smileys (nee, voor text apparte parser bouwen, met verschillende types)
+    </pre-->
+  <div class="footer">
+    Copyright &copy; 2001-2005 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

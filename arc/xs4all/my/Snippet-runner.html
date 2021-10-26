@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Snipper-runner (CDN)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="Snippet-runner/" >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css" media="screen" />
+    <!-- 
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" type="text/css" media="screen">    
+    -->
+  </head>
+  <body>
+      <div class="container-fluid">
+        <form>
+          <div class="row">
+            <h1 class="col-sm-8" id="snippet-title"></h1>
+            <h1 class="col-sm-4" style="text-align:right">Snipper-runner</h1>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+                <select id="snippet-items" class="form-control" size="12">
+                </select>
+                <hr />
+                <div class="btn-toolbar" role="toolbar" aria-label="actions with snippets">
+                  <div class="btn-group" role="group" aria-label="navigation of snippets">
+                    <button type="button" class="btn btn-group btn-default" id="button-previous">
+                      <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                      Vorige
+                    </button>
+                    <button type="button" class="btn btn-group btn-default" id="button-next">
+                      Volgende
+                      <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-primary" id="button-run">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                    Run snippet
+                  </button>
+                </div>
+                <div class="form-group" role="group" aria-label="loading of snippets" style="margin-top:1em">
+                    <select id="snippet-library" class="form-control"></select>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <textarea id="snippet-code" class="form-control" rows="12" style="font-family:monospace;display:none">
+                </textarea>
+                <div id="snippet-editor" class="form-control" style="height:20em;font-size:110%"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+            </div>
+          </div>
+        </form>
+      </div>
+      <footer style="color:gray" class="text-center">
+        <hr>
+        <small>&copy; 2015 D. Zanstra &ndash; version 0.31</small>
+      </footer>
+      <script src="https://cdn.jsdelivr.net/ace/1.2.2/min/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdn.jsdelivr.net/bootstrap/3.3.5/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+      <!--
+      <script src="lib/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="lib/jquery-2.1.4.js" type="text/javascript" charset="utf-8"></script>
+      <script src="lib/bootstrap/js/bootstrap.js" type="text/javascript" charset="utf-8"></script>
+        -->
+      <script src="runner.js" type="text/javascript" charset="utf-8"></script>
+      
+  </body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title> FlowDown </title>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+//--| Drawing |----------------------------------------------------------------
+function Drawing() {
+  this.shapes=new Array();
+  this.shapes.addIterator('toDbg');
+  this.shapes.addIterator('drawText');
+}
+//--| ShapeList |--------------------------------------------------------------
+Array.prototype.addIterator=function(funcname) {
+  Array.prototype[funcname]=function() {
+    for(var i=0; i<this.length; i++) {
+      this[i][funcname].apply(this[i],arguments);
+    }
+  }
+}
+//--| Shape |------------------------------------------------------------------
+function Shape(id,text,shape,style) {
+  var wsl=/^\s+/.test(text);
+  var wsr=/\s+$/.test(text);
+  this.id=id;
+  this.text=text.replace(/^\s+|\s+$/g,''); //trim
+  this.shape=shape;
+  this.style=new Style(style);
+  if(!this.style.textAlign) {
+    if(wsl&&wsr) this.style.textAlign='center';
+    else if(wsl) this.style.textAlign='right';
+    else this.style.textAlign='left';
+  }
+}
+function grid2pixel(g,w) {
+  var halfGrid=50;
+  return (halfGrid+(+g-1)*(halfGrid*2))-parseInt(w/2,10);
+}
+
+Shape.prototype.getCssValue=function(property) {
+  return this.cssRules.getValue(property,this.shape,this.id,this.style);
+}
+Shape.prototype.getCssValueInPx=function(property) {
+  return this.cssRules.getValueInPx(property,this.shape,this.id,this.style);
+}
+Shape.prototype.drawText=function(cssRules) {
+  this.cssRules=cssRules;
+  //--| drawText
+  var o=document.createElement('div');
+  o.id=this.id;
+  o.style.textAlign=this.style.textAlign;
+  o.style.position='absolute';
+  var copys="color,fontFamily,fontSize,fontWeight".split(',');
+  for(var i=0; i<copys.length; i++) {
+    var copy=copys[i];
+    var cssValue=this.getCssValue(copy);
+    if(cssValue) o.style[copy]=cssValue;
+  }
+  o.innerHTML=this.text.replace(/(\r\n|\r|\n)/g,'<br>');
+  o=document.getElementById('Tpaint').appendChild(o);
+  this.textWidth=o.offsetWidth;
+  this.textHeight=o.offsetHeight;
+  this.textLeft=grid2pixel(this.style.getValue('left'),this.textWidth);
+  this.textTop=grid2pixel(this.style.getValue('top'),this.textHeight);
+  o.style.left=this.textLeft+'px';
+  o.style.top=this.textTop+'px';
+  //--| drawShape
+  var fill=false;
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.strokeStyle = this.getCssValue('borderColor')||'white';
+  ctx.lineWidth = this.getCssValueInPx('borderWidth')||0;
+  var xxx=this.getCssValue('background');
+  if(xxx) { 
+    ctx.fillStyle=xxx;
+    fill=true;
+  }
+  this.drawShape(ctx,fill);
+}
+Shape.prototype.drawShape=function(ctx,fill) {
+  var x=this.textLeft-this.getCssValueInPx('paddingLeft');
+  var y=this.textTop-this.getCssValueInPx('paddingTop');
+  var w=this.textWidth+this.getCssValueInPx('paddingLeft')+this.getCssValueInPx('paddingRight');
+  var h=this.textHeight+this.getCssValueInPx('paddingTop')+this.getCssValueInPx('paddingBottom');
+  switch(this.shape) {
+  case 'circle':
+    var radius=(Math.max(w,h)+Math.max(this.getCssValueInPx('paddingLeft')+this.getCssValueInPx('paddingRight'),this.getCssValueInPx('paddingTop')+this.getCssValueInPx('paddingBottom')))/2
+    ctx.arc(this.textLeft+this.textWidth/2,this.textTop+this.textHeight/2,radius,0,Math.PI*2,true);
+    if(fill) ctx.fill();
+    else ctx.stroke();
+    break;
+  case 'square':
+    if(w>h) {
+      y-=parseInt((w-h)/2,10);
+      h=w;
+    }
+    else {
+      x-=parseInt((h-w)/2,10);
+      w=h;
+    }
+  case 'rectangle':
+  default:
+    if(fill) ctx.fillRect(x,y,w,h);
+    ctx.strokeRect(x,y,w,h);
+    break;
+  }
+}
+
+Shape.prototype.toDbg=function() {
+  var ul=document.getElementById('dbg');
+  var li=document.createElement('li');
+  var a=[];
+  a.push('id:'+this.id);
+  a.push('shape:'+this.shape);
+  a.push('text('+this.text.replace(/(\r\n|\r|\n)/g,'\\n')+')');
+  var b=[];
+  for(var i in this.style) {
+    if(this.style.hasOwnProperty(i)) {
+      var val=this.style[i];
+      b.push(i+':'+val);
+    }
+  }
+  a.push('style('+b.join('; ')+')');
+  li.appendChild(document.createTextNode(a.join(' | ')));
+  ul.appendChild(li);
+}
+//--| StyleRules |-------------------------------------------------------------
+function StyleRule(selector,style) {
+  this.selector=selector;
+  this.style=style;
+}
+StyleRule.prototype.toString=function() {
+  return this.selector+" [\n"+this.style.toString()+"\n]";
+}
+function StyleRules() {
+  this.rules=new Array();
+}
+StyleRules.prototype.toString=function() {
+  return this.rules.join('\n');
+}
+/* selector: * (all), shape (name of shape), #id (id of item)  */
+StyleRules.prototype.add=function(selector,style) {
+  this.rules.push(new StyleRule(selector,style));
+}
+StyleRules.prototype.selectWeight=function(selector,shape,id) {
+  if(selector=='*') return 1;
+  if(selector==shape) return 10;
+  if(selector=='#'+id) return 100;
+  return 0;
+}
+// @param property: name of css property (javascript style: fontFamily)
+// @param shape: name of shape
+// @param id: id of shape
+// @param style: style object of shape itself
+StyleRules.prototype.getValue=function(property,shape,id,style) {
+  if(style&&style[property]) {
+    //inline style has biggest weight
+    return style[property];
+  }
+  var bestWeight=1, bestValue=null;
+  for(var i=0; i<this.rules.length; i++) {
+    var rule=this.rules[i];
+    var weight=this.selectWeight(rule.selector,shape,id);
+    if(weight>=bestWeight) {
+      var value=rule.style[property];
+      if(value) {
+        bestWeight=weight;
+        bestValue=value;
+      }      
+    }
+  }
+  return bestValue;
+}
+
+StyleRules.prototype.getValueInPx=function(property,shape,id,style) {
+  var val=this.getValue(property,shape,id,style);
+  if(val) {
+    var a=/(\d+)([a-z]+)/i.exec(val);
+    if(!a) return 0;
+    if(a[2]=='px') return +a[1];
+  }
+  else {
+    return 0;
+  }
+}
+
+//--| Style |------------------------------------------------------------------
+function Style(s) {
+  var a=s.split(';');
+  for(var i=0; i<a.length; i++) {
+    var dash,b=a[i].split(':',2);
+    var name=b[0].replace(/^\s+|\s+$/g,'');
+    var value=b[1].replace(/^\s+|\s+$/g,'');
+    //convert from css-style to javascriptStyle
+    while((dash=name.indexOf('-'))!=-1) {
+      ch=name.substr(dash+1,1);
+      name=name.replace('-'+ch,ch.toUpperCase());
+    }
+    if(name=='border') {
+      var c=value.split(' ');
+      this.borderWidth=c[0];
+      this.borderStyle=c[1];
+      this.borderColor=c[2];
+    }
+    else if(name=='padding') {
+      var c=value.split(' ');
+      if(c.length==1) {
+        this.paddingLeft=this.paddingRight=this.paddingTop=this.paddingBottom=c[0];
+      }
+      else if(c.length==2) {
+        this.paddingTop=this.paddingBottom=c[0];
+        this.paddingLeft=this.paddingRight=c[1];
+      }
+      else if(c.length==4) {
+        this.paddingTop=c[0];
+        this.paddingRight=c[1];
+        this.paddingBottom=c[2];
+        this.paddingLeft=c[3];
+      }
+      else {
+        throw new Error("Wrong padding format (1, 2 or 4 digits, "+c.length+" supplied): "+name+":"+value);
+      }
+    }
+    else {
+      this[name]=value;
+    }
+  }
+}
+Style.prototype.toString=function(s) {
+  var a=[];
+  for(var i in this) {
+    if(this.hasOwnProperty(i)) {
+      a[a.length]=i+' -> '+this[i];
+    }
+  }
+  return a.join('\n');
+}
+Style.prototype.getValue=function(s) {
+  if(this[s]) return +this[s].replace(/[^-0-9]/g,'');
+  else return null;
+}
+//--| Parser |-----------------------------------------------------------------
+function ParseFlowDown(s) {
+  var drawing=new Drawing();
+  var beginShape,endShape,endText,endId,endStyle=0;
+  var shape,text,id,style;
+  while(true) {
+    beginShape=s.substr(endStyle).search(/[a-z]/i)+endStyle;
+    endShape=s.indexOf('|',beginShape+1);
+    if(beginShape!=-1&&endShape!=-1) {
+      shape=s.substring(beginShape,endShape);
+      endText=s.indexOf('|',endShape+1);
+      if(endText!=-1) {
+        text=s.substring(endShape+1,endText);
+        endId=s.indexOf('|',endText+1);
+        if(endId!=-1) {
+          id=s.substring(endText+1,endId);
+          endStyle=s.indexOf(')',endId+1)+1;
+          style=s.substring(endId+1,endStyle);
+          style=style.replace(/style\((.*?)\)\s*$/i,'$1');
+          drawing.shapes.push( new Shape(id,text,shape,style) );
+        }
+        else break;
+      }
+      else break;
+    }
+    else break;
+  }
+  return drawing;
+}
+function ParseCss(s) {
+  var rules=new StyleRules();
+  var a,re=/(\*|#?[a-z]+)\s*\{(.*?)\}/ig;
+  while(a=re.exec(s)) {
+    rules.add(a[1],new Style(a[2]));
+  }
+  return rules;
+}
+function teken() {
+  var s=document.getElementById('tekst').value;
+  var drawing=ParseFlowDown(s);
+  var cssRules=ParseCss(document.getElementById('css').value);
+  drawing.shapes.toDbg();
+  document.getElementById('dbgrules').innerHTML=cssRules.toString();
+  drawing.shapes.drawText(cssRules);
+}
+function herteken() {
+  document.getElementById('Tpaint').innerHTML='<canvas id="Spaint" width="300" height="200"></canvas>';
+  document.getElementById('dbg').innerHTML="";
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,300,300);
+  teken();
+}
+window.onload=function() {
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.save();
+  teken();
+}
+    </script>
+  </head>
+  <body>
+    <h1>Flowchart Language</h1>
+    <form onsubmit="return false;">
+      <textarea id="css" style="width:100%;height:100px">
+* { font-family: Verdana; font-size: 10pt; padding: 5px 10px; border:1px solid gray }  square { border: 2px solid slateblue }circle { padding: 3px }#web { border:4px solid red;color:blue;background:yellow }            </textarea>    
+      <textarea id="tekst" style="width:100%;height:150px">
+rectangle| Gebruiker |usr|style(left:1g;top:1g)rectangle|Webservers zijn cool |web|style(left:2g;top:1g) square| Rechts|right|style(left:3g;top:1g;font-family:sans-serif) circle| LinksRechts |left|style(left:1g;top:2g) square| Database |db|style(left:2g;top:2g;font-family:Verdana;font-size:10px)            </textarea>
+      <input type="button" value="redraw" onclick="herteken()"/>
+      <input type="button" value="css" onclick=""/>
+    </form>
+    
+    <div id="Tpaint" style="position:absolute;left:600px;top:350px;width:300px;height:300px;z-index:10"><canvas id="Spaint" width="300" height="200"></canvas></div>
+		
+
+    <ul id="dbg" style="width:550px">
+    </ul>
+    <pre id="dbgrules"></pre>
+  </body>
+</html>

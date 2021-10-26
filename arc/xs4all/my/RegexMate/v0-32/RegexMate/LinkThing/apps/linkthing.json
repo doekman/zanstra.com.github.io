@@ -1,0 +1,9 @@
+{ "type":"delicious"
+, "account":"regexmate"
+, "pages":
+  [ { tags:["macosx"],  "name":"macosx.htm",  "title":"Mac OS X"}
+  , { tags:["windows"], "name":"windows.htm", "title":"Windows"}
+  , { tags:["webapp"],  "name":"webapp.htm",  "title":"Web applications"}
+  , { tags:["linux"],   "name":"linux.htm",   "title":"Linux"}
+  ]
+}

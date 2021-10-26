@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <style type="text/css">
+label { cursor: hand; font-style: italic }
+    </style>
+
+    <script language="javascript">
+function extractFNCID(s) {
+  var i, j=0, ss, fn, cid, res=[];
+  //helaas: javascript ondersteund geen multi-line reguliere expressies (pas in ie5.5 of zo)
+  //zoek positie "Content-Disposition:" aan het begin vd regel (i)
+  //zoek positie lege regel hierna (j)
+  //neem deze substring (ss)
+  //vindt wsp+'filename="xxx" (fn)
+  //vindt Content-ID: <xxx> (cid)
+  //voeg toe aan resultaat, indien beide gevonden (res)
+  //doe dit net zolang (vanaf j) totdat geen i meer gevonden is.
+  while(true) {
+    i=s.indexOf('\nContent-Disposition:',j);
+    if(i==-1) break; //no more attachments
+    j=s.indexOf('\r\n\r\n',i);
+    if(j==-1) j=s.length;
+    ss=s.substring(i,j); //the part of the header, we are interested in
+    fn=ss.match(/[ \t]*filename=\"([^\"]*)\"/i);
+    if(fn.length==2) fn=fn[1]; 
+    else fn=''; //not found
+    cid=ss.match(/Content-ID\: \<([^\>]*)\>/i);
+    if(cid.length==2) cid=cid[1]; 
+    else cid=''; //not found
+    if(fn.length>0&&cid.length>0) res[res.length]=fn+':'+cid;
+  }
+  return res.join('\n');
+}
+
+function replaceCidWithFn(sHtml,sList) {
+  var aList=sList.split('\r\n');
+  var aElement=aList[0].split(':');
+  for(var i=0; i<aList.length; i++) {
+    aElement=aList[i].split(':');
+    sHtml=sHtml.replace( new RegExp('cid:'+aElement[1],'ig'), aElement[0]);
+  }
+  return sHtml;
+}
+    </script>
+  </head>
+  <body>
+    <h1>HTML email als HTML pagina bewaren</h1>
+    <p>
+      Als je een emailtje, opgemaakt in HTML, in <a href="http://www.microsoft.com/Windows/oe/">Outlook Express</a>
+      als HTML wilt opslaan stuit je op twee problemen:
+    </p>
+    <ol>
+      <li>Alhoewel er plaatjes in de HTMl vermeld staan, zie je geen attachments, en</li>
+      <li>Als je <code>Bestand-&gt;Opslaan Als...</code> (of <code>File-&gt;Save As...</code>) kiest, en je
+        selecteert als bestandstype HTML, zie je de plaatjes niet in het resultaat.</li>
+    </ol>
+    <p>
+      In de HTML kunnen namelijk twee typen verwijzingen staan naar een plaatje. Een http link (bijv. 
+      <code>http://www.nrc.nl/images/koeienth,0.jpg</code>) of inline 
+      <a href="http://www.oac.uci.edu/indiv/ehood/MIME/2046/rfc2046.html" title="Multipurpose Internet Mail Extension">MIME</a> 
+      links  (bijv. <code>geelbalk.mhtml@www.nrc.nl</code>). De http links zullen het wel doen, maar de inline
+      MIME links niet. <a href="#onder">Onderaan</a> deze pagina staan de bestanden, waarmee op deze pagina gewerkt wordt.
+    </p>
+    <h2>De inline MIME bestanden uit het emailtje halen</h2>
+    <p>
+      Sleep het emailtje naar een folder, bijvoorbeeld de desktop.
+      Je kunt het emailtje nu als bestand bewerken. Doe dit met een teksteditor, zoals Notepad.
+      Je zult in de email-header (de tekst boven de eerste lege regel) nu een regel zien als:
+    </p>
+
+    <pre> Content-Type: multipart/related;</pre>
+    <p>
+      Dat betekent dat de bestanden in dit mailtje bijelkaar horen, en dus geen attachments zijn. Vervang
+      <code><a href="http://www.ietf.org/rfc/rfc2387.txt" 
+      title="The Multipart/Related content-type provides a 
+common mechanism for representing objects that 
+are aggregates of related MIME body parts.">multipart/related</a></code> door 
+      <code><a href="http://www.oac.uci.edu/indiv/ehood/MIME/2046/rfc2046.html#3"
+      title="multipart -- data consisting of multiple entities of 
+independent data types. Four subtypes are initially 
+defined, including the basic &quot;mixed&quot; subtype 
+specifying a generic mixed set of parts [...]"
+      >multipart/mixed</a></code>; 
+      bewaar het; open het nu weer met
+      Outlook Express; en voil&agrave;, allemaal attachments.
+    </p>
+    <h2>De cid's vervangen door bestandsnamen</h2>
+    <p>
+      Je hebt nu toegang tot de attachments. Nu moeten de inline MIME links in de HTML nog vervangen
+      worden door de bestandsnamen. Als je de body van het emailtje (onder de eerste lege regel) bekijkt,
+      zie je repeterende blokken als:
+    </p>
+    <pre> ------_=_NextPart_002_01C141A3.9B5D4420
+  Content-Type: image/gif;
+    name="nieuwsbrief.gif"
+  Content-Transfer-Encoding: base64
+  Content-Disposition: attachment;
+    filename="nieuwsbrief.gif"
+  Content-ID: <nieuwsbrief.mhtml@www.nrc.nl>
+  Content-Location: ATT-2-87B998400AADD511935B00508B5D5C6C-n
+    ieuwsbr.gif
+
+  R0lGODlh2AEXALMAAP/GAP/OAP/WAP/OCP/SDP/WEP/WGP/WKfrXRP/kcf/vmP/1vf/32v//5v//
+  <em>[....]</em></pre>
+  <p>
+    Belangrijk voor ons doel zijn de headers <code>Content-Disposition</code> en <code>Content-ID</code> (cid).
+    De bestandsnaam die bij <code>Content-Disposition</code> hoort, wordt gebruikt als attachment bestandsnaam.
+    De waarde die achter <code>Content-ID:</code> tussen scherpe haken staat, wordt in de HTML als verwijzing
+    gebruikt (door er <code>cid:</code> voor te zetten). Ergo, vervang de cid waarde door
+    de bestansnaam van veld <code>Content-Disposition</code>.
+  </p>
+  <p>
+    Dat is veel werk. Echter, dit kan enigszins geautomatiseerd worden. Als je het betreffende emailtje als
+    tekst in onderstaand tekstvak paste, dan kun je met een druk op de knop deze FileName/Content-ID 
+    paren eruit zoeken.
+  </p>
+  <form name="frmMessage">
+    <label for="idMsg">Email bericht:</label>
+    <textarea name="msg" id="idMsg" style="width: 100%" rows="4"> </textarea>
+    <input type="button" value="Extract FileName/Content-ID" onclick="with(frmMessage) fncid.value=extractFNCID(msg.value);">
+    <br><br>
+    <label for="idFNCID">Verzamelde FileName:Content-ID lijst (wordt gegenereerd):</label>
+    <textarea name="fncid" id="idFNCID" style="width: 100%" rows="4"> </textarea>
+    <p>
+      Stop nu de bewaarde HTML body (die van <code>File-&gt;Save As...</code>) in onderstaand
+      tekstvak. Druk op de knop om de cid's te vervangen door bestandsnamen. Bewaar het resultaat
+      als je uiteindelijke HTML versie.
+    </p>
+    <label for="idHtm">HTML body:</label>
+    <textarea name="htm" id="idHtm" style="width: 100%" rows="4"> </textarea>
+    <input type="button" value="Replace cid with filename" onclick="with(frmMessage) htm.value=replaceCidWithFn(htm.value,fncid.value);">
+  </form>
+  <h2>Afsluiting</h2>
+  <p>
+    Ik had natuurlijk ook een tooltje in <a href="http://msdn.microsoft.com/vbasic/" title="Visual Basic">VB</a> 
+    kunnen schrijven, waarbij je het emailtje naar dat
+    tooltje kunt slepen, waarop het tooltje dan de boel verwerkt en bewaard.
+    Doe jij het? (stuur me de URL en ik plaats hem).
+    Mij is het iets te veel werk. Tevens vind ik dat Outlook Express het zelf zou moeten kunnen:
+    De optie <code>Save As HTML</code> zou ook de gerelateerde bestanden op moeten slaan.
+    Maar aan de andere kant, zo kun je mooi even onderzoeken hoe zo'n mailtje nu eigenlijk werkt.
+  </p>
+  <h2><a name="onder"> </a>Bijlagen <img src="../img/smileyHappy.gif" title="Attachments"></h2>
+  <ul>
+    <li>
+      Het emailtje, te openen met Outlook Express of Notepad;
+      [<a href="nrc.eml.txt">open</a>]</li>
+    <li>
+      De HTML Body, bewaard uit bovenstaand emailtje.
+      [<a href="nrc.htm.txt">open</a>]</li>
+  </ul>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Vraagje</title>
+    <link rel="stylesheet" href="../default.css">
+    <style type="text/css">
+.button {
+  background-color: blue;
+  color: yellow;
+  font-weight: bold;
+}
+    </style>
+    <script language="javascript">
+function pageInit() {
+  var args=window.dialogArguments;
+  document.getElementById('idIcon').src=args[0];
+  document.getElementById('idMelding').innerHTML=args[1];
+  frmInvoer.butOK.value=args[2];
+  frmInvoer.butCancel.value=args[3];
+  window.focus();
+}
+function sluit(bln) {
+  window.returnValue=bln;
+  window.close();
+}
+    </script>
+  </head>
+  <body onload="pageInit();" style="margin: 10px; padding: 0px">
+  <form name="frmInvoer">
+    <table cellpadding="0" border="0" width="100%">  
+      <tr>
+        <td width="45" rowspan="2" style="text-align: center"><img src="" id="idIcon" style="margin-right: 5px"></td>
+        <td id="idMelding" width="100%">&nbsp;</td>
+      </tr>
+      <tr><td colspan="2">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>
+          <input type="button" name="butOK" value="OK" onclick="sluit(true);" class="button" style="width: 75px;">
+          <span style="width: 5px;">&nbsp;</span>
+          <button type="button" name="butCancel" value="Annuleer" onclick="sluit(false);" class="button" style="width: 75px;">
+        </td>
+      </tr>
+    </table>
+  </form>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> JSB Code128 barcode </title>      
+    <link rel="stylesheet" href="Barcode/code128.css" type="text/css">
+    <meta name="format-detection" content="telephone=no">
+	<script src="Barcode/base2-jsb-fp.js" type="text/javascript" charset="utf-8"></script>
+    <!-- script type="text/javascript" src="http://base2.googlecode.com/svn-history/r309/trunk/lib/base2-jsb-fp.js"></script -->
+    <!-- script type="text/javascript" src="http://base2.googlecode.com/svn/trunk/lib/base2-jsb-fp.js"></script -->
+    <!-- script type="text/javascript" src="http://base2.googlecode.com/svn/trunk/lib/src/base2.js"></script>
+    <script type="text/javascript" src="http://base2.googlecode.com/svn/trunk/lib/src/base2-dom.js"></script>
+    <script type="text/javascript" src="http://base2.googlecode.com/svn/trunk/lib/src/base2-jsb.js"></script -->
+    <script src="Barcode/code128-base2.js" type="text/javascript"></script>
+    <script src="/arc/xs4all/js/get.js" type="text/javascript"></script>
+    <script>
+new jsb.Rule(".barcode, .barcode2", base2.Barcode.code128behaviour);
+    </script>
+  </head>
+
+  <body>
+    <h1>Barcode <a href="http://en.wikipedia.org/wiki/Code_128">Code 128</a></h1>
+    <p>
+      <div class="barcode">1234567890</div>
+      <br>
+      <div class="barcode">123</div>
+      <br>
+      <div class="barcode code128a">123</div>
+      <br>
+      <div class="barcode">This is a text-barcode</div>
+      <br>
+      <div class="barcode2">Bigger</div>
+		</p>
+		<p style="clear:both">
+      You can add barcodes in the markup, by adding the <code>barcode</code> class to an HTML element, containing the barcode text.
+      Use <code>barcode2</code> for double size. To specify which subtype to use, specify a second class: <code>code128a</code>, 
+      <code>code128b</code> or <code>code128c</code>. 
+    <p>
+      View source for the markup. No images, no server-side stuff. Just HTML, Javascript and CSS.
+    </p>
+		<ul>
+			<li><a href="Barcode/code128-base2.js">code128-base2.js</a> (the base2 version of the script)</li>
+			<li><a href="Barcode/code128.js">code128.js</a> (the script)</li>
+			<li><a href="Barcode/code128.css">code128.css</a> (the css)</li>
+		</ul>
+		<p>The barcodes have been tested with <a href="http://www.onlinebarcodereader.com/">onlinebarcodereader.com</a> and <a href="http://zxing.org/w/decode">zxing.org</a>.</p>
+		<h2>Test yourself</h2>
+		<p>
+			<form>
+				<label>Barcode: <input name="barcode" id="barcode_input"></label>
+				<a href="http://en.wikipedia.org/wiki/Code_128#Subtypes">Subtype</a>:
+				<select name="type" id="barcode_subtype">
+				  <option value="">(auto detect)</option>
+				  <option value="code128a">Code Set A</option>
+				  <option value="code128b">Code Set B</option>
+				  <option value="code128c">Code Set C</option>
+				</select>
+			  <input type="checkbox" value="yes" name="bigger" id="bigger"><label for="bigger">Bigger</label>
+				<input type="submit" value="Generate">
+			</form>
+		</p>
+		<p>
+			<script>
+var qs=new getParameter();
+if(qs.barcode) {
+  var cls = qs.bigger ? 'barcode2' : 'barcode';
+  if (qs.type) cls += ' '+qs.type;
+	document.write('<div class="'+cls+'">'+qs.barcode+'</div>');
+	new jsb.Rule("#barcode_input", { 
+		ondocumentready: function() {
+			document.getElementById('barcode_input').value = qs.barcode;
+			if (qs.type) document.getElementById('barcode_subtype').value = qs.type;
+			if (qs.bigger) document.getElementById('bigger').checked = true;
+		}
+	});
+}			
+			</script>
+    </p>
+		<h2 style="clear:left">Known issues</h2>
+		<p>                 
+		  <a href="http://itlearnings.wordpress.com/2011/01/08/javascript-code128-barcode/">This blog</a> 
+		  made some improvements, I hopefuly incorporate in my code (thanks to Zachary Zebrowski for 
+		  bringing this to my attention).
+		</p>
+		<h2>Version history</h2>
+		<ul>
+		  <li><code>2012-04-24</code>: Does print now (kudos to Michael Specht)</li>
+		  <li><code>2012-02-20</code>: Code is now <a href="http://www.opensource.org/licenses/mit-license.php" title="Unless otherwise specified.">MIT Licensed</a>.</li>
+		  <li><code>2011-06-20</code>: Fixed an issue with the iPad (iOS in general) and <a href="http://stackoverflow.com/questions/226131/how-to-disable-phone-number-linking-in-mobile-safari">10 digit</a> barcodes on this page.</li>
+		  <li><code>2011-06-18</code>: Added subtype override for use with base2, after question by Clarence Stephenson. <a href="Barcode/code128-base2-v0.js">Previous version here</a>.</li>
+		  <li><code>2011-04-23</code>: Created a version that's not dependend on base2, and updated the CSS to have a bigger size barcode. <a href="Barcode/code128-v0.css">Original version here</a>.</li>
+			<li><code>2011-02-13</code>: Now also works in Firefox (removed single file support, now you need to include the CSS. See <a href="http://code.google.com/p/base2/issues/detail?id=130">this bug</a>), and updated to base2 revision r309. <a href="Barcode/code128-v2.js">Original version here</a>.</li>
+			<li><code>2010-01-13</code>: Fixed bugs (type C with odd length is now correct, prepend a 0). <a href="Barcode/code128-v1.js">Old version here</a> + added a test form.</li>
+			<li><code>2010-01-05</code>: Fixed two bugs (checksum and type-A conversion). <a href="Barcode/code128-v0.js">Old version here</a>.</li>
+		</ul>
+		<h2>Usages on the Web</h2>
+		<ul>
+			<li><code>2012-04-23</code>: I made my own <a href="BarcodeClock.html">Barcode 128 clock</a> this library (and Qr code clock with Google's API)!</li>
+			<li><code>2010-01-05</code>: Jack Zielke made a <a href="http://takeovertheworld.org/~jack/barcode/">Barcode Clock</a> with this library!</li>
+		</ul>
+		<script src="ga.js"></script>
+  </body>
+</html>

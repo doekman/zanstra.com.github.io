@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Binary &amp; Hexadecimal Clock</title>
+  <script language="JavaScript">  
+    function setTime(){
+        var dateTime = new Date();
+        var day = dateTime.getDate();
+        var month = dateTime.getMonth()+1;
+        if(dateTime.getYear() > 2000){
+			var year = dateTime.getYear();
+        }else{
+			var year = dateTime.getYear()+1900;
+		};
+		var hour = dateTime.getHours();
+        var minutes = dateTime.getMinutes();
+        var seconds = dateTime.getSeconds();   
+                     
+        setLed("d", parseInt(day).toString(2), 5);
+        setLed("m", parseInt(month).toString(2), 4);
+        setLed("j", parseInt(year).toString(2), 12);
+        setLed("u", parseInt(hour).toString(2), 5);
+        setLed("min", parseInt(minutes).toString(2), 6);
+        setLed("s", parseInt(seconds).toString(2), 6);
+        
+        document.getElementById("Y").innerHTML = year;
+        document.getElementById("M").innerHTML = month;
+        document.getElementById("D").innerHTML = day;
+        document.getElementById("H").innerHTML = hour;
+        document.getElementById("Min").innerHTML = minutes;
+        document.getElementById("S").innerHTML = seconds;
+        
+        var dateTimeString = "";
+        if(day.toString().length == 1){dateTimeString += "0" + day}else{dateTimeString += day};
+        dateTimeString += "-";
+        if(month.toString().length == 1){dateTimeString += "0" + month}else{dateTimeString += month};
+        dateTimeString += "-" + year + "&nbsp;&nbsp;&nbsp;";
+        if(hour.toString().length == 1){dateTimeString += "0" + hour}else{dateTimeString += hour};
+        dateTimeString += ":";
+        if(minutes.toString().length == 1){dateTimeString += "0" + minutes}else{dateTimeString += minutes};
+        dateTimeString += ":";
+        if(seconds.toString().length == 1){dateTimeString += "0" + seconds}else{dateTimeString += seconds};
+
+        document.getElementById("dateTimeDisplay").innerHTML = dateTimeString;
+
+        var colorString = "#";
+        var RR = parseInt(Math.round((hour/24)*256)).toString(16); if(RR.length == 1){colorString += "0" + RR}else{colorString += RR};
+        var GG = parseInt(Math.round((minutes/60)*256)).toString(16); if(GG.length == 1){colorString += "0" + GG}else{colorString += GG};
+        var BB = parseInt(Math.round((seconds/60)*256)).toString(16); if(BB.length == 1){colorString += "0" + BB}else{colorString += BB};
+
+        document.getElementById("dateTimeColor").style.background = colorString;
+        document.getElementById("dateTimeColor").value = colorString.toUpperCase();
+        setTimeout("setClock()",997);
+    };
+
+    function setLed(element,sTring,totLen){     
+        var counter = sTring;
+        var tempCount = -1;
+        for(i=1;i<=totLen;i++){
+            if(i+counter.length <= totLen){
+                eval("document.getElementById('"+element + i +"').src='off.png'");
+            }else{
+                tempCount = tempCount + 1;
+                if(counter.charAt(tempCount) == 0){
+                    eval("document.getElementById('"+element + i +"').src='off.png'");
+                }else{
+                    eval("document.getElementById('"+element + i +"').src='on.png'");
+                };
+            };
+        };
+    };
+
+    function setClock(){setTime()};
+  </script>
+  <style>
+    td{color:#FFFFFF}
+    .binClock{border: 1px solid #666666}
+  </style>
+</head>
+<body onLoad="setClock()" bgcolor="Black">
+
+<table border="0" height="100%" width="100%">
+    <tr>
+      <td align="center" height="100%" valign="middle" width="100%">
+        <table bgcolor="Black" style="color:#FFFFFF;font-size:8px;font-family:verdana" border="0" cellpadding="2" cellspacing="0">
+            <tr>
+                <td colspan="6" align="center" style="color:#999999;font-size:10px"><br><b>Date and time </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dateTimeDisplay"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>is binary:</b><br><br></td>
+            </tr>
+            <tr>
+                <td class="binClock">Year (<span id="Y"></span>)</td>
+                <td class="binClock">Month (<span id="M"></span>)</td>
+                <td class="binClock">Day (<span id="D"></span>)</td>
+                <td class="binClock">Hour (<span id="H"></span>)</td>
+                <td class="binClock">Minutes (<span id="Min"></span>)</td>
+                <td class="binClock">Seconds (<span id="S"></span>)</td>
+            </tr>
+             <tr>
+                <td class="binClock"><img id="j1" src="off.png" height="12" width="12"><img id="j2" src="off.png" height="12" width="12"><img id="j3" src="off.png" height="12" width="12"><img id="j4" src="off.png" height="12" width="12"><img id="j5" src="off.png" height="12" width="12"><img id="j6" src="off.png" height="12" width="12"><img id="j7" src="off.png" height="12" width="12"><img id="j8" src="off.png" height="12" width="12"><img id="j9" src="off.png" height="12" width="12"><img id="j10" src="off.png" height="12" width="12"><img id="j11" src="off.png" height="12" width="12"><img id="j12" src="off.png" height="12" width="12"></td> 
+                <td class="binClock"><img id="m1" src="off.png" height="12" width="12"><img id="m2" src="off.png" height="12" width="12"><img id="m3" src="off.png" height="12" width="12"><img id="m4" src="off.png" height="12" width="12"></td>
+                <td class="binClock"><img id="d1" src="off.png" height="12" width="12"><img id="d2" src="off.png" height="12" width="12"><img id="d3" src="off.png" height="12" width="12"><img id="d4" src="off.png" height="12" width="12"><img id="d5" src="off.png" height="12" width="12"></td>
+                <td class="binClock"><img id="u1" src="off.png" height="12" width="12"><img id="u2" src="off.png" height="12" width="12"><img id="u3" src="off.png" height="12" width="12"><img id="u4" src="off.png" height="12" width="12"><img id="u5" src="off.png" height="12" width="12"></td>
+                <td class="binClock"><img id="min1" src="off.png" height="12" width="12"><img id="min2" src="off.png" height="12" width="12"><img id="min3" src="off.png" height="12" width="12"><img id="min4" src="off.png" height="12" width="12"><img id="min5" src="off.png" height="12" width="12"><img id="min6" src="off.png" height="12" width="12"></td>
+                <td class="binClock"><img id="s1" src="off.png" height="12" width="12"><img id="s2" src="off.png" height="12" width="12"><img id="s3" src="off.png" height="12" width="12"><img id="s4" src="off.png" height="12" width="12"><img id="s5" src="off.png" height="12" width="12"><img id="s6" src="off.png" height="12" width="12"></td>
+            </tr>
+            <tr>
+                <td colspan="6" align="center" style="color:#999999;font-size:10px"><br><b>Hexadecimal color-clock:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="dateTimeColor" readonly style="font-size:10px;color:#000000;text-align:center;width:100px;height:16px;background-color:#000000;border: 1px solid Black"><br><br></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

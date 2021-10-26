@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<months>
+  <month id="1">
+    <name>Januari</name>
+  </month>
+
+  <month id="2">
+    <name>Februari</name>
+  </month>
+
+  <month id="3">
+    <name>Maart</name>
+  </month>
+
+  <month id="4">
+    <name>April</name>
+  </month>
+
+  <month id="5">
+    <name>Mei</name>
+  </month>
+
+  <month id="6">
+    <name>Juni</name>
+  </month>
+
+  <month id="7">
+    <name>Juli</name>
+  </month>
+
+  <month id="8">
+    <name>Augustus</name>
+  </month>
+
+  <month id="9">
+    <name>September</name>
+  </month>
+
+  <month id="10">
+    <name>Oktober</name>
+  </month>
+
+  <month id="11">
+    <name>November</name>
+  </month>
+
+  <month id="12">
+    <name>December</name>
+  </month>
+</months>
+

@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <title> Safari testcase | document.load </title>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript">
+function test1()
+{
+  if (document.implementation&&document.implementation.createDocument)
+  {
+    xmlDoc = document.implementation.createDocument('','',null);
+    xmlDoc.onload = function() { alert('loaded'); };
+    xmlDoc.load('apple.xml');
+  }
+  else 
+  {
+    alert('Sorry, no support for Document.load');
+  }
+}
+function test2()
+{
+  try
+  {
+    if (document.implementation&&document.implementation.createDocument)
+    {
+      xmlDoc = document.implementation.createDocument('','',null);
+      xmlDoc.onload = function() { alert('loaded'); };
+      xmlDoc.load('apple.xml');
+    }
+    else 
+    {
+      alert('Sorry, no support for Document.load');
+    }
+  }
+  catch(ex)
+  {
+    alert('Exception: '+ex);
+  }
+}
+function test3()
+{
+  if (document.implementation&&document.implementation.createDocument)
+  {
+    xmlDoc = document.implementation.createDocument('','',null);
+    xmlDoc.onload = function() { alert('loaded'); };
+    if(xmlDoc.load)
+    {
+      xmlDoc.load('apple.xml');
+    }
+    else
+    {
+      alert('Sorry, no support for Document.load (2)');
+    }
+  }
+  else 
+  {
+    alert('Sorry, no support for Document.load (1)');
+  }
+}
+    </script>
+  </head>
+  <body>
+    <h1> Safari testcase | document.load  </h1>
+    <p>
+      The <code>load</code> method of a <code>Document</code>
+      object should be implemented. What's the use in a web-page
+      of <code>document.implementation.createDocument</code> anyway,
+      if the load method is not implemented.
+    </p>
+    <p>
+      This testcase discusses in what way the <code>load</code> method
+      is used in conjunction with <code>createDocument</code> on the
+      web. The first two scripts will fail, because the load propery
+      is <code>undefined</code> in Safari. The third script is the way
+      it should be implemented.
+    </p>
+    <p>
+    </p>
+    <form onsubmit="return false;">
+      <script>
+showCode(test1,'This script will fail in Safari (but you won\'t notice).');
+showCode(test2,'This script will fail in Safari (you will get an alert).');
+showCode(test3,'This is how it should be programmed.');
+      </script>
+      <p>
+        But really, a way of loading XML documents would 
+        really come in handy ;-) 
+      </p>
+    </form>
+    <p>
+      <hr/>
+      <a href="../safariIdea.htm">Back</a> to the bugs
+    </p>
+  </body>
+</html>

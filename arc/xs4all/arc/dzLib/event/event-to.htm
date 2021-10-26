@@ -1,0 +1,318 @@
+<html>
+<head>
+	<title>dzLib: event-lib</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" />
+  <link rel="stylesheet" type="text/css" href="default.css" />
+	<style type="text/css">
+.noOption {
+  text-decoration:line-through;
+}
+.note {
+  color:blue;
+  background-color:yellow;
+  font-style:italic;
+  font-weight:bold;
+  border-left:5px solid blue;
+  border-right:5px solid blue;
+  padding:1px 5px 1px 5px;
+
+}
+  </style>
+  <script language="javascript" src="../../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  hiLiteJS('highlite-js-syntax');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+	<h1>
+    Event-lib
+  </h1>
+  <p class="note">
+    This is a working document, so it might be messy
+  </p>
+  <p>
+    Because the <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/">DOM Level 2 Events 
+    specification</a> (i.e. <code><em>object</em>.addEventListener</code>) is not implemented on the
+    majority of browsers, this library is in developement. It uses the inline event-model 
+    (which is supported by virtually all browsers), and tries to unify event behaviour and properties.
+  </p>
+  <p>
+    The idea is this: the advanced event model of w3c has huge advantages, but is rendered
+    useless, because of the low implemented base. It is my believe, a lot of this functionality
+    can be achieved with the inline event-model and a library. I'm not sure, which options are 
+    possible at the moment, but a we will see what is possible.
+  </p>
+  <p>
+    After a few years, when the w3c model is in common use, this library will be obsolete 
+    <img src="../../img/smileyHappy.gif" class="smiley" />. This library will rely on hefty 
+    event-research by <a href="http://www.xs4all.nl/~ppk/js/">Peter-Paul Koch</a>.
+  </p>
+  <h2>Design decisions</h2>
+  <p>
+    We will target the browsers listed below. The optional browsers may be supported, when possible,
+    but may be left out, when an advanced feature is more important.
+  </p>
+  <p>
+    <em>Mandatory</em>: <code>ie5+/Win, ie5+/Mac, Mozilla</code>
+    <br>
+    <em>Optional</em>: <code>Opera, Konquerer, iCab, OmniWeb, Netscape 4???, IE3/4</code>
+  </p>
+  <p>
+    I keep close to the definitions of Peter-Paul's website, with some excpetions. I speak
+    of Mozilla (instead of Netscape 6). Also I only speak of the inline-model, when
+    PPK speaks of inline- and tradition-model. To me, this is the same model. The first
+    is only used declarative (in HTML: <code>&lt;element onclick="bla();"&gt;</code>) and the lather
+    is the inline-model, used programmatically (<code>element.onclick=bla;</code>).
+    <br/>
+    Note that the two examples above are not the same. The differences:
+  </p>
+  <pre class="highlite-js-syntax">//Declarative use; value of element.onclick.toString():
+function anonymous()
+{
+  bla();
+}
+//Programmatic use; value of element.onclick.toString():
+function bla()
+{
+  //whatever this function is doing
+}</pre>
+  <h2>Event chaining</h2>
+  <p>
+    This can be accomplished by altering the (anonymous) function, attached to
+    the elements event-property (or when absent, create a new function.
+    Removing works the other way around. A dispatch function will not be necessary, just
+    use <em>element</em>.<em>event</em>(); <a href="_addEvent.htm">Testpage event chain</a>
+	</p>
+  <p> 
+    It would be possible the keep a list of event meta-data (ie, does an particular HTML element
+    support an event, is an event cancelable). At this point, this will not be done. 
+    The only reason to do this in the furure, is when some events are supported by browser A, but
+    not by browser B...
+  </p>
+  <p>
+    This is not yet done in NS4, but should be possible with the use of <code>element.captureEvenst</code>.
+  </p>
+  <h2 class="noOption">Event capture</h2>
+  <p>
+    <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-flow-cancelation">DOM/2 
+    definition</a>. Only possible in Netscape4, Mozilla and Konquerer (not on IE, Opera, iCab).
+  </p>
+  <h2>Event bubbling</h2>
+  <p>
+    <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-flow-bubbling">DOM/2
+    definition</a>. Possible in IE4.0+ (according MSDN on all platforms), Mozilla and Konquerer. 
+    Not possible in NS4, Opera, iCab.
+    IE bubble cancel: event.cancelBubble=true; Mozilla/Konquerer: event.stopPropagation(). TODO: 
+    does event.stopPropagation() work with inline event-model? 
+    <br>
+    Implementation: Create a stopPropagation() method on the event-object parameter.
+  </p>
+  <p>
+    event.eventPhase: is the event a bubble, or not. <a href="event/detectBubble.htm">read
+    and shiver</a> (it's almost possible).
+  </p>
+  <h2>Event cancelation</h2>
+  <p>
+    <a href="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-flow-cancelation">DOM/2
+    definition</a>
+    Use of return in top function works on all browsers. event.returnValue on IE is not usefull 
+    (it's meant for declarative use of the inline model, so you don't have to write
+     &lt;a href='bla.url' onclick="<em>return</em> doFunction();"&gt;).
+    <br>
+    Implementation: Create a preventDefault() method on the event-object parameter.
+  </p>
+  <h2>Event cancelation LITE</h2>
+  <p>
+    Implementation for the Lite version (just using the return-value). 
+    We need the if(bResult==false), because the default action is only
+    cancelled when returning false (and undefined is not false).
+  </p>
+  <pre class="highlite-js-syntax">function anonymous()
+{
+  var bResult; 
+  if(firstFunction()==false) bResult=false;
+  if(secondFunction()==false) bResult=false;
+  return blnResult;
+}
+  </pre>
+  <h2><code>this</code> as event "owner"</h2>
+  <p>
+    It's handy when the <code>this</code> statement refers to the HTML element, firing the event.
+    This can be accomplished with the javascript <a href="http://msdn.microsoft.com/library/en-us/script56/html/js56jsmthCall.asp">call</a>
+    method (of the Function object). Because .call is introduced on Windows with IE5.5 and is
+    absent on IE/Macintosh, I made a workaround. (needs to be tested on IE5.01-/Win).
+    The <code>$</code> prefix is to show that it's private ($) 
+  </p>
+  <pre class="highlite-js-syntax">if(!Function.call) Function.prototype.call = function(THIS)
+{
+  if(!THIS) { alert('First argument needs to be the owner object (this)'); return; }
+  THIS.$call=this;
+  return THIS.$call();
+}</pre>
+  <script language="javascript">
+if(!Function.call) Function.prototype.call = function(THIS)
+{
+  if(!THIS) { alert('First argument needs to be the owner object (this)'); return; }
+  THIS.$call=this;
+  return THIS.$call();
+}
+
+function makeRed()
+{
+  if(this.style.color=='')
+  {
+    this.style.color='Red';
+    this.innerText='Make black';
+  }
+  else
+  {
+    this.style.color='';
+    this.innerText='Make red';
+  }
+}
+  </script>
+  <p>
+    <button>bla</button>
+    Test: <button onclick="makeRed.call(this);" onfocus="this.style.width=this.childNodes[0].offsetWidth+8;"><span>Make Red</span></button>
+  </p>
+  <h2><code>this</code> as event "owner" LITE</h2>
+  <p>
+    Implementation for the Lite version:
+  </p>
+  <pre class="highlite-js-syntax">function anonymous()
+{
+  var blnResult;
+  if(firstFunction.call(this)==false) blnResult=false;
+  if(secondFunction.call(this)==false) blnResult=false;
+  return blnResult;
+}
+  </pre>
+  <h2>Event property unification</h2>
+  <p>
+    This is a major-one.
+  </p>
+  <h2>Declarative use</h2>
+  <p>
+    How is this library going to work with the declarative use the inline-model?
+    Questions/ideas:
+  </p>
+  <ul>
+    <li>
+      Does the inline-model needs to benefit from the "advanced" features, like
+      one-and-the-same event object on all browsers, etc.
+    </li>
+    <li>
+      How is <code>&lt;element onclick="bla();"&gt;</code> going to co-operate with
+      <code>addEvent(element,'onclick',bla)</code>.
+    </li>
+    <li>
+      Solution 1: window.onload changes all declarative inline event-handlers in the DOM?
+      This, with an extra call, or automatically when including the lib.
+      Does this perform.
+    </li>
+    <li>
+      Solution 2: let the declarative events alone. When adding an event function
+      with addEvent, let the declarative code be executed last, and don't 
+      give it the addEvent's extras.
+    </li>
+    <li> 
+      In what way must window.onload and &lt;body onload=""&gt; co-operate.
+      (body.onload overwrites window.onload entry added before the body-tag [in IE and Mozilla]).
+      <br>
+      1) Don't use addEvent(window,'onload'..) before the body onload tag.
+      <br>
+      2) Don't use the body onload at all
+    </li>
+  </ul>
+  <h2>Declarative use: LITE</h2>
+  <p> 
+    The declared event is executed last (could be first as well, just mather of choice).
+    Take the following HTML fragment:
+    <br>
+    &lt;form method="POST" onsubmit="return checkForm()"&gt;
+    <br>
+    The valueOf the onsubmit event is:
+  </p>
+  <pre class="highlite-js-syntax">function anonymous()
+{
+  return checkForm();
+}</pre>
+  <p>
+    After a call to <code>addEvent(oFormElement,'onsubmit',acceptCopyright);</code> the
+    code will be changed to:
+  </p>
+  <pre class="highlite-js-syntax">function anonymous()
+{
+  /*eventLib*/
+  var fInLine=function() { return checkForm(); };
+  var bReturnValue;
+  if(fInLine.call(this)==false) bReturnValue=false;
+  if(acceptCopyright.call(this)==false) bReturnValue=false;
+  return bReturnValue;
+}
+</pre>
+  <p>
+    If no event was specified in the HTML, after a call to 
+    <code>addEvent(oFormElement,'onsubmit',acceptCopyright);</code> the
+    code will be:
+  </p>
+  <pre class="highlite-js-syntax">function anonymous()
+{
+  /*eventLib*/
+  var bReturnValue;
+  if(acceptCopyright.call(this)==false) bReturnValue=false;
+  return bReturnValue;
+}</pre>
+  <p>To check if an event has been touched by <code>addEvent</code> (if the function-body
+    was specified with the html declaration, we need to wrap a function around the code)
+    I tried to <em>name</em> the function. When creating a function with the Function 
+    constructor, the function will be anonymous. However, IE (mac & win) and Mozilla 
+    can't create a named (or anonymous)
+    function from string (<code style="color:blue">eval('function x() { return; }')</code>).
+    So I plan to use a remark, like <code style="color:green">/*addEvent*/</code> as the
+    first part of the body.
+  </p>
+
+  <h2>Comparisation table</h2>
+  <table style="width:100%">
+    <tr>
+      <th>Option</th>
+      <th>addEvent</th> <th>inline-model</th> <th>DOM 2 Events</th> <th>MS.attachEvent</th>
+    </tr>
+    <tr>
+      <td> event-chaining </td>
+      <td> YES </td> <td> no </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <td> default cancelation </td>
+      <td> YES </td> <td> YES </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <td> event capturing </td>
+      <td> no </td> <td> no </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <td> event bubbling </td>
+      <td title="Not Implemented Yet"> YES* </td> <td> no </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <td> this as event owner </td>
+      <td> YES </td> <td> YES </td> <td> YES </td> <td> no </td>
+    </tr>
+    <tr>
+      <td> clear event properties </td>
+      <td title="Not Implemented Yet"> YES* </td> <td> no </td> <td> YES </td> <td> YES </td>
+    </tr>
+    <tr>
+      <td> Works on most browsers </td>
+      <td> YES </td> <td> YES </td> <td> no </td> <td> no </td>
+    </tr>
+  </table>
+  <div class="footer">
+    <a href="mailto:zanstra@xs4all.nl?subject=events" title="Stuur een email">Doeke Zanstra</a>, 2001-2002. 
+    Code is free to use and provided as-is, mention source (me). Don't blame me if anything goes wrong ;-)
+   </div>
+</body>
+</html>

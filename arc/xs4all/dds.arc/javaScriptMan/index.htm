@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+	<TITLE>The javascript-Man</TITLE>
+	<STYLE type="text/css">
+		P, DIV {
+			font: 10pt Arial
+		}
+		.prjWindow {
+			width: 100px;
+			height: 100px;
+			border-width: 10px;
+			border-style: Solid;
+			border-color: #00CC00;
+			margin: 0px;
+			background-color: #00ff00;
+			vertical-align: middle;
+			text-align: center;
+		}
+		.big1 {
+			font: 48pt Courier New;
+			color: #dddddd;
+		}
+		.big2 {
+			font: 68pt Courier New;
+			color: #bbbbbb;
+		}
+		.proceed {
+			font: 10pt Courier New;
+		}
+	</STYLE>
+	<SCRIPT type="text/javascript">
+		var aParamList;
+
+		function getParams()
+		{	var strURL = document.location.href;
+			var i=strURL.indexOf("?");
+			return i!=-1?strURL.substr(i+1):"";
+		}
+		function beGod()
+		{	if(window.top.length>1)
+			{	window.open("http://huizen.dds.nl/~olrik/javaScriptMan/index.htm?"+getParams(),"_top","",true);
+			}
+		}
+		function proceed()
+		{	window.open("index2.htm?"+getParams(),"_self","",true);
+		}
+	</SCRIPT>
+</HEAD>
+<BODY onload="beGod();">
+<P>
+	<TT>
+		<font color="darkblue">&lt;</font><font color="purple">SCRIPT </font><font color="red">type</font><font color="black">=</font><font color="blue">"text/javascriptman"</font><font color="darkblue">&gt;</font>
+		<BR>
+		<font color="gray">&lt;!--</font>
+		<br>
+		<font color="green">//Work in progress...</font>
+		<BR><BR>
+		<TABLE>
+			<TR>
+				<TD class="big1">&lt;</TD>
+				<TD class=prjWindow><SPAN id=project><a href="javascript:proceed()" class="proceed">Proceed</a></SPAN></TD>
+				<TD class="big2">&gt;</TD>
+			</TR>
+		</TABLE>
+	</TT>
+</P>
+</BODY>
+</HTML>

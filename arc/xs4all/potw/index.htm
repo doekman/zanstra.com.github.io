@@ -1,0 +1,203 @@
+<html>
+<head>
+	<title>Plaatje van de week</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+#weekTitel {
+  text-align: center;
+}
+#weekFotoDiv {
+  text-align: center;
+}
+#weekOmschrijvingDiv {
+  text-align: center;
+  padding-top: 1em;
+}
+#weekOmschrijving {
+  text-align: center;
+}
+img.vcr {
+  cursor: hand;
+  width: 23px; height: 16px;
+  border-width: 0px;
+}
+  </style>
+  <script language="javascript" src="../js/window.js"> </script>
+  <script language="javascript" src="../js/get.js"> </script>
+  <script language="javascript" src="index.js"> </script>
+  <script language="javascript"> 
+var oPOTW;
+/*enum move*/ var 
+  mvFirst=0,
+  mvLast=1,
+  mvPrev=2,
+  mvNext=3
+/*end enum*/ ;
+function setPOTW() {
+  window.top.status='Loading image...';
+  document.body.style.cursor='wait';
+  document.getElementById('weekFoto').src=oPOTW.image();
+  //set other data, when image is loaded (with function proceedPlay)...
+}
+function move(enumMove) {
+  var blnRes;
+  with(oPOTW) {
+    switch(enumMove) {
+      case mvFirst: blnRes=moveFirst(); break;
+      case mvLast: blnRes=moveLast(); break;
+      case mvPrev: blnRes=movePrev(); break;
+      case mvNext: blnRes=moveNext(); break;
+    }
+  }
+  if(!blnRes) htmlAlert('Sorry, de plaatjes\'s zijn op.');
+  else setPOTW();
+}
+function moveTo(cursorPos) {
+  if(oPOTW.moveTo(cursorPos)) setPOTW();
+  else htmlAlert('Illegal function call.');
+}
+function insertMenuIndex() {
+  var strHTML='', saveCursorPos=oPOTW.cursorPos();
+
+  for(var blnEOF=oPOTW.moveLast(); blnEOF; blnEOF=oPOTW.movePrev()) {
+    strHTML+='<div class="item"><a href="index.htm?potw='+oPOTW.cursorPos()+'" onclick="moveTo('+oPOTW.cursorPos()+'); return false;"'
+            +'title="week '+oPOTW.weekNrOrdinal()+'">week '+oPOTW.weekNrCards()+'</a></div>\n';
+  } 
+  oPOTW.moveTo(saveCursorPos);
+  document.getElementById('idPOTWindex').innerHTML=strHTML;
+}
+function pageInit() {
+  var oQueryString=new getParameter();
+  oPOTW=new POTW(2001);
+  insertMenuIndex();
+  if(oQueryString.potw==null) {
+    oPOTW.moveLast();
+  }
+  else {
+    var intMoveTo=parseInt(oQueryString.potw,10);
+    if(isNaN(intMoveTo)) oPOTW.moveLast();
+    else oPOTW.moveTo(intMoveTo); 
+  }
+  setPOTW();
+}
+var idIntervalPlay=null, intInterval, blnPlayBackwards=true;
+var sLastImage;
+function proceedPlay() {
+  if(oPOTW==null) return; 
+  //bugfix for animated-gifs (they fire the onload with every frame advance...)
+  //onload fires when all the gif-frames have loaded,
+  //and then fires at every frame-advance.
+  if(sLastImage!=null&&sLastImage==document.getElementById('weekFoto').src) return; 
+  sLastImage=document.getElementById('weekFoto').src;
+
+  window.top.status='Done';
+  document.body.style.cursor='auto';
+  //set title and description when image has loaded
+  document.getElementById('weekTitel').innerHTML=oPOTW.weekNrCards();
+  document.getElementById('weekOmschrijving').innerHTML=oPOTW.description();
+  document.getElementById('idMailAFriend').href=mailToURL();
+  if(idIntervalPlay==null) return; //not in playing mode
+  //in playing mode, so restart timeout
+  idIntervalPlay=window.setTimeout(showNextFoto,intInterval*1000);
+}
+function showNextFoto() {
+  if(oPOTW==null) return;
+  if(blnPlayBackwards) {
+    if(!oPOTW.movePrev()) oPOTW.moveLast();
+  }
+  else {
+    if(!oPOTW.moveNext()) oPOTW.moveFirst();
+  }
+  setPOTW();
+}
+function togglePlay() {
+  if(idIntervalPlay==null) {
+    //Start play
+    blnPlayBackwards=!event.ctrlKey;
+    intInterval=htmlPrompt('Om de hoeveel seconden moet er een nieuwe plaatjes komen?',intInterval==null?'5':intInterval);
+    if(intInterval==null) return; //cancel pressed
+    with(document.getElementById('imgPlay')) {
+      src='../img/vcrStop.png';
+      alt='Stop';
+      title='Stop de diashow';
+    }
+    idIntervalPlay=window.setTimeout(showNextFoto,1); //quick response for first movement
+  }
+  else {
+    //stop playing
+    window.clearTimeout(idIntervalPlay);
+    idIntervalPlay=null;
+    with(document.getElementById('imgPlay')) {
+      src='../img/vcrPlay.png';
+      alt='Diashow';
+      title='Laat de plaatjes\'s automatisch na elkaar zien (control-click voor andere richting)';
+    }
+  }
+}
+function mailToURL() {
+  return 'mailto:?subject='+escape('Plaatje van de week.')
+          +'&body='+escape('http://www.xs4all.nl/~zanstra/potw/index.htm?potw='+oPOTW.cursorPos())
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0" width="100%"><tr><td width="100px"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/eplus.png">
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+    weekPlaatje
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1 style="text-align: center">Plaatje van de week <span id="weekTitel">&nbsp;</span></h1>
+</td></tr><tr><td><!--column 1b-->
+
+  <div class="titel">Navigeer</div>
+    <div class="item" style="padding-top: 2px">
+      <img onclick="move(mvPrev);" src="../img/vcrRewind.png" alt="Vorige" title="Ga naar de vorige plaatje van de week" class="vcr">
+      <img onclick="togglePlay();" src="../img/vcrPlay.png" id="imgPlay" alt="Diashow" 
+       title="Laat de plaatjes's automatisch na elkaar zien  (control-click voor andere richting)" class="vcr">      
+      <img onclick="move(mvNext);" src="../img/vcrForward.png" alt="Volgende" title="Ga naar de volgende plaatje van de week" class="vcr">
+    </div>
+    <div class="item">&nbsp;</div>
+  <div class="titel">Serie 2001</div>
+    <div id="idPOTWindex"></div><!--content inserted by script-->
+    <div class="item">&nbsp;</div>
+  <div class="titel">Index</div>
+    <div class="item"><a href="../fotos/index.htm">Fotoalbum</a></div>
+    <div class="item"><a href="../index.htm">Home</a></div>
+    <div class="item">&nbsp;</div>
+
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+  <table width="100%" border="0"><tr><td width="50%">&nbsp;</td><td><!--tekst onder plaatje is nu net zo breed als het plaatje-->
+    <div id="weekFotoDiv">
+      <img src="../img/icqoffline.gif" id="weekFoto" alt="Plaatje van de week" onload="proceedPlay();"
+       style="margin-left: 1cm; margin-right: 1cm"><!--marge om plaajte, zo is de onderstaande tekst net iets breder-->
+    </div>
+    <div id="weekOmschrijvingDiv">
+      <span id="weekOmschrijving">&nbsp;</span>
+    </div>
+  </td><td width="50%">&nbsp;</td></table>
+  <div style="height: 4em">&nbsp;</div>
+	<p>
+		Weekplaatje is gearchiveerd. Er komen geen nieuwe plaatjes bij. <br />
+		De collectie is opgenomen in
+		<a href="../fotos/index.htm?album=2&index=25">Fotoalbum</a>.
+		Deze pagina (met DHTML-technieken is vervangen door een met old-school-Netscape-technieken [document.writeln]).
+	</p>
+	<p>
+		De weeknummers mbv kaart-symbolen is geïnspireerd door het boek van Jostein Gaarder, "Het geheim van de kaarten".
+		Lees hier <a href="notities.txt">enkele notities</a>.
+	</p>
+  <p>
+    <img src="../img/emailIcoon.gif"> <a href="#" id="idMailAFriend">Stuur een link van deze pagina naar een vriend</a>.
+  </p>
+  <div class="footer">
+    Doeke Zanstra, 2001, <a href="../index.htm">index</a>;
+    <span style="color: black">week B&spades;</span>, <span style="color: red">week 7&hearts;</span>, <a href="javascript: void htmlAlert('Dat moet nog gemaakt worden.');">wat is dat?</a>
+  </div>
+</td></tr></table><!--end columns--></body>
+</html>

@@ -1,0 +1,65 @@
+﻿@font-face {
+    font-family: 'Ecofont Vera Sans';
+    src: url('../fonts/ecofont_vera_sans_regular.ttf') format('truetype');
+    font-weight:400;
+}
+body.eco {
+    font-family: 'Ecofont Vera Sans', sans-serif;
+}
+.inhoud {
+  margin-top: 50px;
+}
+.container {
+    max-width: 730px;
+}
+.inhoud {
+  padding: 40px 15px;
+}
+/* formulieren en tabellen */
+td .checkbox {
+    margin-bottom: 0 ! important;
+}
+td .non-form-group {
+    margin-top: 10px;
+}
+.tooltip-inner {
+    white-space:pre;
+    max-width:none;
+    text-align:left;
+}
+.tickets {
+    border-bottom:thin solid black;
+}
+.ticket {
+    padding: 1em;
+}
+.ticket + .ticket {
+    border-left:thin dashed black;
+}
+.ticket h3 {
+    margin:0;
+}
+.ticket .footer {
+    font-size:80%
+}
+.tocht-description {
+    page-break-after: always;
+}
+@media screen {
+    .tocht-description {
+        margin-bottom:20em;
+    }
+}
+.logs li {
+    list-style-type: none;
+}
+span.note {
+    color: lightgrey;
+}
+.progress.grouped {
+    margin-bottom:0;
+    height: 10px;
+}
+.hide {
+    display:none;
+}

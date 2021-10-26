@@ -1,0 +1,1 @@
+cscript GoT2v2.js //Nologo < GoT2v2.txt

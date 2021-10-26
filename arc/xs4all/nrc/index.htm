@@ -1,0 +1,30 @@
+<html>
+  <script language="javascript" src="../js/get.js"> </script>
+  <script language="javascript">
+window.onload=pageInit;
+
+function pageInit() {
+  var oQS=new getParameter();
+
+  if(oQS.data!=null) window.frames.data.location.replace(oQS.data);
+}
+
+var blnState=true;
+function toggleNavShow(bln,idHidden,idShow,idShow2,idTitle) {
+  if(bln==null) bln=blnState=!blnState;
+  frmst.cols=bln?'195,*':'18,*';
+  idHidden.style.display=bln?'none':'block';
+  idShow.style.display=bln?'block':'none';
+  idShow2.style.display=bln?'block':'none';
+  idTitle.style.display=bln?'block':'none';
+  window.frames.nav.document.body.style.overflow=bln?'scroll':'visible';
+  window.frames.nav.document.body.style.overflowX='visible';
+  window.frames.nav.document.body.style.overflowY=bln?'scroll':'visible';
+  window.frames.nav.document.body.style.borderRight=bln?'0px solid black':'1px solid black';
+}
+  </script>
+  <frameset cols="195,*" id="frmst" border="0">
+    <frame src="navigate.htm" name="nav" scrolling="yes" />
+    <frame src="data.htm" name="data" />
+  </frameset>
+</html>

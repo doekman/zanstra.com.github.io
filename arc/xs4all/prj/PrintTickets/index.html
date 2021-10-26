@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  	<title>Qronnected tickets</title>
+  	<style type="text/css" media="screen">
+.qrCode {
+  float:left;
+}
+.ticket {
+  border:1px solid slateblue;
+  clear:both;
+}  	 
+  	</style>
+    <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
+    <script src="js/handlebars.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/doekman.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+var fetchTickets = function(showCode) {
+  $.getJSON("api/{0}.json".f(showCode))
+  .done(function(json) {
+    var show = json.data.show
+    ,   customers = json.data.customers
+    ;
+    //TODO: sanitize customer (groupBy, and make reference), do dates
+    $("#messageSpan").html("Request succeeded: {0}, {1}".f(json.responseCode, show.name));
+    var source   = $("#ticketTemplate").html();
+    var template = Handlebars.compile(source);
+    $("#tickets").html(template(json.data.show));
+  })
+  .fail(function(jqxhr, textStatus, error) {
+    $("#messageSpan").html("Request failed: {0}, {1}".f(textStatus, error));
+  });
+};
+   
+$(function() {
+  $("#getButton").click(function() {
+    var showCode = $("#showCode").val();
+    fetchTickets(showCode);
+  });
+});      
+    </script>
+    <script type="text/x-handlebars-template" id="ticketTemplate">
+    {{#each tickets}}
+    <div class="ticket"> 
+      <img src="http://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={{ticketCode}}" alt="qr code: {{ticketCode}}" class="qrCode" />
+      <h2>{{../name}}</h2>
+      {{#if customerId}}
+      <p>Klantnr: {{customerId}}</p>
+      {{/if}}
+      <table> 
+        {{#each attributes}}
+          <tr><th>{{../../attributes}}</th><td>{{@index}}</td><td>{{this}}</td></tr>
+        {{/each}}
+      </table>
+    </div>
+    {{/each}}
+    </script>
+  </head>
+  <body>
+    <h1>Qronnected tickets</h1>
+    <form>
+      <input id="showCode" value="hegnwybjtfxv">
+      <input type="button" value="GET" id="getButton">
+      <span id="messageSpan"></span>
+    </form>
+    <div id="tickets"></div>
+    
+  </body>
+</html>
+
+  </body>
+</html>

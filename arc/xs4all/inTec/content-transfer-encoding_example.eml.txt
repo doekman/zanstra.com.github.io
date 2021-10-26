@@ -1,0 +1,14 @@
+From: "Doeke Zanstra" <doeke@zanstra.net>
+To: "example@doekman"
+Subject: Let text/plain flow with Content-Transfer-Encoding: quoted-printable
+Date: Thu, 27 Sep 2001 00:12:29 +0200
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+And that is bad, because I determine the width of my =
+window/message. And not necessary as well. If the client would use the =
+MIME header Content-Transfer-Encoding with as value quoted-printable, the=
+ text would flow like hell
+

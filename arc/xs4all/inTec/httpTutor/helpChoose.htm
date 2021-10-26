@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <style type="text/css">
+    </style>
+    <script language="javascript" src="../js/get.js"> </script>
+  </head>
+  <body>
+    <h1>Multiple help entries available</h1>
+    <script language="javascript">
+var oQS=new getParameter();
+var aList=oQS.sURLList.split(' ? ');
+var aBlock;
+document.writeln('<p>The following entries are available for the '+oQS.sItem+' <strong>'+oQS.sItemValue+'</strong></p>');
+document.writeln('<ul>');
+for(var i=0; i<aList.length; i++) {
+  aBlock=aList[i].split(' ! ');
+  document.writeln('<li><a href="'+aBlock[1]+'">'+aBlock[0]+'</a></li>');
+}
+document.writeln('</ul>');
+    </script>
+  </body>
+</html>

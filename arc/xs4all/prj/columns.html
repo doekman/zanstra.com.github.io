@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title> Tofu like columns </title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style type="text/css">
+li {
+  border: 1px solid blue;
+  margin: 0 0 0 2em
+}
+.ul3 {
+  whitespace: -moz-pre-wrap
+}
+.container {
+  overflow-x:scroll; 
+  overflow-y:none;
+  border:1px solid lightgrey;
+  padding:1em  
+}
+.tofuColumn {
+  column-width:15em; 
+  -moz-column-width:15em; 
+  -webkit-column-width:15em; 
+  
+  column-gap:2em; height: 15em;  
+  -moz-column-gap:2em; height: 15em;  
+  -webkit-column-gap:2em; height: 15em;  
+}
+    </style>
+  </head>
+  <body>
+    <h1>Column screen reader</h1>
+    <p>
+      [nl]: Door middel van <a href="http://developer.mozilla.org/en/docs/CSS3_Columns#Column_Count_And_Width">Css 3 kolommen</a>, kun je tekst
+      handig leesbaar maken, à la <a href="http://homepage.mac.com/asagoo/tofu/index.html">Tofu</a>. Werkt alleen in FireFox 1.5+ en Safari 3+ (en andere browsers met Css3 kolom ondersteuning). 
+    </p>
+    <p>
+      [en]: By using <a href="http://developer.mozilla.org/en/docs/CSS3_Columns#Column_Count_And_Width">Css 3 columns</a>, 
+      you can make text better readible (like <a href="http://homepage.mac.com/asagoo/tofu/index.html">Tofu</a>). 
+      Works only with FireFox 1.5+ and Safari 3+ (and other browsers with Css3 column support). 
+    </p>
+    <div class="container"><div class="tofuColumn">
+<p><b>Stormy Conditions, Outlook Fair</b></p>
+<p>Right now I'm swamped. I landed frame display lists yesterday (woohoo) and I've been fixing a few regressions today. Unfortunately there was a small size and space hit, and I have more work to do to analyze where the growth came from and cut it back. I'm hoping that stopping certain functions from being inlined will help a lot. Also there is view system code that is no longer used that we can remove.
+</p><p>
+Now that frame display lists have landed, we can move quickly to finish the caret work so carets will use the normal paint path --- killing the infamous "caret disappears when over IFRAME etc" bug. This will also enable caret in SVG-transformed HTML. Which reminds me that another thing I plan to do very soon, based on frame display lists, is reenable SVG <foreignobject> on trunk, for cairo builds at least. Painting and event targeting to transformed HTML should work, but invalidation will not work immediately, so dynamic effects in the transformed HTML won't look right yet. Getting invalidation to work will happen during view system removal, and I've decided to delay that until after widgets get removed, which depends on plugin widgets being hoisted to the top level --- so that's an upcoming major project. Before that though, I'm working on getting native GTK themes working with cairo as well as they can. This will let us turn on GTK theming for HTML content, which will be cool --- we haven't done that before because we could never print them. With my new code, we will be able to.
+</p><p>
+Apart from all that, I'm also supposed to be judging extension contest entries over the next week. I've done a few, and so far I'm impressed.
+</p><p>
+I'm going offline for most of next week. Friends from the USA are visiting and I'll be spending as much time with them as possible, climbing volcanoes, getting sunburned, that sort of thing. So don't be surprised if blog comments don't show up, email doesn't get answered, and trunk regressions take a while to be fixed :-).
+</p>
+<p>Right now I'm swamped. I landed frame display lists yesterday (woohoo) and I've been fixing a few regressions today. Unfortunately there was a small size and space hit, and I have more work to do to analyze where the growth came from and cut it back. I'm hoping that stopping certain functions from being inlined will help a lot. Also there is view system code that is no longer used that we can remove.
+</p><p>
+Now that frame display lists have landed, we can move quickly to finish the caret work so carets will use the normal paint path --- killing the infamous "caret disappears when over IFRAME etc" bug. This will also enable caret in SVG-transformed HTML. Which reminds me that another thing I plan to do very soon, based on frame display lists, is reenable SVG <foreignobject> on trunk, for cairo builds at least. Painting and event targeting to transformed HTML should work, but invalidation will not work immediately, so dynamic effects in the transformed HTML won't look right yet. Getting invalidation to work will happen during view system removal, and I've decided to delay that until after widgets get removed, which depends on plugin widgets being hoisted to the top level --- so that's an upcoming major project. Before that though, I'm working on getting native GTK themes working with cairo as well as they can. This will let us turn on GTK theming for HTML content, which will be cool --- we haven't done that before because we could never print them. With my new code, we will be able to.
+</p><p>
+Apart from all that, I'm also supposed to be judging extension contest entries over the next week. I've done a few, and so far I'm impressed.
+</p><p>
+I'm going offline for most of next week. Friends from the USA are visiting and I'll be spending as much time with them as possible, climbing volcanoes, getting sunburned, that sort of thing. So don't be surprised if blog comments don't show up, email doesn't get answered, and trunk regressions take a while to be fixed :-).
+</p>
+    </div></div>
+  </body>
+</html>
+

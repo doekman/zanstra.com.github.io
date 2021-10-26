@@ -1,0 +1,39 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../iframe.css">
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+<h2>postTool</h2>
+<p>When developing and testing ASP-pages, I thought it would be handy to
+easily <em>generate</em> HTTP-Requests with a POST body.
+Just take a form, fill out the parameters and their values of the to-be-tested ASP-page. 
+Very easy for those hard or impossible to reproduce cases, like an ordernumber which
+doesn't exist.<br><br>
+The result is postTool.htm. I also made a tool to check which parameters a page submits. 
+This one is called postTool.asp.<br><br>
+Just as a spin-off, I made saveForm, which saves the values of the inputs of a form to 
+a cookie and gets 'em back. This can easily be used via an IFRAME and one line of code
+to initialize it. 
+<h2>Quick start</h2>
+<UL>
+	<li>Choose example (below)
+	<li>Fill out one or more parameters with their values
+	<li>Leave action on 'postTool.asp'
+	<li>Click on submit and see what happens.
+</ul>
+<h2>Handy for web-mail</h2>
+Not really, but it's possible. Just go to <a href="http://hotmail.com" target="_new">hotmail.com</a>
+Save the startpage on your desktop, change the action-URL to 
+http://huizen.dds.nl/~olrik/javascriptman/postTool/postTool.asp.
+(download <a href="jsPostTool.asp">JS</a> or <a href="vbPostTool.asp">VBS</a> asp version)
+Load this (altered) page in your browser, submit it. At postTool.<strong>asp</strong>, 
+you can save the form-values to a cookie (sorry, doesn't
+work at the moment).<br><br>
+Now, go back to postTool.<strong>htm</strong>: load the cookie and you have a one-button logon.
+What people do, to keep themselves busy ;-)
+</body>
+</html>

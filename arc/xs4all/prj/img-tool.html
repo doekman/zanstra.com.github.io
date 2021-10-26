@@ -1,0 +1,536 @@
+<html>
+  <head>
+    <title> Image Crop and Resize </title>
+    <style type="text/css">
+label, legend {
+  font: 12px/100% Arial;
+  color: slateblue;
+}
+div.info {
+  font: 11px/100% Arial;
+  color: gray;
+  width: 125px;
+}
+.panel {
+  float:left;
+  margin: 0.5em 0.25em;
+}
+.box {
+  clear:left;
+  margin: 0.5em 0.25em;
+}
+fieldset {
+  border: 1px solid slateblue;
+  width: auto;
+  margin: 0;
+  padding: 0.25em 0.625em 0.75em 0.625em;
+}
+input.number, span.number { 
+  width: 5em; 
+  font: 11px 'Lucida Grande', sans-serif;
+  text-align: right;
+}
+div.tabel div span.number {
+  color: gray;
+}
+#image_url { width: 350px }
+#url { width: 100% }
+#img_alt { width: 30% }
+#img_title { width: 69% }
+#restore { color: slateblue }
+/* BEGIN tab stuff*/
+.tabpanel {
+  display: none;
+}
+.tabstrip {
+  font: 12px/12px Arial;
+  padding: 1px 1em 0 1em;
+}
+.tabstrip a {
+  font: 12px/12px Arial;
+  text-decoration: none;
+  color: slateblue;
+  padding: 0 4px 1px 4px;
+  margin: 0;
+}
+.tabstrip a:hover {
+  text-decoration: underline;
+}
+.tabstrip a.active {
+  background: slateblue;
+  color: white;
+}
+/* END tab stuff*/
+/* BEGIN styling of tab-forms*/
+.tabel {
+  display:table;
+}
+div.tabel div {  display:table-row;}
+div.tabel div label,
+div.tabel div span { display:table-cell; padding: 0 2px }
+.center { text-align: center }
+/* END styling of tab-forms */
+#crop-rect {
+  position:absolute;
+  border:1px dashed yellow;
+  display:none;
+}
+/* Preview stuff*/
+#markup { width: 38em; height: 8em }
+/*help*/
+a.helpicon:link {
+  font-weight: bold;
+  color: slateblue;
+  text-decoration: none;
+  padding: 0 3px;
+}
+a.helpicon:hover {
+  color:red;
+}
+div.help {
+  display: none;
+  border: 1px solid #FFCC00;
+  color: gray;
+  background: ivory;
+  padding: 4px;
+  margin:2px 0;
+}
+    </style>
+    <script type="text/javascript" src="log.js"></script>
+    <script type="text/javascript" src="cookie.js"></script>
+    <script type="text/javascript" src="get.js"></script>
+    <script type="text/javascript" src="ImageData.js"></script>
+    <script type="text/javascript" src="help.js"></script>
+    <script type="text/javascript">
+function $(id) { if(typeof id=='string') return document.getElementById(id); else return id; }
+function px(n) { return n+"px"; }
+function pct(n) { return n+"%"; }
+function fromPx(s) { return isPx(s)?+s.replace(/ *px$/,''):+s; }
+function fromPct(s) { return isPct(s)?s.replace(/ *%$/,'')/100:NaN; }
+function isPx(s) { return /^\d+ *px$/.test(s) }
+function isPct(s) { return /^\d+ *%$/.test(s) }
+function posX(id) {
+  if(typeof id=="string") id=$(id);
+  var pos=0;
+  do {
+    pos+=id.offsetLeft;
+    id=id.offsetParent;
+  } while(id);
+  return pos;
+}
+function posY(id) {
+  if(typeof id=="string") id=$(id);
+  var pos=0;
+  do {
+    pos+=id.offsetTop;
+    id=id.offsetParent;
+  } while(id);
+  return pos;
+}
+function getName(href) {
+  return href.slice(href.indexOf("#")+1); 
+}
+String.prototype.format=function() {
+  var s=this;
+  for(var i=0; i<arguments.length; i++) {
+    s=s.replace(new RegExp("\\{"+i+"\\}"),arguments[i]);
+  }
+  return s;
+}
+
+/***************************************************************************/
+var image;
+function SetupImgSize() {
+  image=new ImageData();
+  //--| size stuff
+  image.registerObserver("url", function(url) { 
+    $("url").value=url; 
+    var t=$("thumbnail");
+    t.style.width=t.style.height="";
+    t.src=url; 
+  });
+  image.registerObserver("imgAlt", function(alt) { 
+    $("img_alt").value=alt; 
+  });
+  image.registerObserver("imgTitle", function(title) { 
+    $("img_title").value=title; 
+  });
+  image.registerObserver("lockAsra", function(lock) { $("asra").checked=lock; });
+  image.registerObserver("width", function(w) { $("w").value=px(w); $("thumbnail").style.width=px(w); });
+  image.registerObserver("height", function(h) { $("h").value=px(h); $("thumbnail").style.height=px(h); });
+  image.registerObserver("orgWidth", function(w) { $("orgWidth").innerHTML=px(w); });
+  image.registerObserver("orgHeight", function(h) { $("orgHeight").innerHTML=px(h); });
+  $("asra").onclick=function() { image.setLockAsra(this.checked); };
+  $("w").onchange=function() { 
+    if(isPx(this.value)) image.setWidth(fromPx(this.value)); 
+    else image.setPctWidth(fromPct(this.value));
+  };
+  $("h").onchange=function() { 
+    if(isPx(this.value)) image.setHeight(fromPx(this.value)); 
+    else image.setPctHeight(fromPct(this.value));
+  };
+  $("restore").onclick=function() { image.resetOrgSize(); return false;};
+  //--| image
+  $("thumbnail").onload=function() { 
+    image.setOrgSize(+this.width, +this.height);
+    fromUrlImgProp();
+  };
+  //TODO: thumbnail.onerror & enable/disable form stuff
+  //--| url
+  $("url").onchange=function() { image.setImage(this.value); };
+  $("img_alt").onchange=function() { image.setImageAlt(this.value); };
+  $("img_title").onchange=function() { image.setImageTitle(this.value); };
+}
+function SetupCrop() {
+  setInterval(function() {
+    //fix for html reflow issues
+    if(image._get("doCrop")) {
+      var left=px(image._get("cropX1")+posX("thumbnail"));
+      if(left!=$("crop-rect").style.left) $("crop-rect").style.left=left;
+      var top=px(image._get("cropY1")+posY("thumbnail"));
+      if(top!=$("crop-rect").style.top) $("crop-rect").style.top=top;
+    }
+  },1e3);
+  image.registerObserver("doCrop",function(doCrop) { 
+    $("docrop").checked=doCrop;
+    $("crop-rect").style.display=doCrop?"block":"none";
+  });
+  image.registerObserver("cropX1",function(v) { 
+    $("crop-coords.x1").value=px(v);
+    $("crop-box.x").value=px(v);
+    $("crop-margin.left").value=px(v);
+    $("crop-rect").style.left=px(v+posX("thumbnail"));
+  });
+  image.registerObserver("cropY1",function(v) { 
+    $("crop-coords.y1").value=px(v);
+    $("crop-box.y").value=px(v);
+    $("crop-margin.top").value=px(v);
+    $("crop-rect").style.top=px(v+posY("thumbnail"));
+  });
+  image.registerObserver("cropX2",function(v) { $("crop-coords.x2").value=px(v); });
+  image.registerObserver("cropY2",function(v) { $("crop-coords.y2").value=px(v); });
+  image.registerObserver("cropWidth",function(v) { 
+    $("crop-box.w").value=px(v); 
+    $("crop-rect").style.width=px(v);
+  });
+  image.registerObserver("cropHeight",function(v) { 
+    $("crop-box.h").value=px(v); 
+    $("crop-rect").style.height=px(v);
+  });
+  image.registerObserver("cropRight",function(v) { $("crop-margin.right").value=px(v); });
+  image.registerObserver("cropBottom",function(v) { $("crop-margin.bottom").value=px(v); });
+  //
+  $("docrop").onclick=function() { image.setDoCrop(this.checked); }
+  $("crop-coords.x1").onchange=function() { image.setCropX1(fromPx(this.value)); }
+  $("crop-coords.y1").onchange=function() { image.setCropY1(fromPx(this.value)); }
+  $("crop-coords.x2").onchange=function() { image.setCropX2(fromPx(this.value)); }
+  $("crop-coords.y2").onchange=function() { image.setCropY2(fromPx(this.value)); }
+  $("crop-box.x").onchange=function() { image.setCropX1(fromPx(this.value)); }
+  $("crop-box.y").onchange=function() { image.setCropY1(fromPx(this.value)); }
+  $("crop-box.w").onchange=function() { image.setCropWidth(fromPx(this.value)); }
+  $("crop-box.h").onchange=function() { image.setCropHeight(fromPx(this.value)); }
+  $("crop-margin.top").onchange=function() { image.setCropY1(fromPx(this.value)); }
+  $("crop-margin.right").onchange=function() { image.setCropRight(fromPx(this.value)); }
+  $("crop-margin.bottom").onchange=function() { image.setCropBottom(fromPx(this.value)); }
+  $("crop-margin.left").onchange=function() { image.setCropX1(fromPx(this.value)); }
+  //
+  var a=$("crop-panel").getElementsByTagName("INPUT");
+  for(var i=0; i<a.length; i++) {
+    var cropInput=a[i];
+    if(/^crop-/.test(cropInput.id)) {
+      cropInput.onfocus=function() {
+        if(!image._get("doCrop")) {
+          image.setDoCrop(true);
+        }
+      }
+    }
+  }
+}
+function SetupPreview() {
+  image.registerObserver("*",function(value,property) {
+    var a=[];
+    if(image._get("doCrop")) {
+      a.push('<div style="width:{0}px;height:{1}px;overflow:hidden;margin:0 auto">'.format(
+        image._get("cropWidth"),
+        image._get("cropHeight"))
+      );
+    }
+    a.push('<img src="{0}"\n width="{1}" height="{2}" alt="{3}" title="{4}"'.format(
+      image._get('url'),
+      image._get('width'),
+      image._get('height'),
+      image._get('imgAlt'),
+      image._get('imgTitle'))
+    );
+    if(image._get("doCrop")) {
+      a.push(' style="position:relative;left:-{0}px; top:-{1}px"'.format(
+        image._get('cropX1'),
+        image._get('cropY1'))
+      );
+    }   
+    a[a.length-1]+=">"; 
+    if(image._get("doCrop")) {
+      a.push('</div>');
+    }
+    $("markup").value=a.join("\n");
+    $("preview").innerHTML=a.join("\n");
+  } );
+  $('createUrl').onclick=function() {
+    location.href=toUrl();
+  }
+  $('genImage').onclick=function() {
+    location.href="img-tool-gen.html"+toUrl();
+  }
+}
+//--| Setup the behaviour for a tab control
+function SetupTab(id) {
+  var PERSIST="crop_"+id;
+  var strip=$(id);
+  var active=getCookie(PERSIST)||GetActiveTab(strip);
+  var knobs=strip.getElementsByTagName("A");
+  for(var i=0; i<knobs.length; i++) {
+    var knob=knobs[i];
+    var name=getName(knob.href);
+    if(name==active) {
+      knob.className+=" active";
+    }
+    strip.setAttribute("active",active);
+    $(name).style.display=name==active?"block":"none";
+    knob.id="knob-"+name;
+    knob.onclick=function() {
+      //hide old tab
+      var active=GetActiveTab(this.parentNode);
+      var knob=$("knob-"+active);
+      knob.className=knob.className.replace(/ *active/,"");
+      $(active).style.display="none";
+      //show new tab
+      this.className+=" active";
+      active=getName(this.href);
+      $(active).style.display="block";
+      this.parentNode.setAttribute("active",active);
+      setCookie(PERSIST,active,getExpireDate("m",3));
+      return false;
+    }
+  }
+}
+function GetActiveTab(id) {
+  return $(id).getAttribute("active")
+}
+function toUrl() {
+  var qs=new getParameter();
+  qs.clearAll();
+  qs.url=image._get('url');
+  if(image._get('lockAsra')) {
+    qs.s=""+image._get('width');
+  }
+  else {
+    qs.s=image._get('width')+"x"+image._get('height');
+  }
+  if(image._get('doCrop')) {
+    switch(GetActiveTab("crop")) {
+    case "crop-coords":
+      qs.cc=image._gets('cropX1','cropY1','cropX2','cropY2').join(',');
+      break;
+    case "crop-box":
+      qs.cb=image._gets('cropX1','cropY1','cropWidth','cropHeight').join(',');
+      break;
+    case "crop-margin":
+      qs.cm=image._gets('cropY1','cropRight','cropBottom','cropX1').join(',');
+      break;
+    }
+  }
+  if(image._get('imgAlt')) {
+    qs.a=image._get('imgAlt');
+  }
+  if(image._get('imgTitle')) {
+    qs.t=image._get('imgTitle');
+  }
+  return qs.toString();
+}
+function fromUrlImg() {
+  var qs=new getParameter();
+  if(qs.url) {
+    image.setImage(qs.url,qs.a,qs.t);
+  }
+  if(qs.dbg) setInterval(Debug,1e3);
+}
+function fromUrlImgProp() {
+  var qs=new getParameter();
+  if(qs.s) {
+    if(qs.s.indexOf("x")==-1) {
+      image.setLockAsra(true);
+      image.setWidth(+qs.s);
+    }
+    else {
+      var s=qs.s.split("x");
+      image.setWidth(+s[0]);
+      image.setHeight(+s[1]);
+    }
+  }
+  if(qs.cc||qs.cb||qs.cm) {
+    image.setDoCrop(true);
+    if(qs.cc) { //crop coordinates
+      var args=qs.cc.split(',');
+      image.setCropX1(+args[0]);
+      image.setCropY1(+args[1]);
+      image.setCropX2(+args[2]);
+      image.setCropY2(+args[3]);
+    }
+    if(qs.cb) { //crop box
+      var args=qs.cb.split(',');
+      image.setCropX1(+args[0]);
+      image.setCropY1(+args[1]);
+      image.setCropWidth(+args[2]);
+      image.setCropHeight(+args[3]);
+    }
+    if(qs.cm) { //crop margin
+      var args=qs.cm.split(',');
+      image.setCropY1(+args[0]);
+      image.setCropRight(+args[1]);
+      image.setCropBottom(+args[2]);
+      image.setCropX1(+args[3]);
+    }
+  }
+}
+function Debug() {
+  var a=[];
+  for(var i in image.properties) {
+    a.push(i+":"+image.properties[i]);
+  }
+  a.push("<em>timer: "+new Date().getSeconds());
+  $("dbg").innerHTML=a.join("<br>");
+}
+window.onload=function() {
+  SetupTab("crop");
+  SetupImgSize();
+  SetupCrop();
+  SetupPreview();
+  //kick start
+  fromUrlImg();
+  //image.setImage("http://gadgets.blogo.nl/images/blogo_blogs/strips12.jpg",true);
+}
+    </script>
+  </head>
+  <body>
+    <h1> Image Crop and Resize </h1>
+    <!--p>
+      Crop and resize an image client-side. You can draw the crop-rectangle if you load the image (and have Safari; doesn't work in FireFox yet). Size is entered in pixels (no unit) or in percentage (try enter 50%). More UI to come (generate CSS; move crop rectangle; width/height of crop; crop aspect ratio contraint).
+    </p-->
+    <form onsubmit="return false;">
+      <fieldset id="image_url" class="panel">
+        <legend>Image URL, alt &amp; title</legend>
+        <div><input type="text" id="url" value="http://" title="Link"></div>
+        <div>
+          <input type="text" id="img_alt" value="alt" title="Alternative text">
+          <input type="text" id="img_title" value="title" title="Title (tooltip)">
+        </div>           
+      </fieldset>
+      <fieldset class="panel">
+        <legend title="Width x height">Size</legend>
+        <div>
+          <span><input type="text" id="w" class="number" value="" title="Width"></span>
+          <span>&times;</span>
+          <span><input type="text" id="h" class="number" value="" title="Height"></span>
+        </div>
+        <div>
+          <input type="checkbox" id="asra"><label>lock aspect ratio</label>
+        </div>
+        <div class="info">
+          Original size is <span id="orgWidth"></span> &times; <span id="orgHeight"></span>. <a href="#restore" id="restore">Reset</a>.
+          <a class="helpicon" href="#hlp_size">&#x24D8;</a>
+          <div class="help" id="hlp_size">
+            Default unit is <code>px</code>, so you don't have to enter this. You can also enter a percentage, for example 25%. The image will be scaled relative to the original size.
+          </div>
+        </div>
+      </fieldset>
+      <div class="panel" id="crop-panel">
+        <fieldset>
+          <legend><input type="checkbox" id="docrop"><label for="docrop">Crop</label></legend>
+          <div id="crop-coords" class="tabpanel tabel">
+            <div>
+              <label>x,y<sub>top</sub></label>
+              <span><input type="text" id="crop-coords.x1" class="number" value="" title="Left"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-coords.y1" class="number" value="" title="Top"></span>
+            </div>
+            <div>
+              <label>x,y<sub>bottom</sub></label>
+              <span><input type="text" id="crop-coords.x2" class="number" value="" title="Right"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-coords.y2" class="number" value="" title="Bottom"></span>
+            </div>
+          </div>
+          <div id="crop-box" class="tabpanel tabel">
+            <div>
+              <label>x,y<sub>top</sub></label>
+              <span><input type="text" id="crop-box.x" class="number" value="" title="Left"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-box.y" class="number" value="" title="Top"></span>
+            </div>
+            <div>
+              <label>size</label>
+              <span><input type="text" id="crop-box.w" class="number" value="" title="Width"></span>
+              <span>&times;</span>
+              <span><input type="text" id="crop-box.h" class="number" value="" title="Height"></span>
+            </div>
+          </div>
+          <div id="crop-margin" class="tabpanel center">
+            <div>
+              <span><input type="text" id="crop-margin.top" class="number" value="" title="Top"></span>
+            </div>
+            <div>
+              <span><input type="text" id="crop-margin.left" class="number" value="" title="Left"></span>
+              <span>&#x2573;</span>
+              <span><input type="text" id="crop-margin.right" class="number" value="" title="Right"></span>
+            </div>
+            <div>
+              <span><input type="text" id="crop-margin.bottom" class="number" value="" title="Bottom"></span>
+            </div>
+          </div>
+        </fieldset>
+        <div class="tabstrip" id="crop" active="crop-coords">
+          <a href="#crop-coords">coordinates</a>
+          <a href="#crop-box">box</a> 
+          <a href="#crop-margin">margin</a>
+        </div>
+      </div>
+    </form>
+    <fieldset class="box">
+      <legend>Canvas</legend>
+      <img src="about:blank" id="thumbnail">
+      <div id="crop-rect"></div>
+    </fieldset>
+    <fieldset class="box">
+      <legend>HTML/CSS preview</legend>
+      <textarea id="markup">
+      </textarea>
+      <div style="margin-top:5px;">
+        <span id="preview" style="float:left;margin:0 5px 5px 0;"></span>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+        <div>
+          <input type="button" id="createUrl" value="Create URL">
+          <input type="button" id="genImage" value="Generate image">
+        </div>
+      </div>
+      <div style="clear:left"></div>
+    </fieldset>
+    <div id="dbg" style="position:fixed; top:10px; right: 10px; text-align:right;font: 10pt monospace; z-index:-10"></div>
+    <h6 style="clear:left">Old versions</h6>
+    <ul>
+      <li><a href="img-tool 0.1.html">version 0.1</a>
+      <li><a href="img-tool 0.2.html">version 0.2</a>
+      <li><a href="img-tool 0.3.html">version 0.3</a>
+      <li><a href="img-tool 0.4.html">version 0.4</a>
+      <li><a href="img-tool 0.5.html">version 0.5</a>
+      <li><a href="img-tool.html">this version</a> (fixed issues with horizontal alignment)
+    </ul>
+    <h6>Todo</h6>
+    <ul>
+      <li>formstate: enabled/disabled
+      <li>alt/title: hint implementeren
+      <li>Rethink size-dialogue (include help icon?)
+      <li>draw, move and resize crop area with mouse
+      <li>move crop area with arrow keys (x1,y1), resize with shift-arrow (x2,y2)?
+      <li>see also <a href="http://agilepartners.com/prototypes/light-table/">light-table</a>.
+  </body>
+</html>

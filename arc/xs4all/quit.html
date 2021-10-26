@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="nl">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Gestopt met roken</title>
+	<style type="text/css" media="screen">
+.big span { 
+  font-weight:bold;
+}	 
+.big .s1 { font-size:800%; }
+.big .s2 { font-size:700%; }
+.big .s3 { font-size:600%; }
+.big .s4 { font-size:500%; }
+.big .s5 { font-size:400%; }
+.footer { color:gray; font-size:75%; margin-top:15em;}
+	</style>
+  <script type="text/javascript" charset="utf-8">
+Date.prototype.toDutchDate=function() {
+  var m = "januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december".split(',');
+  return [this.getDate(), m[this.getMonth()], this.getFullYear()].join(' ');
+}
+Date.prototype.valueInDays=function() {
+  return parseInt(new Date(this.getFullYear(),this.getMonth(),this.getDate()).valueOf()/(24*60*60*1000));
+}
+function $(id) { return document.getElementById(id); }
+window.onload=function() {
+  var dt = new Date(2008, 1-1, 18), now = new Date();
+  var d = now.valueInDays() - dt.valueInDays();
+  $('dd').innerHTML = dt.toDutchDate();
+  $('days').innerHTML = d;
+  $('weeks').innerHTML = Math.floor(d/7);
+  $('months').innerHTML = Math.floor(d/30.5);
+  $('years').innerHTML = Math.floor(d/365.25);
+  //
+  var nr = now.valueInDays() - dt.valueInDays();
+  var part = Math.floor(nr/365.25);
+  $('years_').innerHTML = part;
+  nr -= part*365.25;
+  var part = Math.floor(nr/30.5);
+  $('months_').innerHTML = part;
+  nr -= part*30.5;
+  $('days_').innerHTML = Math.floor(nr);
+}
+  </script>
+</head>
+<body>
+  <h1 title="Klinkt een stuk beter als 'stoppen met roken' nietwaar?">Gestopt met roken</h1>
+  <p>Op <span id="dd">dd</span> heb ik het roken opgegeven. Dat is:</p>
+  <p class="big"><span id="days" class="s1">x</span> dagen, <span id="weeks" class="s2">w</span> weken, <span id="months" class="s3">m</span> maanden <em>of</em> <span id="years" class="s4">y</span> jaren.</p>
+  
+  <hr>
+  
+  <p class="big" title="Je kunt beter zeggen...">Je kunt ook zeggen: dat is <span id="years_" class="s1">j</span> jaar, <span id="months_" class="s3">m</span> maanden  <em>en</em> <span id="days_" class="s5">d</span> dagen gelden.</p>
+  
+  <p class="footer" title="This is the end of the page">&copy; 2008-2011 D. Zanstra.</p>
+</body>
+</html>

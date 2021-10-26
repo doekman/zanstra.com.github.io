@@ -1,0 +1,31 @@
+table.keyboard {
+  border-collapse: collapse;
+  text-align: center;
+}
+table.keyboard td { 
+  width: 12px; 
+}
+tr.whiteAndBlack { 
+  height: 80px;
+}
+tr.whiteOnly { 
+  height: 42px
+}
+.black, .whiteTop, .whiteBottom {   
+  font-weight: bold; font-size: 11pt; font-family: Verdana, Arial, sans-serif;
+  text-align: center; vertical-align: bottom;
+  margin: 0px; padding: 0px;
+}
+.black {
+  color: black; background-color: black;
+  border-left: 1px solid gray; border-right: 1px solid gray; border-bottom: 0px solid gray; border-top: 1px solid gray;
+}
+.whiteTop, .whiteBottom {
+  color: white; background-color: white;
+}
+.whiteTop {
+  border-left: 1px solid gray; border-right: 1px solid gray; border-bottom: 0px solid gray; border-top: 1px solid gray;
+}
+.whiteBottom {
+  border-left: 1px solid gray; border-right: 1px solid gray; border-bottom: 1px solid gray; border-top: 0px solid gray;
+}

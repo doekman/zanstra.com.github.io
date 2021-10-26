@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <title> Image Crop and Resize </title>
+    <style type="text/css">
+label, legend {
+  font: 12px/100% Arial;
+  color: slateblue;
+}
+.panel {
+  float:left;
+  margin: 0.5em 0.25em;
+}
+fieldset {
+  border: 1px solid slateblue;
+  width: auto;
+  margin: 0;
+  padding: 0.25em 0.625em 0.75em 0.625em;
+}
+input.number {
+  width: 5em;
+  text-align: right;
+}
+#url { width: 100% }
+/* BEGIN tab stuff*/
+.tabpanel {
+  display: none;
+}
+.tabstrip {
+  font: 12px/12px Arial;
+  padding: 1px 1em 0 1em;
+}
+.tabstrip a {
+  font: 12px/12px Arial;
+  text-decoration: none;
+  color: slateblue;
+  padding: 0 4px 1px 4px;
+  margin: 0;
+}
+.tabstrip a:hover {
+  text-decoration: underline;
+}
+.tabstrip a.active {
+  background: slateblue;
+  color: white;
+}
+/* END tab stuff*/
+/* BEGIN styling of tab-forms*/
+.tabpanel {
+  display:table;
+}
+.tabpanel div {  display:table-row;}
+.tabpanel div label,
+.tabpanel div span { display: table-cell; padding: 0 2px }
+/* END styling of tab-forms */
+    </style>
+    <script type="text/javascript" src="log.js"></script>
+    <script type="text/javascript" src="cookie.js"></script>
+    <script type="text/javascript" src="ImageData.js"></script>
+    <script type="text/javascript">
+function $(id) { return document.getElementById(id); }
+function px(n) { return n+"px"; }
+/***************************************************************************/
+var image;
+function Setup() {
+  image=new ImageData();
+  //--| size stuff
+  image.registerObserver("url", function(url) { 
+    $("url").value=url; 
+    var t=$("thumbnail");
+    t.style.width=t.style.height="";
+    t.src=url; 
+  });
+  image.registerObserver("lockAsra", function(lock) { $("asra").checked=lock; });
+  image.registerObserver("width", function(w) { $("w").value=px(w); $("thumbnail").style.width=px(w); });
+  image.registerObserver("height", function(h) { $("h").value=px(h); $("thumbnail").style.height=px(h); });
+  $("asra").onclick=function() { image.setLockAsra(this.checked); };
+  $("w").onchange=function() { image.setWidth(this.value); };
+  $("h").onchange=function() { image.setHeight(this.value); };
+  $("restore").onclick=function() { image.resetOrgSize(); };
+  //--| image
+  $("thumbnail").onload=function() { image.setOrgSize(this.width, this.height); };
+  //TODO: thumbnail.onerror & enable/disable form stuff
+  //--| url
+  $("url").onchange=function() { image.setImage(this.value); };
+  //$("reload_img").onclick=function() { /*hack*/ $("thumbnail").src=$("url").value; };
+}
+function getName(href) { 
+  return href.slice(href.indexOf("#")+1); 
+}
+//--| Setup the behaviour for a tab control
+function SetupTab(id) {
+  var PERSIST="tabCrop";
+  var strip=$(id);
+  var active=getCookie(PERSIST)||strip.getAttribute("active");
+  var knobs=strip.getElementsByTagName("A");
+  for(var i=0; i<knobs.length; i++) {
+    var knob=knobs[i];
+    var name=getName(knob.href);
+    if(name==active) {
+      knob.className+=" active";
+    }
+    strip.setAttribute("active",active);
+    $(name).style.display=name==active?"block":"none";
+    knob.id="knob-"+name;
+    knob.onclick=function() {
+      //hide old tab
+      var active=this.parentNode.getAttribute("active");
+      var knob=$("knob-"+active);
+      knob.className=knob.className.replace(/ *active/,"");
+      $(active).style.display="none";
+      //show new tab
+      this.className+=" active";
+      active=getName(this.href);
+      $(active).style.display="block";
+      this.parentNode.setAttribute("active",active);
+      setCookie(PERSIST,active,getExpireDate("m",3));
+      return false;
+    }
+  }
+}
+function Debug() {
+  var a=[];
+  for(var i in image.properties) {
+    a.push(i+":"+image.properties[i]);
+  }
+  a.push("<em>timer: "+new Date().getSeconds());
+  $("dbg").innerHTML=a.join("<br>");
+}
+window.onload=function() {
+  SetupTab("crop");
+  Setup();
+  setInterval(Debug,1e3);
+  //kick start
+  image.setImage("http://gadgets.blogo.nl/images/blogo_blogs/strips12.jpg",true);
+}
+    </script>
+  </head>
+  <body>
+    <h1> Image Crop and Resize </h1>
+    <!--p>
+      Crop and resize an image client-side. You can draw the crop-rectangle if you load the image (and have Safari; doesn't work in FireFox yet). Size is entered in pixels (no unit) or in percentage (try enter 50%). More UI to come (generate CSS; move crop rectangle; width/height of crop; crop aspect ratio contraint).
+    </p-->
+    <form onsubmit="return false;">
+      <fieldset id="image_url" class="panel">
+        <legend>Image URL</legend>
+        <input type="text" id="url" value="">
+        <!--br>
+        <input type="button" id="reload_img" value="Reload"-->
+      </fieldset>
+      <fieldset class="panel">
+        <legend title="Width &times; height">Size</legend>
+        <div>
+          <input type="text" id="w" class="number" value="0" title="Width">
+          &times;
+          <input type="text" id="h" class="number" value="0" title="Height">
+        </div>
+        <div>
+          <input type="checkbox" id="asra"><label>lock aspect ratio</label>
+        </div>
+        <div>
+          <input type="button" id="restore" value="reset values">
+        </div>
+      </fieldset>
+      <div class="panel">
+        <fieldset>
+          <legend><input type="checkbox" id="docrop"><label for="docrop">Crop</label></legend>
+          <div id="crop-coords" class="tabpanel">
+            <div>
+              <label>x,y<sub>top</sub></label>
+              <span><input type="text" id="crop-coords.x1" class="number" value="0" title="Left"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-coords.y1" class="number" value="0" title="Top"></span>
+            </div>
+            <div>
+              <label>x,y<sub>bottom</sub></label>
+              <span><input type="text" id="crop-coords.x2" class="number" value="0" title="Left"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-coords.y2" class="number" value="0" title="Top"></span>
+            </div>
+          </div>
+          <div id="crop-box" class="tabpanel">
+            <div>
+              <label>x,y<sub>top</sub></label>
+              <span><input type="text" id="crop-box.x" class="number" value="0" title="Left"></span>
+              <span>,</span>
+              <span><input type="text" id="crop-box.y" class="number" value="0" title="Top"></span>
+            </div>
+            <div>
+              <label>size</label>
+              <span><input type="text" id="crop-box.w" class="number" value="0" title="Width"></span>
+              <span>&times;</span>
+              <span><input type="text" id="crop-box.h" class="number" value="0" title="Height"></span>
+            </div>
+          </div>
+          <div id="crop-margin" class="tabpanel">
+            <div>
+              <label>top</label>
+              <span><input type="text" id="crop-box.top" class="number" value="0" title="Left"></span>
+              <label>right</label>
+              <span><input type="text" id="crop-box.right" class="number" value="0" title="Top"></span>
+            </div>
+            <div>
+              <label>bottom</label>
+              <span><input type="text" id="crop-box.bottom" class="number" value="0" title="Left"></span>
+              <label>left</label>
+              <span><input type="text" id="crop-box.left" class="number" value="0" title="Top"></span>
+            </div>
+          </div>
+        </fieldset>
+        <div class="tabstrip" id="crop" active="crop-coords">
+          <a href="#crop-coords">coordinates</a>
+          <a href="#crop-box">box</a> 
+          <a href="#crop-margin">margin</a>
+        </div>
+      </div>
+      <!--div style="clear:left">
+        <label>&nbsp;</label>
+        <input type="button" id="apply" value="apply" onclick="ResizeImage()">
+      </div-->    
+    </form>
+    <p style="clear:left">
+      <img src="about:blank" id="thumbnail">
+      <!--div id="crop-rectangle"></div-->
+    </p>
+    <div id="dbg" style="position:fixed; top:10px; right: 10px">dbg</div>
+    <h6>Old versions</h6>
+    <ul>
+      <li><a href="img-tool 0.1.html">version 0.1</a>
+      <li><a href="img-tool 0.2.html">version 0.2</a>
+      <li><a href="img-tool 0.3.html">version 0.3</a>
+      <li><a href="img-tool.html">this version</a>
+    </ul>
+  </body>
+</html>

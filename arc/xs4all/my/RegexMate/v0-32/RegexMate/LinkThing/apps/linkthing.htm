@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Regexmate Applications: [[TITLE]]</title>
+	<style type="text/css" media="screen">
+.content {
+  margin: 0 auto;
+  width: 640px;
+}
+/* menu */
+/** menu system for horizontal and vertical menus.
+ ** Layout: <OL><LI class="first"><A class="active"><SPAN>text</SPAN></A></LI></OL>
+ ** List can be an OL or an UL
+ ** The first LI element get's a class 'first'
+**/
+.hor_menu ,
+.vert_menu,
+.hor_menu  li,
+.vert_menu li{
+  margin:0;
+}
+.hor_menu ,
+.vert_menu{
+  list-style-type:none;
+  padding:0;
+}
+.hor_menu {
+  overflow:auto;
+  clear:left;
+  width:100%;
+}
+.hor_menu li {
+  float:left;
+}
+.hor_menu a {
+  text-align:center;
+}
+.hor_menu  a,
+.vert_menu a { 
+  display:block;
+}
+.hor_menu  a:focus,
+.vert_menu a:focus{ 
+  outline:0; 
+}
+.hor_menu  a:focus span,
+.vert_menu a:focus span{ 
+  outline:1px dotted invert; 
+}
+/*customized*/
+.hor_menu li {
+  padding: 0 1em 0 0;
+}
+.active { font-weight:bold;}
+/*verder*/
+.footer {
+  text-align:center;
+  margin-top:4em;
+  font-size:75%;
+  color:gray;
+}
+.footer a {
+  color:gray;
+}
+	</style>
+</head>
+<body>
+  <div class="content">
+    <h1>Regexmate Applications: [[TITLE]]</h1>
+    <ul class="hor_menu">[[MENU]]</ul>
+    [[ITEMS]]
+    <p class="footer">&copy; 2008 <a href="http://www.catsdeep.com/">catsdeep</a> &ndash; [[FOOTER]]</p>
+  </div>
+</body>
+</html>

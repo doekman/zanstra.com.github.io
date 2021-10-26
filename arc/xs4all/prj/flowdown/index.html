@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  <head>
+    <title> FlowDown </title>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript" src="StyleRules.js"></script>
+    <script type="text/javascript" src="Style.js"></script>
+    <script type="text/javascript">
+//--| Drawing |----------------------------------------------------------------
+function Chart() {
+  this.aspectRatio=[4,3];
+  this.width=300;
+  this.height=300;
+  this.shapes=new Array();
+  this.shapes.addIterator('toDbg');
+  this.shapes.addIterator('drawText');
+}
+Chart.prototype.draw=function(cssRules) {
+  this.shapes.drawText(cssRules);
+  this.determineGrid();
+  for(var i=0; i<this.shapes.length; i++) {
+    var shape=this.shapes[i];
+    //TODO: rekening houden met fracties
+    var x=this.columnMiddles[shape.gx]+1;
+    var y=this.rowMiddles[shape.gy]+1;
+    shape.drawShape(x,y);
+  }
+}
+Chart.prototype.determineGrid=function() {
+  function InG(s,def) {
+    //als <s> een grid-waarde is ("12g" but not "12.0g")
+    if(/^\d+(\.\d+)?g$/.test(s)) return +s.substring(0,s.length-1);
+    else return def;
+  }
+  //Eerst grid-posities bepalen
+  var gridCursorX=1, gridCursorY=1;
+  var maxWidth=Math.round(this.shapes.length/(this.aspectRatio[0]*this.aspectRatio[1])*this.aspectRatio[0]);
+  alert("maxWidth:"+maxWidth);
+  this.columnWidths=[]; //one-based
+  this.rowHeights=[]; //one-based
+  for(var i=0; i<this.shapes.length; i++) {
+    var shape=this.shapes[i];
+    var gx=shape.getCssValue("left");
+    var gy=shape.getCssValue("top");
+    var hptugs=/^\d+g$/.test(gx); //Hand Positioned + TakesUpGridSpace
+    shape.gx=InG(gx,gridCursorX);
+    shape.gy=InG(gy,gridCursorY);
+    shape.takesUpGridSpace= gx===null || hptugs;
+    if(hptugs) { 
+      //reposition cursor
+      gridCursorX=InG(gx);
+    }
+    if(shape.takesUpGridSpace) {
+      //determine max dimensions
+      var w=shape.getWidth();
+      if(typeof this.columnWidths[shape.gx]=="undefined"||this.columnWidths[shape.gx]<w) {
+        this.columnWidths[shape.gx]=w;
+      }
+      var h=shape.getHeight();
+      if(typeof this.rowHeights[shape.gy]=="undefined"||this.rowHeights[shape.gy]<h) {
+        this.rowHeights[shape.gy]=h;
+      }
+    }
+    //advance cursor    
+    gridCursorX++;
+    //wrap to contain aspect ratio (
+    if(gridCursorX>maxWidth) {
+      gridCursorX=1; 
+      gridCursorY++;
+    }
+  }
+  //TODO: margins bekijken tbv kolommen/rijen  
+  //Midden van rijen/kolom bepalen
+  this.columnMiddles=[];
+  var cum=0;
+  for(var i=1; i<this.columnWidths.length; i++) {
+    this.columnMiddles[i]=cum+Math.round(this.columnWidths[i]/2);
+    cum+=this.columnWidths[i];
+  }
+  this.rowMiddles=[];
+  cum=0;
+  for(i=1; i<this.rowHeights.length; i++) {
+    this.rowMiddles[i]=cum+Math.round(this.rowHeights[i]/2);
+    cum+=this.rowHeights[i];
+  }
+  //draw grid lines
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.strokeStyle="green";
+  ctx.lineWidth=0.5;
+  cum=0;
+  for(i=1; i<this.columnWidths.length; i++) {
+    cum+=this.columnWidths[i];
+    ctx.beginPath();
+    ctx.moveTo(cum,0);
+    ctx.lineTo(cum,this.height);
+    ctx.stroke();    
+  }
+  cum=0;
+  for(i=1; i<this.rowHeights.length; i++) {
+    cum+=this.rowHeights[i];
+    ctx.beginPath();
+    ctx.moveTo(0,cum);
+    ctx.lineTo(this.width,cum);
+    ctx.stroke();    
+  }
+
+    document.getElementById("dbg").innerHTML="("+[
+      this.columnWidths.join(","),
+      this.rowHeights.join(","),
+      this.columnMiddles.join(","),
+      this.rowMiddles.join(",")
+      ].join(")\n(")
+      +")";
+}
+//--| Array extensions |-------------------------------------------------------
+/** Voeg en method toe die ook op alle Array items zit. 
+    (Runtime inheritance) */
+Array.prototype.addIterator=function(funcname) {
+  Array.prototype[funcname]=function() {
+    for(var i=0; i<this.length; i++) {
+      this[i][funcname].apply(this[i],arguments);
+    }
+  }
+}
+//--| Shape |------------------------------------------------------------------
+function Shape(id,text,shape,style,cssRules) {
+  this.cssRules=cssRules;
+  this.id=id;
+  this.text=text.replace(/^\s+|\s+$/g,''); //trim
+  this.shape=shape;
+  this.style=new Style(style);
+  this.determineAlignment(text);
+}
+Shape.prototype.determineAlignment=function(text) {
+  var wsl=/^\s+/.test(text);
+  var wsr=/\s+$/.test(text);
+  if(!this.style.textAlign) {
+    if(wsl&&wsr) this.style.textAlign='center';
+    else if(wsl) this.style.textAlign='right';
+    else this.style.textAlign='left';
+  }
+}
+Shape.prototype.getCssValue=function(property) {
+  return this.cssRules.getValue(property,this.shape,this.id,this.style);
+}
+Shape.prototype.getCssValueInPx=function(property) {
+  return this.cssRules.getValueInPx(property,this.shape,this.id,this.style);
+}
+Shape.prototype.getWidth=function() {
+  return this.getCssValueInPx("borderWidth")*2+this.contentWidth;
+}
+Shape.prototype.getHeight=function() {
+  return this.getCssValueInPx("borderWidth")*2+this.contentHeight;
+}
+Shape.prototype.drawText=function() {
+  //--| drawText
+  var o=document.createElement('div');
+  o.id=this.id;
+  o.style.textAlign=this.style.textAlign;
+  o.style.position='absolute';
+  var copys="color,fontFamily,fontSize,fontWeight,paddingTop,paddingRight,paddingBottom,paddingLeft".split(',');
+  for(var i=0; i<copys.length; i++) {
+    var copy=copys[i];
+    var cssValue=this.getCssValue(copy);
+    if(cssValue) o.style[copy]=cssValue;
+  }
+  o.innerHTML=this.text.replace(/(\r\n|\r|\n)/g,'<br>');
+  this.text=document.getElementById('Tpaint').appendChild(o);
+  this.contentWidth=o.offsetWidth;
+  this.contentHeight=o.offsetHeight;
+}
+Shape.prototype.drawShape=function(x,y) {
+  var ctx,fill,o=this.text;
+  this.contentLeft=Math.round(x-(this.getWidth()/2));
+  this.contentTop=Math.round(y-(this.getHeight()/2));
+  o.style.left=this.contentLeft+'px';
+  o.style.top=this.contentTop+'px';
+  //--| drawShape
+  var fill=false;
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.strokeStyle = this.getCssValue('borderColor')||'white';
+  ctx.lineWidth = this.getCssValueInPx('borderWidth')||0;
+  var xxx=this.getCssValue('background');
+  if(xxx) { 
+    ctx.fillStyle=xxx;
+    fill=true;
+  }
+  var bw=this.getCssValueInPx("borderWidth");
+  var shapeLeft=this.contentLeft+(bw/2);
+  var shapeTop=this.contentTop+(bw/2);
+  var w=this.getWidth()-bw;
+  var h=this.getHeight()-bw;
+  switch(this.shape) {
+  case 'circle':
+    var radius=Math.max(w,h)/2;
+    //var radius=(Math.max(w,h)+Math.max(this.getCssValueInPx('paddingLeft')+this.getCssValueInPx('paddingRight'),this.getCssValueInPx('paddingTop')+this.getCssValueInPx('paddingBottom')))/2
+    ctx.arc(x,y,radius,0,Math.PI*2,true);
+    if(fill) ctx.fill();
+    else ctx.stroke();
+    break;
+  case 'square':
+    if(w>h) {
+      shapeTop-=Math.round((w-h)/2);
+      h=w;
+    }
+    else {
+      shapeLeft-=Math.round((h-w)/2);
+      w=h;
+    }
+  case 'rectangle':
+  default:
+    if(fill) ctx.fillRect(shapeLeft,shapeTop,w,h);
+    ctx.strokeRect(shapeLeft,shapeTop,w,h);
+    break;
+  }
+}
+
+Shape.prototype.toDbg=function() {
+  var ul=document.getElementById('dbg');
+  var li=document.createElement('li');
+  var a=[];
+  a.push('id:'+this.id);
+  a.push('shape:'+this.shape);
+  a.push('text('+this.text.replace(/(\r\n|\r|\n)/g,'\\n')+')');
+  var b=[];
+  for(var i in this.style) {
+    if(this.style.hasOwnProperty(i)) {
+      var val=this.style[i];
+      b.push(i+':'+val);
+    }
+  }
+  a.push('style('+b.join('; ')+')');
+  li.appendChild(document.createTextNode(a.join(' | ')));
+  ul.appendChild(li);
+}
+
+//--| Parser |-----------------------------------------------------------------
+function ParseFlowDown(s,cssRules) {
+  var drawing=new Chart();
+  var beginShape,endShape,endText,endId,endStyle=0;
+  var shape,text,id,style;
+  while(true) {
+    beginShape=s.substr(endStyle).search(/[a-z]/i)+endStyle;
+    endShape=s.indexOf('|',beginShape+1);
+    if(beginShape!=-1&&endShape!=-1) {
+      shape=s.substring(beginShape,endShape);
+      endText=s.indexOf('|',endShape+1);
+      if(endText!=-1) {
+        text=s.substring(endShape+1,endText);
+        endId=s.indexOf('|',endText+1);
+        if(endId!=-1) {
+          id=s.substring(endText+1,endId);
+          endStyle=s.indexOf(')',endId+1)+1;
+          style=s.substring(endId+1,endStyle);
+          style=style.replace(/style\((.*?)\)\s*$/i,'$1');
+          drawing.shapes.push( new Shape(id,text,shape,style,cssRules) );
+        }
+        else break;
+      }
+      else break;
+    }
+    else break;
+  }
+  return drawing;
+}
+function ParseCss(s) {
+  var rules=new StyleRules();
+  //FIXME: whitespace+comma selectors parsen (square, circle {... )
+  var a,re=/([a-z#*,]+)\s*\{(.*?)\}/gi;
+  while(a=re.exec(s)) {
+    rules.add(a[1],new Style(a[2]));
+  }
+  return rules;
+}
+function teken() {
+  var s=document.getElementById('tekst').value;
+  var cssRules=ParseCss(document.getElementById('css').value);
+  var drawing=ParseFlowDown(s,cssRules);
+  drawing.shapes.toDbg();
+  document.getElementById('dbgrules').innerHTML=cssRules.toString();
+  drawing.draw();
+}
+function herteken() {
+  document.getElementById('Tpaint').innerHTML='<canvas id="Spaint" width="300" height="200"></canvas>';
+  document.getElementById('dbg').innerHTML="";
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,300,300);
+  teken();
+}
+window.onload=function() {
+  var canvas = document.getElementById('Spaint');
+  var ctx = canvas.getContext('2d');
+  ctx.save();
+  teken();
+}
+    </script>
+  </head>
+  <body>
+    <h1>Flowchart Language</h1>
+    <form onsubmit="return false;">
+      <textarea id="css" style="width:100%;height:100px">
+* { font-family: Verdana; font-size: 10pt; padding: 5px 10px; border:1px solid gray }  
+square { border: 2px solid slateblue; padding: 2px }
+circle { padding: 3px; font-weight: bold; border: 5px solid pink; color: salmon }
+#web { border:4px solid red;color:blue;background:yellow }
+#db { font-size: 18px; color: darkblue; font-weight: bold }
+            </textarea>    
+      <textarea id="tekst" style="width:100%;height:150px">
+rectangle| Gebruiker |usr|style(left:1g;top:1g)rectangle|Webservers zijn cool |web|style(left:2g;top:1g) square| Rechts|right|style(left:3g;top:1g;font-family:sans-serif) circle| LinksRechts |left|style(left:1g;top:2g) square| data
+base |db|style(left:2g;top:2g;font-family:Verdana;font-size:10px)            </textarea>
+      <input type="button" value="redraw" onclick="herteken()"/>
+      <input type="button" value="css" onclick=""/>
+    </form>
+    
+    <div id="Tpaint" style="position:absolute;left:600px;top:350px;width:300px;height:300px;z-index:10"><canvas id="Spaint" width="300" height="300"></canvas></div>
+		
+
+    <ul id="dbg" style="width:550px">
+    </ul>
+    <pre id="dbg" style="border:1px dotted gray"></pre>
+    <pre id="dbgrules"></pre>
+  </body>
+</html>

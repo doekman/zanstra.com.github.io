@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>json2html</title>
+		<style type="text/css" media="screen">
+/* layout */		
+* { box-sizing: border-box; -moz-box-sizing: border-box;}
+#json { width: 100%; height: 15em; border: 1px solid black;}	
+#but { margin: 1em 0;}
+#html { background: #eeeeee; font: 9pt Monaco, monospace;}	
+#navigator { border: 1px solid black; margin-bottom: 1em; }
+#url { width: 90%;}
+#fetch { float: right;}
+/* json html */
+.null { font-weight: bold; color: gray;}
+.number { color: #00aa00;}
+.boolean { color: red; font-weight: bold;}
+.string { color: blue;}
+.null, .number, .boolean, .string { 
+  margin-left: 7px;
+}
+table.array { 
+  border-collapse: collapse;
+  border-left: 3px solid #cccccc; 
+}
+table.object {
+  border-collapse: collapse;
+  border-left: 3px solid #cccccc; 
+}
+table.array th,
+table.array td,
+table.object th,
+table.object td { 
+  text-align: left; 
+  vertical-align: top;
+  padding: 0 4px;
+}
+		</style>
+		<script type="text/javascript" charset="utf-8">
+window.onload=function() {
+  convert();
+  var o=$("html");
+  if(o.addEventListener) o.addEventListener('click',helper,false);
+  else if(o.attachEvent) o.attachEvent('onclick',function(){helper(event)});
+  $("url").value=location.href.replace(/\.html$/,'.json');
+}
+function getUrl(url,onSuccess) {
+  try {
+    var req=XMLHttpRequest?new XMLHttpRequest():new ActiveXObject("Microsoft.XMLHTTP");
+    req.onreadystatechange=function() {
+      if(req.readyState==4) {
+        if(req.status==200) onSuccess(req.responseText);
+        else alert("Error fetching url: "+req.status+" "+req.statusText);
+      }
+    }
+    req.open("GET",url,true);
+    req.send(null);
+  }
+  catch(e) {
+    alert("Error fetching url: "+e);
+  }
+}
+var fetch=function() {
+  getUrl($('url').value,function(s){
+    $('json').value=s;
+  });
+}
+function helper(e) {
+  var src=e.target||e.srcElement;
+  if(src&&src.title) {
+    prompt("Do the copy-paste thing",src.title);
+    src.returnValue=false;
+    if(src.cancelBubble) src.cancelBubble();
+  }
+}
+function $(id) { return document.getElementById(id);}
+var convert=function() { $('html').innerHTML=pp($('json').value)}		
+function pp(json) {
+  var o=eval('('+json+')');
+  return PP(o,"");
+}
+function span(inner,cls,ttl) { return '<span class="'+cls+'" title="'+ttl+'">'+inner+'</span>'; }
+function PP(o,path) {
+  if(o===null) return span("null","null","null is null or not an object");
+  switch(typeof o) {
+    case "boolean": 
+    case "number": 
+    case "string": 
+      return span(""+o,typeof o,typeof o);
+    case "object":
+      var a=[], p;
+      if(o.constructor==Array) {
+        a.push('<table class="array">');
+        for(var i=0; i<o.length; i++) {
+          pt=path+"["+i+"]";
+          a.push('<tr><th title="'+pt+'">'+i+'</th><td>'+PP(o[i],pt)+'</td>');
+        }
+        a.push('</table>');
+      }
+      else {
+        a.push('<table class="object">');
+        for(var p in o) {
+          pt=path+"."+p;
+          if(o.hasOwnProperty(p)) a.push('<tr><th title="'+pt+'">'+p+'</th><td>'+PP(o[p],pt)+'</td>');
+        }
+        a.push('</table>');
+      }
+      return a.join('');
+  }
+}
+		</script>
+	</head>
+	<body>
+	  <div>
+	    <input id="url"><input type="button" value="fetch" onclick="fetch()">
+	  </div>
+		<textarea id="json">
+{ "menu": {
+    "id": "This is a string",
+    "bool": true,
+    "nr": 123.32,
+    "nothing": null,
+    "popup": {
+      "menuitem": [
+        {"value": "New", "onclick": "CreateNewDoc()"},
+        {"value": "Open", "onclick": "OpenDoc()"},
+        {"value": "Close", "onclick": "CloseDoc()"}
+      ]
+    }
+  }
+}
+		</textarea>
+		<div id="but">
+		  <input type="button" value="convert" onclick="convert();">
+		  paste your JSON above, and press convert to make it human-readable
+		</div>
+		<div id="html"></html>
+	</body>
+</html>

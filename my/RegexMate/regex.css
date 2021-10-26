@@ -1,0 +1,105 @@
+body { 
+  font-family: "Gill Sans",Tahoma,Geneva,Trebuchet MS,Verdana,Arial,sans-serif;
+  text-align:center;
+}
+p { font-size: 13px;}
+form.body {
+  text-align: left;
+  margin:0 auto;
+  width:777px;
+}
+.text, 
+textarea {
+  font:12px "Andale Mono", monospace; 
+  width:100%;
+}
+textarea { overflow:auto; /*IE*/}
+table.layout {
+  table-layout:fixed;
+  border-collapse: collapse;
+  width:100%;
+}
+table.layout td,
+table.layout th {
+  width:50%;
+  text-align:left;
+  vertical-align:top;
+}
+fieldset,
+input.text, 
+textarea {
+  border: 1px solid #D4D4D4;
+}
+.optional { color:#C0C0C0; }
+.comment { color:gray; }
+fieldset {
+  padding:0.5em;
+  background-color:#F5F5F5
+}
+legend {
+  font-size: 13px;
+  background-color:white;
+}
+label {
+  color:slateblue;
+  font-size:12px;
+}
+label.top {
+  display:block;
+  margin-top:4px;
+}
+.buttonbar {
+  margin-top:4px;
+}
+table.layout td.icon { 
+  vertical-align:middle;
+  font: 15px Webdings;
+}
+.footer {
+  padding-top:1em;
+  color:gray;
+  font-size:10px;
+  text-align:center;
+}
+.footer a {
+  font-weight: bold;
+  color:gray;
+  text-decoration:none;
+}
+.footer a:hover {
+  text-decoration:underline;
+}
+#con {
+  overflow:auto;
+  height:200px;
+  border:1px solid lightgrey;
+  background-color:white;
+  font-family:"Andale Mono", monospace;
+  font-size:11px;
+  margin:0;
+  padding:0;
+}
+#con li {
+  list-style-type:none;
+  margin:0;
+  padding:1px;
+  border-bottom:1px solid lightgrey;
+}
+/* styles on li*/
+.edit    { color:black; font-family:monospace; padding-left:2px;}
+.ok      { color:limegreen; font-size:20px;}
+.info    { color:blue;}
+.warn    { color:red;}
+/* inner styles*/
+#con .icon    { font: 13px Webdings; }
+#con .cmd     { color:black; font-weight:bold; }
+#con .string  { color:blue; }
+#con .number  { color:royalblue; }
+#con .boolean { color:slateblue; }
+#con .null    { color:blue; font-weight:bold; }
+#con .regex   { color:green; }
+#con .method  { color:red; }
+#con .bracket { color:darkblue; }
+#con .sep     { color:black; }
+#con .found   { background-color: #C8FED2; }
+#con pre      { margin: 0; }

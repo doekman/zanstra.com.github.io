@@ -1,0 +1,1 @@
+cscript traumaHeli.js //Nologo < voorbeeld.txt

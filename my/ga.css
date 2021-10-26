@@ -1,0 +1,22 @@
+p.footer {
+  margin:6em auto 0;
+  clear:both
+}
+.footer {
+  font: 11px/150% "Gill Sans", Tahoma, sans-serif;
+  color:gray;
+}
+#footnote {
+  border-top:1px solid lightgrey;
+  padding-top:2px
+}
+#footnote a {
+  color:gray;
+  font-size:11px;
+}
+span.abs { 
+  position:absolute;
+  color:slateblue; 
+  letter-spacing:-0.75px;
+  font:9px monospace;
+}

@@ -1,0 +1,158 @@
+<html>
+<head>
+	<title>dzLib (js code-base)</title>
+  <link rel="stylesheet" href="../default.css">
+	<style type="text/css">
+h2 {
+  margin-top: 1em;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 18px;
+  font-size: 14pt; font-weight: bold;
+}
+  </style>
+  <script language="javascript" src="../js/menu.js"> </script>
+  <script language="javascript" src="mindex.js"> </script>
+  <script language="javascript" src="../js/colorSyntaxJS.js"> </script>
+  <script language="javascript">
+function pageInit() {
+  pre2div('preSampleCode','divSampleCode');
+}
+  </script>
+</head>
+<body onload="pageInit();">
+<table cellpadding="0" border="0"><tr><td width="100"><!--column 1a-->
+  <div style="text-align: center">
+    <img src="../img/jsLogo.png" /><!--img as icon-->
+  </div>  
+		<div style="font-family: Tahoma, sans-serif; font-size: 8pt; text-align: center">
+			dzLib.js<!--filename-->
+  </div>
+</td><td style="width: 5px"><!--column 2a-->
+&nbsp;
+</td><td><!--column 3a-->  
+	<h1>
+    Color syntax javascript-code
+  </h1>
+</td></tr><tr><td><!--column 1b-->
+    <!--menu-->
+    <script language="javascript">writeMenu();</script>
+    <!--einde menu-->
+</td><td><!--column 2b-->
+</td><td style="border-left: 1px solid black; padding-left: 7px"><!--column 3b-->  
+	<p>
+		<em>Description</em>:<br>
+    This library makes your source look more attractive when published as HTML. 
+    It can either be used client-side or server-side. Also try the <strong>bracket-matching</strong>
+    function: move your mouse-cursor over a bracket in the syntax-colored source below.
+    This lib produces xHTML. Colors can be fully configured via CSS-classes.
+    <br><br>
+    <em>Download</em>:
+    <a href="../js/colorSyntaxJS.js" title="Right mouse-click, and choose Save as..">code</a>,
+    <a href="view-source:http://www.xs4all.nl/~zanstra/js/colorSyntaxJS.js" title="IE propriety mode">view-source</a>,
+    <a href="../js/colorSyntaxJS.css" title="Right mouse-click, and choose Save as..">CSS</a>.
+    <br>
+    <em>Targetted</em>: <code>ie4+, ns6.1+</code>
+    <br>
+    <em>Tested on</em>: <code><b>win32</b>: ie5..ie6, ns6.1</code>
+	</p>
+  <h2>
+    Usage:
+  </h2>
+  <div id="divSampleCode" style="display: none"></div>
+  <pre id="preSampleCode"> 
+//Divide operator now works
+var a = 20;
+var b = a / 100;
+var c = "b";
+
+//Server-side (no Server.HTMLEncode needed!)
+Response.Write(parseJSCode(strJavascript,false)); 
+
+//Client-side (including line-numbers)
+document.getElementById('divCode').innerHTML=parseJSCode(strJavascript,true);
+
+//Highlight all PRE tags with CLASS "JS" and CLASS "JSnr" with linenumbers
+hiLiteJS('JS');
+hiLiteJS('JSnr',true):
+
+//Regular expressions and numbers also work
+var re=[/^0x[0-9a-f]$/i, /^#(.*?)$/gm, /function(\s*[a-z_$][a-z0-9_$}*){0,1}\(.*?\)/i];
+var nHex=[0xF, 0Xff80, 0xF8D7];
+var nWholeNumbers=[0, 12, 20, 142323, 12., +12, -13];
+var nFractions=[.12, 0.312, 0.1434241];
+var nExponents=[12e132, 1E+12, 10e-12, 10.12e2];]]></code-block>
+  </pre>
+  <h2>
+    Demo
+  </h2>
+<script language="javascript">
+function testCode() {
+  var s, dtBegin, dtEnd;
+  dtBegin=new Date();
+  s=parseJSCode(ID('invoer').value,ID('lineNumbers').checked);
+  dtEnd=new Date();
+  ID('uitvoer').value=ID('voorbeeld').innerHTML=s;
+  ID('idTimeElapsed').innerHTML=' ('+(dtEnd.valueOf()-dtBegin.valueOf())+' ms elapsed)';
+}
+function selectAll(sId) {
+  var o=ID('uitvoer'); 
+  if(o.focus!=null&&o.select!=null) { 
+    o.focus(); 
+    o.select(); 
+  } 
+  return false;
+}
+</script>
+  <form name="frm" onsubmit="return false;">
+    <label for="invoer">Javascript-code input:</label><br />
+    <textarea id="invoer" style="width: 600px; height: 150px;" onkeydown="if(event.keyCode==9) return false;">
+//Handy function, because of IE4 
+//Not handy vor NS4.x because no support for .innerHTML
+function ID(s) {
+  if(typeof document.getElementById=='undefined') 
+    return document.all[s]; /*use the old collection*/
+  else
+    return document.getElementById(s);
+}
+var sMsg='<ol>\n'
+  +'\t<li>Message\'s from javascript</li>\n'
+  +'\t<li>Windir: c:\\winnt\\system32\\</li>\n'
+  +'<ol>';</textarea>
+    <br />
+    <input type="checkbox" id="lineNumbers" />
+    <label for="lineNumbers">show line numbers</label>
+    <button onclick="testCode();" accesskey="P"><u>P</u>rocess</button>
+    <br />
+    <div>HTML preview<span id="idTimeElapsed"></span>:</div>
+    <div id="voorbeeld" style="border: 1px solid black; padding: 2px; width: 600px">
+    </div>
+    <br />
+    <label for="uitvoer">HTML output</label>
+    (<a href="#" onclick="return selectAll('uitvoer');">select all</a>,
+    <a href="../js/colorSyntaxJS.css">CSS</a>).
+    <br />
+    <textarea id="uitvoer" style="width: 600px; height: 150px;">
+    </textarea>
+    <br />
+  </form>
+  <h3>History</h3>
+  <ul>
+    <li>31-03-2003: fixed difference between regular expressions and divisions (bug
+      submitted by Owen van Dijk, thanks).</li>
+    <li>20-09-2002: added support for number- and regular expression literals</li>
+    <li>19-09-2002: fixed a bugs: line-remark on Mac</li>
+  </ul>
+  <h3>Planned options</h3>
+  <ul>
+    <li>Fix code to work under Safari</li>
+    <li>Operator recognition (+, -, ==, new, typeof etc.)</li>
+    <li>Correct identifier-parsing (now, a token is a word, consisting of alpha-characters)</li>
+  </ul>
+  <div class="footer">
+    Copyright &copy; 2001-2003 
+    <a href="mailto:zanstra@xs4all.nl?subject=dzLib" title="Send an email">Doeke Zanstra</a>, 
+    distributed under the <a href="legal.htm">BSD License</a>
+   </div>
+</td></tr></table><!--end columns--></body>
+</html>

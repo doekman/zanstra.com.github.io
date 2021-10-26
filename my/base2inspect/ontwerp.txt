@@ -1,0 +1,60 @@
+=Browser=
+"Namespaces" -> Namespaces     -> Classes   -> "static methods" -> Methods
+                                               instance-methods
+                                  Functions
+"Classes"    -> Classes (ns)   -> static    -> Methods
+                                  instance  -> Methods
+"Methods"    -> static         -> Methods (ns+cls)
+                instance       -> Methods (ns+cls)
+"Functions"  -> Functions (ns)
+
+(functions are namespace instance methods)
+(ns) only add namespace, when there are duplicate function names
+(ns+cls) idem, but mention namespace + className: no inherited methods thus!
+
+cool: 
+  var fqn="ding.dong.dang"; //of "ding"
+  fqn.slice(fqn.lastIndexOf(".")+1||0)
+
+
+fqn of:
+  * namespace:       DOC
+  * class:           DOC.Node
+  * function:        DOC.Node2Text
+  * instance method: DOC.Node.prototype.hasChildren  (test ClassInstance.property)
+  * static method  : DOC.Node.setNode                (test ClassName.property)
+
+TODO: also other properties?
+-Collection.Item
+
+=Namespace details=
+
+=Class details=
+
+Namespace: xxx
+Inheritance path:
+  * Base
+    * Abstract
+      * *Module*
+        * IArray
+        * Window
+        * Interface
+        * Traversal
+        * ...
+__info__
+
+==Instance methods==
+|| add    || __info__ ||
+|| copy   || Implemented by [base2inspect://base2.Hash]. __info__
+|| count || __info__ ||
+
+==Static methods==
+|| extend    || __info__ ||
+|| forEach   || Implemented by [base2inspect://base2.Base]. __info__
+|| implement || __info__ ||
+
+__remarks__
+
+=Method details=
+
+=Function details=

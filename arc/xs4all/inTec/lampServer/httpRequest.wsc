@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<component>
+
+<?component error="true" debug="false"?>
+
+<registration
+	description="httpRequest"
+	progid="inTec.httpRequest"
+	version="1.00"
+	classid="{86854637-a25d-4f11-b784-98f95d26f1db}"
+>
+</registration>
+
+<public>
+	<property name="sMethod">
+		<get/>
+	</property>
+	<property name="sURL">
+		<get/>
+	</property>
+	<property name="sVersion">
+		<get/>
+	</property>
+	<property name="oHeader">
+		<get/>
+	</property>
+	<property name="sBody">
+		<get/>
+	</property>
+	<method name="parse">
+		<PARAMETER name="strRequest"/>
+	</method>
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var description = new httpRequest;
+
+function httpRequest()
+{
+	this.get_sMethod = get_sMethod;
+	this.get_sURL = get_sURL;
+	this.get_sVersion = get_sVersion;
+	this.get_oHeader = get_oHeader;
+	this.get_sBody = get_sBody;
+
+	this.parse = parse;
+}
+
+var sMethod;
+var sURL;
+var sVersion;
+var oHeader;
+var sBody;
+
+function get_sMethod()
+{
+	return sMethod;
+}
+
+function get_sURL()
+{
+	return sURL;
+}
+
+function get_sVersion()
+{
+	return sVersion;
+}
+
+function get_oHeader()
+{
+	return oHeader;
+}
+
+function get_sBody()
+{
+	return sBody;
+}
+
+function parse(strRequest)
+{
+  var re=/^([^ ]+) ([^ ]+) ([^\r]*)/;
+  var arr, i, j, arrHeader;
+
+  //Process the status-line
+  arr=re.exec(strRequest);
+  if(arr==null) return 1
+  if(arr.length!=4) return 2;
+  sMethod=arr[1];
+  sURL=unescape(arr[2]);
+  sVersion=arr[3];
+
+  //Process the body
+  i=strRequest.indexOf('\r\n'); //end of status, begin of headers
+  j=strRequest.indexOf('\r\n\r\n');  //end of headers, begin of body
+  if(j==-1) {
+    sBody='';
+    j=strRequest.length;
+  }
+  else {
+    sBody=strRequest.substr(j+'\r\n\r\n'.length); 
+  }
+  //Process the headers
+  oHeader=new ActiveXObject('Scripting.Dictionary');
+  arr=strRequest.substring(i+2,j).replace(/\r\n[\t ]*/g,'\r\n').split('\r\n');
+  for(i=0; i<arr.length; i++) {
+    arrHeader=arr[i].split(/[:][\t ]*/);
+    if(oHeader.Exists(arrHeader[0])) {
+      arrHeader[1]=oHeader.Item(arrHeader[0])+','+arrHeader[1];
+      oHeader.Remove(arrHeader[0]);
+      oHeader.Add(arrHeader[0], arrHeader[1]);
+    } 
+    else oHeader.Add(arrHeader[0],arrHeader[1]);
+  }
+	return true;
+}
+
+]]>
+</script>
+
+</component>
