@@ -11,3 +11,10 @@ Problem: the WSC components haven't been registered.
 Solution: Run setup.bat
 
 source: http://www.xs4all.nl/~zanstra/inTec/http.htm
+
+
+Update 2021-11-29:
+
+* Link is now <https://zanstra.com/arc/xs4all/inTec/http.htm>
+* zipped `.exe` files, because GitHub Pages
+* Added index-file
