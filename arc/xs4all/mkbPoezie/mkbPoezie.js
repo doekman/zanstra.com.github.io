@@ -1,10 +1,11 @@
 var strImgPath=''; /*change if you're accessing this from another folder*/
 var arrMkbPoezie = [
-new Gedicht('We do asbest as we can!', 'Sloopcombinatie Laren BV', 'sloopcombinatieLarenBv.jpg',384,512),
-new Gedicht('In de Winkel van Sinkel is alles te koop:\ndaar kan men krijgen: mandjes met vijgen\ndoosjes pommade. flesjes orgeade.\nhoeden en petten en damescorsetten:\ndrop om te snoepen en pillen om te poepen', 'ANWB bordje, Utrecht', 'winkelVanSinkel.jpg',535,524),
-new Gedicht('HAVERMOUTPAP gereed,\nOntbijt compleet.!', 'Fryslân tijdschrift', 'havermoutGereed.jpg',222,357),
-new Gedicht('Is het kledingstuk niet uw maat?\nDan staat de naaimachine paraat!', '?', 'Afb1186editted.jpg',438,625),
-new Gedicht('Mensen met verstand,\nkopen aan deze kant','Tekst wordt geroepen bij Vishandel Chris Zwier op de vismarkt, Groningen', 'chrisZwier.jpg',373,373),
+  new Gedicht('Brakke smoel ?\nHaal koffie bij Roel', 'Bij Roel, Oude kijk in\'t Jatstraat 27', 'brakke-smoel.jpg',806,605),
+  new Gedicht('We do asbest as we can!', 'Sloopcombinatie Laren BV', 'sloopcombinatieLarenBv.jpg',384,512),
+  new Gedicht('In de Winkel van Sinkel is alles te koop:\ndaar kan men krijgen: mandjes met vijgen\ndoosjes pommade. flesjes orgeade.\nhoeden en petten en damescorsetten:\ndrop om te snoepen en pillen om te poepen', 'ANWB bordje, Utrecht', 'winkelVanSinkel.jpg',535,524),
+  new Gedicht('HAVERMOUTPAP gereed,\nOntbijt compleet.!', 'Fryslân tijdschrift', 'havermoutGereed.jpg',222,357),
+  new Gedicht('Is het kledingstuk niet uw maat?\nDan staat de naaimachine paraat!', '?', 'Afb1186editted.jpg',438,625),
+  new Gedicht('Mensen met verstand,\nkopen aan deze kant','Tekst wordt geroepen bij Vishandel Chris Zwier op de vismarkt, Groningen', 'chrisZwier.jpg',373,373),
   new Gedicht('Jak\'s haring,\naltijd een openbaring.','Gelezen op de markt in Schalkwijk, Haarlem (Peter Houben)'),
   new Gedicht('Ieder pondje gaat door het mondje,\ndat geldt ook voor onze kat of ons hondje!','Dierenwinkel in Helpman, Groningen','katjehondje.jpg',458,480),
   new Gedicht('Hij en Zij op een fiets van Klei','Klei Tweewielers, Groningen (Nienke Smidt)','HijEnZij.jpg',599,346),
