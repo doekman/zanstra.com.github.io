@@ -197,6 +197,12 @@ var alphaNumSorter = function (selector) {
   }
 }
 
+var coords_distance = function(coords_a, coords_b) {
+  let square_side_x = Math.pow(Math.abs(coords_a[0] - coords_b[0]), 2);
+  let square_side_y = Math.pow(Math.abs(coords_a[1] - coords_b[1]), 2);
+  return Math.sqrt(square_side_x + square_side_y);
+}
+
 // From base2js
 // Url: https://code.google.com/p/base2/source/browse/trunk/lib/src/base2.js
 

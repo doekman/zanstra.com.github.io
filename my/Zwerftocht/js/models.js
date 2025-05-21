@@ -74,7 +74,8 @@ var initTochtModel = function (tochtData, initial) {
                 name: "",
                 nrSeats: 12,
                 nrIssuedCourses: [0, 0, 0],
-                vegetarian: true
+                vegetarian: true,
+                coordinates: [1, 1]
             };
         }
     };
@@ -199,6 +200,23 @@ var initTochtModel = function (tochtData, initial) {
             }
           }
           return;
+        },
+        distanceStats: function() {
+            let list = data.restaurants;
+            let max_distance = 0.0;
+            let total_distance = 0, nr_distances = 0;
+            for (var i = 0; i < list.length; i++) {
+                let coords_i = list[i].coordinates || [1, 1];
+                for (var j = 0; j < list.length; j++) {
+                    if (j == i) continue;
+                    let coords_j = list[j].coordinates || [1, 1];
+                    let distance_i_j = coords_distance(coords_i, coords_j);
+                    max_distance = Math.max(max_distance, distance_i_j);
+                    total_distance += distance_i_j;
+                    nr_distances += 1;
+                }
+            }
+            return [max_distance, total_distance / nr_distances];
         },
         nrSeats: function () {
             var nr = 0, list = data.restaurants;

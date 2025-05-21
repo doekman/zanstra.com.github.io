@@ -334,9 +334,12 @@
             model = initTochtModel(ddb.currentDoc()),
             nrSeats = model.Restaurants.nrSeats(),
             nrIssuedCourses = model.Restaurants.nrIssuedCourses(0),
+            distanceStats = model.Restaurants.distanceStats(),
             data = {
           "entries": model.Restaurants.sort(),
           "nrSeats": nrSeats,
+          "maxDistance": Math.round(distanceStats[0]),
+          "meanDistance": Math.round(distanceStats[1]),
           "nrAvailableSeats": nrSeats - nrIssuedCourses,
           "default": model.Restaurant.defaultItem()
         };
@@ -390,6 +393,9 @@
                 break;
               case 'restaurant_vegetarian':
                 restaurant.vegetarian = element.val2();
+                break;
+              case 'restaurant_coordinates':
+                restaurant.coordinates = element.val2().split(/\s*,\s*/, 2);
                 break;
               default:
                 console.warn("Unknown name '%s' when updating data", name);
@@ -656,6 +662,7 @@
             </span>
             <input type="number" class="form-control" id="tocht_maxDistance" placeholder="Maximale wandelafstand tussen gangen"
                    value="{{maxDistance}}" min="1">
+            <div class="input-group-addon">eenheden</div>
           </div>
         </div>
       </div>
@@ -689,8 +696,9 @@
     <table class="table table-condensed table-hover">
       <thead>
         <tr>
-          <th class="col-md-4">Naam</th>
-          <th class="col-md-2">Aantal plaatsen</th>
+          <th class="col-md-3">Naam</th>
+          <th class="col-md-1">Aantal plaatsen</th>
+          <th class="col-md-1">x, y</th>
           <th class="col-md-2" title="Voorgerecht | Hoofdgerecht | Nagerecht">Aantal plaatsingen</th>
           <th class="col-md-2">Mogelijkheden</th>
           <th class="col-md-2"></th>
@@ -707,6 +715,7 @@
         {{/with}}
       </tfoot>
     </table>
+    <p>Maximale afstand tussen de restaurants is {{maxDistance}} eenheden, en gemiddels is het {{meanDistance}} eenheden.</p>
   </script>
 
   <script type="text/template" id="restaurant-row-template">
@@ -722,8 +731,13 @@
         <input type="number" class="form-control" id="restaurant_nrSeats${{id}}" name="restaurant_nrSeats" data-id="{{id}}" value="{{nrSeats}}"
                placeholder="Aantal" autocomplete="off">
       </td>
+      <td class="form-group">
+        <label class="sr-only" for="restaurant_coordinates${{id}}">Coördinaten</label>
+        <input type="text" class="form-control" id="restaurant_coordinates${{id}}" name="restaurant_coordinates" data-id="{{id}}" value="{{join coordinates ', '}}"
+               placeholder="x, y" autocomplete="off">
+      </td>
       <td>
-        <div class="non-form-group">{{join nrIssuedCourses}}</div>
+        <div class="non-form-group">{{join nrIssuedCourses ' | '}}</div>
       </td>
       <td>
         <div class="checkbox">

@@ -1,8 +1,8 @@
 ﻿Handlebars.registerHelper('markdown', function (text) {
   return new Handlebars.SafeString(text ? marked(text) : '<em>undefined</em>');
 });
-Handlebars.registerHelper('join', function (array) {
-    return (array||[]).join(' | ');
+Handlebars.registerHelper('join', function (array, seperator) {
+    return (array||[]).join(seperator);
 });
 Handlebars.registerHelper('attr', function (condition, attribute, options) {
     return condition ? " " + attribute : "";
