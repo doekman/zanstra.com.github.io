@@ -39,6 +39,7 @@ var initTochtModel = function (tochtData, initial) {
                 name: name,
                 description: format("# Culinaire Zwerftocht %1\n\nU wordt verwacht bij de restaurants volgens onderstaand tijdsschema:\n\n- Voorgerecht: 18:30\n- Hoofdgerechtt: 19:30\n- Nagerecht: 21:00\n- Borrel: 22:00\n\n\n\n\n- - -\nGeprint met [www.EcoFont.com](http://www.ecofont.com/en/products/green/font/download-the-ink-saving-font.html) (indien beschikbaar).", name),
                 afterPartyBar: 'Leuke kroeg',
+                maxDistance: null, //geen max afstand, anders een getal
                 restaurants: [],
                 groups: [],
                 logs: []
@@ -48,6 +49,7 @@ var initTochtModel = function (tochtData, initial) {
             return {
                 name: data.name,
                 description: data.description,
+                maxDistance: data.maxDistance,
                 afterPartyBar: data.afterPartyBar,
                 nrRestaurants: data.restaurants.length,
                 nrSeats: Restaurants.nrSeats(),

@@ -275,6 +275,22 @@
           model.data.description = $(this).val();
           ddb.saveDoc();
         });
+        $("#tocht_has_maxDistance", container).change(function (e) {
+          var val = $(this).val2();
+          if (!val) $('#tocht_maxDistance').val('')
+          model.data.maxDistance = val ? $('#tocht_maxDistance').val2() : null;
+          ddb.saveDoc();
+          if (val) $('#tocht_maxDistance').focus();
+        });
+        $("#tocht_maxDistance", container).keypress(function (e) {
+          var val = $(this).val2();
+          $('#tocht_has_maxDistance').get(0).checked = !!val;
+        }).change(function (e) {
+          var val = $(this).val2();
+          model.data.maxDistance = val || null;
+          ddb.saveDoc();
+        });
+
         $("#tocht_has_afterParty", container).change(function (e) {
           var val = $(this).val2();
           if (!val) $('#tocht_afterPartyBar').val('')
@@ -632,7 +648,20 @@
       </div>
 
       <div class="form-group">
-        <label for="tocht_name" class="col-sm-2 control-label">Borrel</label>
+        <label for="tocht_has_maxDistance" class="col-sm-2 control-label">Max afstand</label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <input type="checkbox" id="tocht_has_maxDistance" {{attr maxDistance 'checked' }}>
+            </span>
+            <input type="number" class="form-control" id="tocht_maxDistance" placeholder="Maximale wandelafstand tussen gangen"
+                   value="{{maxDistance}}" min="1">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="tocht_has_afterParty" class="col-sm-2 control-label">Borrel</label>
         <div class="col-sm-10">
           <div class="input-group">
             <span class="input-group-addon">
