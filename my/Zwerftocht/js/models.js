@@ -61,11 +61,23 @@ var initTochtModel = function (tochtData, initial) {
             return 'Voorgerecht,Hoofdgerecht,Nagerecht' + (data.afterPartyBar ? ',Borrel' : '');
         }
     };
-
     //--| Restaurant
-    var restaurantFilter = function (rest, courseNr) {
+    var restaurantFilter = function (rest, courseNr, previousRestaurants) {
         if (courseNr == 1 /*only main course in vergetarian filter*/ && rest.vegetarian) return rest.vegetarian;
         return true;
+    };
+    var createRestaurantMaxDistanceFilter = function(maxDistance) {
+        return function (rest, courseNr, previousRestaurants) {
+            if (previousRestaurants.length > 0) {
+                let distance = coords_distance(rest.coordinates || [1,1], previousRestaurants.at(-1).coordinates || [1,1]);
+                if (distance > maxDistance) {
+                    console.info(`Afgewezen kandidaad: lopen van ${rest.name} naar ${previousRestaurants.at(-1).name} is te ver`);
+                    return false;
+                }
+                
+            }
+            return restaurantFilter(rest, courseNr, previousRestaurants);
+        }
     };
     var Restaurant = {
         defaultItem: function (id) {
@@ -239,7 +251,7 @@ var initTochtModel = function (tochtData, initial) {
                 ,   nrIssuedCourses = rest.nrIssuedCourses[courseNr]
                 ,   seatsAvailable = rest.nrSeats - nrIssuedCourses
                 ;
-                if (seatsAvailable >= nrSeatsNeeded && indexOf2(exclude, rest) == -1 && filter(rest, courseNr)) {
+                if (seatsAvailable >= nrSeatsNeeded && indexOf2(exclude, rest) == -1 && filter(rest, courseNr, exclude)) {
                     candidates.push(rest);
                 }
             }
@@ -312,7 +324,8 @@ var initTochtModel = function (tochtData, initial) {
                 var oldIssuedCourses = entry.issuedCourses;
                 entry.issuedCourses = null;
                 Restaurants.recalculateCourses();
-                var issuedCourses = Restaurants.issueCourses(entry, restaurantFilter);
+                theFilter = data.maxDistance ? createRestaurantMaxDistanceFilter(data.maxDistance) : restaurantFilter;
+                var issuedCourses = Restaurants.issueCourses(entry, theFilter);
                 if (!issuedCourses) {
                     // undo
                     entry.issuedCourses = oldIssuedCourses;
@@ -352,7 +365,8 @@ var initTochtModel = function (tochtData, initial) {
                 return errorMessage;
             }
             if (!group.id) group.id = nextId(list);
-            group.issuedCourses = Restaurants.issueCourses(group, restaurantFilter);
+            theFilter = data.maxDistance ? createRestaurantMaxDistanceFilter(data.maxDistance) : restaurantFilter;
+            group.issuedCourses = Restaurants.issueCourses(group, theFilter);
             if (group.issuedCourses) {
                 // Now add group to list, and actually issue courses
                 list.push(group);
