@@ -138,7 +138,7 @@ var initTochtModel = function (tochtData, initial) {
             
         },
         sort: function () {
-            var nameSorter = alphaSorter(function (x) { return x.name || ""; });
+            var nameSorter = alphaNumSorter(function (x) { return x.name || ""; });
             var list = data.restaurants;
             for(var i=0; i<list.length; i++) {
               var item = list[i];

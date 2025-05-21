@@ -170,11 +170,30 @@ var ascSorter = function (a, b) {
 }
 var alphaSorter = function (selector) {
   return function (a, b) {
-    var fixName = function (x) {
+    var normalizeName = function (x) {
       return x.toLowerCase().replace(/^(de|het)\s*/, '');
-    },  A = fixName(selector(a)),
-        B = fixName(selector(b));
+    },  A = normalizeName(selector(a)),
+        B = normalizeName(selector(b));
     return ascSorter(A,B);
+  }
+}
+var alphaNumSorter = function (selector) {
+  // Braksort: zorg voor human sort ["1. Bla", "2. Die", "10. Bla"]
+  //           (met alphaSort komt "10. Bla" tussen 1 en 2 in)
+  return function (a, b) {
+    let reAlphaNum = /^([0-9]*)?(.*)$/
+    ,   aa = selector(a).match(reAlphaNum).splice(1)
+    ,   bb = selector(b).match(reAlphaNum).splice(1)
+    ,   normalizeName = function (x) {
+      return x.toLowerCase().replace(/^(de|het)\s*/, '').replace(/^[-=_+;:,.]+/, '');
+    };
+    res1 = ascSorter(+aa[0],+bb[0]);
+    if (res1 == 0) {
+      aa[1] = normalizeName(aa[1]);
+      bb[1] = normalizeName(bb[1]);
+      return ascSorter(aa[1],bb[1]);
+    }
+    return res1
   }
 }
 

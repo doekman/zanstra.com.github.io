@@ -533,7 +533,7 @@
       overForm: function () {
         var model = initTochtModel(ddb.currentDoc());
         var data = model.Logs.getLines();
-        data.app = {versie:"2.02", jaar:"2014-2015", auteur: "D. Zanstra" };
+        data.app = {versie:"2.03", jaar:"2025", auteur: "D. Zanstra" };
         var container = view.render("#over-template", "#tab-content", data);
       }
     };
@@ -873,7 +873,8 @@
   <script type="text/template" id="over-template">
     <p>
       Dit is versie {{ app.versie }} van de Culinaire Zwerftocht app, gemaakt in {{ app.jaar }} door {{ app.auteur }}.
-      Er is ook een <a href="http://zanstra.com/my/Zwerftocht/arc/">archief van oude versies</a>.
+      Er is ook een <a href="http://zanstra.com/my/Zwerftocht/arc/">archief van oude versies</a>. Sinds 2025 worden
+      versies bijgehouden in <a href="https://github.com/doekman/zanstra.com.github.io/tree/main/my/Zwerftocht">git</a>.
     </p>
     <h4>Logs</h4>
     <p>Alle transacties, met de nieuwste bovenaan. [is dit compleet? En werkelijk handig en nodig?]</p>
