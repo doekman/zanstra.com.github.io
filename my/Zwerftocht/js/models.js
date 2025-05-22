@@ -71,7 +71,7 @@ var initTochtModel = function (tochtData, initial) {
             if (previousRestaurants.length > 0) {
                 let distance = coords_distance(rest.coordinates || [1,1], previousRestaurants.at(-1).coordinates || [1,1]);
                 if (distance > maxDistance) {
-                    console.info(`Afgewezen kandidaad: lopen van ${rest.name} naar ${previousRestaurants.at(-1).name} is te ver`);
+                    //console.info(`Afgewezen kandidaad: lopen van ${rest.name} naar ${previousRestaurants.at(-1).name} is te ver`);
                     return false;
                 }
                 
@@ -219,14 +219,20 @@ var initTochtModel = function (tochtData, initial) {
             let total_distance = 0, nr_distances = 0;
             for (var i = 0; i < list.length; i++) {
                 let coords_i = list[i].coordinates || [1, 1];
+                let rejected_rest = [];
                 for (var j = 0; j < list.length; j++) {
                     if (j == i) continue;
                     let coords_j = list[j].coordinates || [1, 1];
                     let distance_i_j = coords_distance(coords_i, coords_j);
+                    if (distance_i_j > data.maxDistance) {
+                        rejected_rest.push(`${list[j].name}: ${Math.round(distance_i_j*10)/10} eenheden`)
+                    }
                     max_distance = Math.max(max_distance, distance_i_j);
                     total_distance += distance_i_j;
                     nr_distances += 1;
                 }
+                
+                console.info(`Niet bewandelbaar ${list[i].name}\n- ${rejected_rest.join('\n- ')}`);
             }
             return [max_distance, total_distance / nr_distances];
         },
