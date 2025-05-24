@@ -224,7 +224,7 @@ var initTochtModel = function (tochtData, initial) {
                     if (j == i) continue;
                     let coords_j = list[j].coordinates || [1, 1];
                     let distance_i_j = coords_distance(coords_i, coords_j);
-                    if (distance_i_j > data.maxDistance) {
+                    if (distance_i_j <= data.maxDistance) {
                         rejected_rest.push(`${list[j].name}: ${Math.round(distance_i_j*10)/10} eenheden`)
                     }
                     max_distance = Math.max(max_distance, distance_i_j);
@@ -232,7 +232,7 @@ var initTochtModel = function (tochtData, initial) {
                     nr_distances += 1;
                 }
                 
-                console.info(`Niet bewandelbaar ${list[i].name}\n- ${rejected_rest.join('\n- ')}`);
+                console.info(`Bewandelbaar ${list[i].name}\n- ${rejected_rest.join('\n- ')}`);
             }
             return [max_distance, total_distance / nr_distances];
         },

@@ -63,3 +63,16 @@ span.note {
 .hide {
     display:none;
 }
+@media screen {
+    .printen {
+        display:none;
+    }
+    #tab-content {
+        margin-top:2em;
+    }
+}
+@media print {
+    .niet-printen {
+        display:none;;
+    }
+}
