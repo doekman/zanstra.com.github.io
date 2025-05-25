@@ -553,6 +553,9 @@
             self.uitgifteForm();
           }
         });
+        $("#cmd_print", container).click(function (e) {
+          window.print();
+        });
       },
 
       overForm: function () {
@@ -880,6 +883,12 @@
           {{/each}}
         </div>
         {{/each}}
+      </div>
+      <div>
+        <button type="button" class="btn btn-link" id="cmd_print" style="margin-top:2em">
+          <span class="glyphicon glyphicon-print"></span>
+          Coupon- & restaurant-statistieken printen
+        </button>
       </div>
     </div>
 
