@@ -8,7 +8,10 @@
   <link href="Content/custom.css" rel="stylesheet" media="all" />
 </head>
 <body>
-  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="printen">
+    <h1>Culinaire Zwerftocht <span class="current-tocht-name"></span></h1>
+  </div>
+  <div class="navbar navbar-inverse navbar-fixed-top niet-printen" role="navigation">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -23,7 +26,7 @@
         <ul class="nav navbar-nav">
           <li class="active"><a href="index.html">Home</a></li>
         </ul>
-        <p class="navbar-text" id="current-tocht-name"></p>
+        <p class="navbar-text current-tocht-name"></p>
       </div><!--/.nav-collapse -->
     </div>
   </div>
@@ -216,7 +219,7 @@
       },
 
       updateMenubar: function (data) {
-        $("#current-tocht-name").html(data && data.name || "");
+        $(".current-tocht-name").html(data && data.name || "");
       },
       
       initCounter: function(model) {
@@ -625,7 +628,7 @@
       <li><a href="#" id="over-tab">Over</a></li>
     </ul>
 
-    <div id="tab-content" style="margin-top:2em">
+    <div id="tab-content">
       {{> initial}}
     </div>
   </script>

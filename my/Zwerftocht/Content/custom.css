@@ -6,14 +6,8 @@
 body.eco {
     font-family: 'Ecofont Vera Sans', sans-serif;
 }
-.inhoud {
-  margin-top: 50px;
-}
 .container {
     max-width: 730px;
-}
-.inhoud {
-  padding: 40px 15px;
 }
 /* formulieren en tabellen */
 td .checkbox {
@@ -64,6 +58,10 @@ span.note {
     display:none;
 }
 @media screen {
+    .inhoud {
+        margin-top: 50px;
+        padding: 40px 15px;
+    }
     .printen {
         display:none;
     }
@@ -72,6 +70,9 @@ span.note {
     }
 }
 @media print {
+    #tochten hr {
+        display:none;
+    }
     .niet-printen {
         display:none;;
     }
