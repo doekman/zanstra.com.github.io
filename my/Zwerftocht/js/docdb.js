@@ -62,6 +62,7 @@
                dbEntry.name = entry.name;
                dbEntry.type = entry.type;
                saveEntries(items);
+               return dbEntry.id;
            },
            remove: function (entry) {
                var items = listEntries(), index = -1;

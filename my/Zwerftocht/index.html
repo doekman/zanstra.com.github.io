@@ -201,7 +201,12 @@
           e.preventDefault();
           var name = $("#tocht_naam", container).val2();
           if (name) {
-            ddb.save(name);
+            // Save "inode" entry, and determine `id`
+            var id = ddb.save(name);
+            // Save initial tocht-data
+            var data = ddb.openDoc(id);
+            var model = initTochtModel(data, { name: name });
+            ddb.saveDoc(model.data);
             $("#tocht_naam", container).val("");
             self.mainForm();
           }
