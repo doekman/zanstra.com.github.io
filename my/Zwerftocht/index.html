@@ -431,6 +431,11 @@
             // use this function, because the data get's augmented
             var array = groups.getGroups(function (entry) { return entry.id == id; });
             if (array.length > 0) groupRecord = array[0];
+            // Determine alternative restaurants, for use when editting
+            ar = model.Restaurants.getAlternatives(id, groupRecord);
+            for (let i=0; i<3; i++) {
+              groupRecord.restaurants[i].alternatives = ar[i];
+            }
         }
         var showGroupEdit = !!groupRecord.id
         ,   maxGroupSize = model.Groups.maxGroupSize()
@@ -444,8 +449,10 @@
           maxGroupSize: maxGroupSize,
           showGroupEdit: showGroupEdit,
           soldOut: maxGroupSize == 0 && !showGroupEdit,
-          showNewGroup: !showGroupEdit && maxGroupSize > 0
+          showNewGroup: !showGroupEdit && maxGroupSize > 0,
+          hasMaxDistance: model.data.maxDistance !== null
         };
+        console.info("uitgifteForm:", data)
         var container = view.render("#uitgifte-template", "#tab-content", data);
         self.updateCounters(model);
         $("*[title]", container).tooltip({ html: true });
@@ -511,6 +518,20 @@
             ddb.saveDoc();
             self.uitgifteForm(key);
         });
+        $(".cmd_change_course", container).change(function (e) {
+          let key = +$("#group_id").val2();
+          let newRestaurantId = +$(e.target).val2();
+          let courseIndex = +e.target.dataset['courseIndex'];
+          let groupEntry = model.Groups.changeCourseRestaurant(key, courseIndex, newRestaurantId);
+          if (groupEntry) {
+            groupEntry.rev++;
+            ddb.saveDoc();
+          }
+          else {
+            self.warningAlert("Er ging iets mis met het wijzigen van een restaurant-gang...");
+          }
+          self.uitgifteForm(key);
+        });
         $("#cmd_delete", container).click(function (e) {
             var key = +$("#group_id").val2();
             var item = model.Groups.findEntry(key);
@@ -528,11 +549,11 @@
             if (group) {
               group.rev++;
               ddb.saveDoc();
-              self.uitgifteForm(key);
             }
             else {
               self.warningAlert("Er ging iets mis met het opnieuw kiezen van restaurants...");
             }
+            self.uitgifteForm(key);
         });
         $(".cmd_edit", container).click(function (e) {
             e.preventDefault();
@@ -566,7 +587,7 @@
       overForm: function () {
         var model = initTochtModel(ddb.currentDoc());
         var data = model.Logs.getLines();
-        data.app = {versie:"2.03", jaar:"2025", auteur: "D. Zanstra" };
+        data.app = {versie:"2.04", jaar:"2026", auteur: "D. Zanstra" };
         var container = view.render("#over-template", "#tab-content", data);
       }
     };
@@ -832,9 +853,17 @@
           </div>
           <div>
               <ul style="margin-top:1em">
-                  {{#each group.restaurants}}<li>{{ name }}</li>
+                  {{#each group.restaurants}}<li><select data-course-index="{{ @index }}" class="clean-select cmd_change_course" id="cmd_change_course_{{ @index }}">
+                          <option value="{{ id }}" selected>{{ name }}</option>
+                          {{#each alternatives}}<option value="{{ id }}">{{ name }}</option>
+                          {{/each}}
+                      </select></li>
                   {{/each}}
               </ul>
+              <p>
+                {{#if group.vegetarian}}Let er zelf op of een restaurant vegetarische opties heeft.{{/if}}
+                {{#if hasMaxDistance}}Let zelf op de maximale afstand tussen restaurants bij handmatig wijzigen van restaurants per gang.{{/if}}
+              </p>
           </div>
           <div style="margin-top:1em">
               <button type="submit" class="btn btn-danger btn-xs" id="cmd_delete"><span class="glyphicon glyphicon-remove"></span> Verwijderen</button>

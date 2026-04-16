@@ -87,7 +87,8 @@ var initTochtModel = function (tochtData, initial) {
                 nrSeats: 12,
                 nrIssuedCourses: [0, 0, 0],
                 vegetarian: true,
-                coordinates: [1, 1]
+                coordinates: [1, 1],
+                alternatives: []
             };
         }
     };
@@ -196,6 +197,21 @@ var initTochtModel = function (tochtData, initial) {
             }
             return result;
         },
+        getAlternatives: function(id, group) {
+          // Get a list of alternative restaurants, for use when editting
+          if (!id) return [[],[],[]];
+          let currentRestaurantIds = group.restaurants.map( (r) => r.id );
+          var nonCurrentRestaurants =  data.restaurants.filter( (r) => !currentRestaurantIds.includes(r.id) );
+          var alternativesPerCourse = [];
+          for (var courseNr = 0; courseNr < 3; courseNr++) {
+            let nrPersonsInGroup = group.nrPersons
+            let alternatives = nonCurrentRestaurants.filter( (r) => r.nrSeats - r.nrIssuedCourses[courseNr] >= nrPersonsInGroup);
+            //console.info(`getAlternatives[courseNr=${courseNr}, nr=${nrPersonsInGroup}, ids=${currentRestaurantIds.join(',')}]: `, alternatives)
+            alternativesPerCourse.push(alternatives);
+          }
+          var nameSorter = alphaNumSorter(function (x) { return x.name || ""; });
+          return alternativesPerCourse.sort(nameSorter);
+        },
         validate: function (newItem) {
           var list = data.restaurants;
           if (!newItem.name) return "Een restaurant naam is verplicht.";
@@ -231,8 +247,9 @@ var initTochtModel = function (tochtData, initial) {
                     total_distance += distance_i_j;
                     nr_distances += 1;
                 }
-                
-                console.info(`Bewandelbaar ${list[i].name}\n- ${rejected_rest.join('\n- ')}`);
+                if (data.maxDistance) {
+                  console.info(`Bewandelbaar ${list[i].name}\n- ${rejected_rest.join('\n- ')}`);
+                }
             }
             return [max_distance, total_distance / nr_distances];
         },
@@ -322,6 +339,20 @@ var initTochtModel = function (tochtData, initial) {
                 if (item.id == id) return item;
             }
             return null;
+        },
+        changeCourseRestaurant: function(groupId, courseIndex, restaurantId) {
+          var list = data.groups;
+          var groupEntry = findById(list, groupId);
+          if (groupEntry) {
+            if (Array.isArray(groupEntry.issuedCourses)) {
+              groupEntry.issuedCourses[courseIndex] = restaurantId;
+              Restaurants.recalculateCourses(); 
+            }
+            else {
+              console.error("issuedCourses is not an array...", groupEntry);
+            }
+          }
+          return groupEntry;
         },
         reIssueRestaurants: function (id) {
             var list = data.groups;

@@ -125,6 +125,7 @@ function csv2(object) {
             case "hidden":
             case "text": return element.value.trim();
             case "number": return element.valueAsNumber;
+            case "select-one": return element.value;
                 //case "date": return element.valueAsDate;
             default: throw new Error("Unknown input type: " + element.type);
         }

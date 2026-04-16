@@ -57,6 +57,10 @@ span.note {
 .hide {
     display:none;
 }
+.clean-select {
+    border:0;
+    background:transparent;
+}
 @media screen {
     .inhoud {
         margin-top: 50px;
