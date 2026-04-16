@@ -334,7 +334,7 @@
             var result = popup.print();
           }
           //popup.close();
-        }, 0);
+        }, 250);
       },
 
       restaurantForm: function () {
@@ -893,7 +893,7 @@
               </li>
               {{/each}}
           </ul>
-        <button type="reset" class="btn btn-link" id="cmd_reset">
+        <button type="reset" class="btn btn-link niet-printen" id="cmd_reset">
           <span class="glyphicon glyphicon-remove"></span>
           Groepen weggooien
         </button>
@@ -919,7 +919,7 @@
         {{/each}}
       </div>
       <div>
-        <button type="button" class="btn btn-link" id="cmd_print" style="margin-top:2em">
+        <button type="button" class="btn btn-link niet-printen" id="cmd_print" style="margin-top:2em">
           <span class="glyphicon glyphicon-print"></span>
           Coupon- & restaurant-statistieken printen
         </button>
