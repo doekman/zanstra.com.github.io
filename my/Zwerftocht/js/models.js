@@ -15,7 +15,8 @@
         rev: 0,
         name: "",
         nrPersons: 1,
-        vegetarian: false, //wants vegetarian
+        vegetarian: false, //wants vegetarian (calculated from nrVegetarians)
+        nrVegetarians: 0,
         issuedCourses: null // [id-a, id-b, id-c]
         --restaurants
     }],
@@ -312,12 +313,13 @@ var initTochtModel = function (tochtData, initial) {
                 rev: 0,
                 name: "",
                 nrPersons: 1,
-                wantsVegetarian: false,
+                vegetarian: false,
+                nrVegetarians: 0,
                 issuedCourses: null
             };
         },
         getTestGroup: function () {
-            return { id: 0, rev: 0, name: 'Test group 123', nrPersons: 2, vegetarian: false };
+            return { id: 0, rev: 0, name: 'Test group 123', nrPersons: 2, vegetarian: false, nrVegetarians: 0 };
         }
     };
     var Groups = {
@@ -374,9 +376,15 @@ var initTochtModel = function (tochtData, initial) {
             }
             return entry;
         },
-        changeNrPersons: function (item, newNrPersons) {
+        changeNrPersons: function (item, newNrPersons, newNrVegetarians) {
             if (typeof newNrPersons != "number" || newNrPersons < 1) {
                 return "Aantal personen moet minimaal 1 zijn";
+            }
+            if (typeof newNrVegetarians != "number" || newNrVegetarians < 0) {
+                return "Aantal vegetariërs moet een getal zijn, en niet negatief";
+            }
+            if (newNrPersons < newNrVegetarians) {
+                return "Aantal vegetariërs mag niet meer zijn dan de groep grootte";
             }
             var nrPersonsDelta = newNrPersons - item.nrPersons;
             // check loop if it's possible
@@ -392,6 +400,8 @@ var initTochtModel = function (tochtData, initial) {
             }
             // apply loop
             item.nrPersons = newNrPersons;
+            item.vegetarian = newNrVegetarians > 0;
+            item.nrVegetarians = newNrVegetarians;
             Restaurants.recalculateCourses();
             return;
         },
@@ -490,7 +500,11 @@ var initTochtModel = function (tochtData, initial) {
             for (var i = 0; i < list.length; i++) {
                 var entry = list[i];
                 if (!fnFilter || fnFilter(entry)) {
-                    var item = { id: entry.id, rev: entry.rev || 0, name: entry.name, nrPersons: entry.nrPersons, vegetarian: entry.vegetarian };
+                    // Create a copy
+                    var item = { id: entry.id, rev: entry.rev || 0, name: entry.name, 
+                        nrPersons: entry.nrPersons, 
+                        vegetarian: entry.vegetarian, 
+                        nrVegetarians: entry.vegetarian ? entry.nrVegetarians || entry.nrPersons : 0};
                     if (entry.issuedCourses) {
                         item.issuedCourses = entry.issuedCourses;
                         // map id to object

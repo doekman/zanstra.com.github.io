@@ -430,7 +430,13 @@
         if (id) {
             // use this function, because the data get's augmented
             var array = groups.getGroups(function (entry) { return entry.id == id; });
-            if (array.length > 0) groupRecord = array[0];
+            if (array.length > 0) {
+              groupRecord = array[0];
+            }
+            // Property introduced in version 2.04; upgrade stored data if necessary
+            if (groupRecord && !groupRecord.hasOwnProperty('nrVegetarians')) {
+              groupRecord['nrVegetarians'] = groupRecord['vegetarian'] ? groupRecord['nrPersons'] : 0;
+            }
             // Determine alternative restaurants, for use when editting
             ar = model.Restaurants.getAlternatives(id, groupRecord);
             for (let i=0; i<3; i++) {
@@ -458,12 +464,21 @@
         $("*[title]", container).tooltip({ html: true });
         
         // New group
+        $("#new_group_vegetarian", container).change(function(e) {
+          let nrPersons = +document.getElementById('new_group_nrPersons').value;
+          document.getElementById('new_group_nrVegetarians').value = e.target.checked ? nrPersons : 0;
+        });
+        $("#new_group_nrVegetarians", container).change(function(e) {
+          let value = +e.target.value;
+          document.getElementById('new_group_vegetarian').checked = value > 0;
+        });
         $("#cmd_register", container).click(function (e) {
           var group = model.Groups.getDefaultEntry(),
               errorMessage;
           group.name = $("#new_group_name").val2();
           group.nrPersons = $("#new_group_nrPersons").val2();
           group.vegetarian = $("#new_group_vegetarian").val2();
+          group.nrVegetarians = group.vegetarian ? $("#new_group_nrVegetarians").val2() : 0;
           
           if (errorMessage = model.Groups.addEntry(group)) {
             $('#new_group_name').focus();
@@ -494,28 +509,29 @@
               self.clearAlert();
             
         });
-        $("#group_nrPersons", container).change(function (e) {
+        $("#group_nrPersons, #group_vegetarian, #group_nrVegetarians", container).change(function (e) {
             var key = $("#group_id").val2(),
                 group = model.Groups.findEntry(key),
-                newNrPersons = +$(this).val2(),
+                nrPersons = +$('#group_nrPersons').val2(),
+                vegetarian = +$('#group_vegetarian').val2(),
+                nrVegetarians = +$('#group_nrVegetarians').val2(),
                 errorMessage;
-            if (errorMessage = model.Groups.changeNrPersons(group, newNrPersons)) {
+            // Logic when checkbox is changed (because `vegetarian` is considered implied by the model)
+            if (e.target.id == 'group_vegetarian') {
+              if (vegetarian && nrVegetarians == 0) {
+                nrVegetarians = nrPersons
+              }
+              if (!vegetarian && nrVegetarians > 0) {
+                nrVegetarians = 0
+              }
+            }
+            if (errorMessage = model.Groups.changeNrPersons(group, nrPersons, nrVegetarians)) {
               self.warningAlert(errorMessage);
             }
             else {
               group.rev++;
               ddb.saveDoc();
             }
-            self.uitgifteForm(key);
-        });
-        $("#group_vegetarian", container).click(function (e) {
-            var key = $("#group_id").val2();
-            var group = model.Groups.findEntry(key);
-            group.vegetarian = $(this).val2();
-            //TODO: check als er bij vegetarische optie geen mogelijkheden meer zijn (of is dit té edge case...)
-            model.Groups.reIssueRestaurants(key);
-            group.rev++;
-            ddb.saveDoc();
             self.uitgifteForm(key);
         });
         $(".cmd_change_course", container).change(function (e) {
@@ -753,7 +769,8 @@
         {{/with}}
       </tfoot>
     </table>
-    <p>Maximale afstand tussen de restaurants is {{maxDistance}} eenheden, en gemiddels is het {{meanDistance}} eenheden.</p>
+    <p>Het vinkje "Vegetarisch" wordt alleen gebruikt bij het bepalen van de hoofdmaaltijd.</p>
+    <p>Maximale afstand tussen de restaurants is {{maxDistance}} eenheden, en gemiddels is het {{meanDistance}} eenheden (indien aangevinkt bij de tocht).</p>
   </script>
 
   <script type="text/template" id="restaurant-row-template">
@@ -809,18 +826,23 @@
 
           <div class="form-group">
               <label class="sr-only" for="new_group_name">Groep naam</label>
-              <input type="text" class="form-control" id="new_group_name" placeholder="Groep naam"
+              <input type="text" class="form-control" id="new_group_name" placeholder="Groep naam" title="Groep naam"
                      value="{{group.name}}" style="width:300px" autofocus>
           </div>
           <div class="form-group">
               <label class="sr-only" for="new_group_nrPersons">Aantal personen</label>
               <input type="number" min="1" max="{{maxGroupSize}}" class="form-control" id="new_group_nrPersons"
-                     placeholder="Aantal personen" value="{{group.nrPersons}}" style="width:100px">
+                     placeholder="Aantal personen" title="Aantal personen" value="{{group.nrPersons}}" style="width:75px">
           </div>
           <div class="checkbox">
               <label>
                   <input type="checkbox" id="new_group_vegetarian" {{attr group.vegetarian 'checked' }}> Vegetarisch
               </label>
+          </div>
+          <div class="form-group">
+              <label class="sr-only" for="new_group_nrPersons">Aantal vegetariërs</label>
+              <input type="number" min="0" max="{{maxGroupSize}}" class="form-control" id="new_group_nrVegetarians"
+                     placeholder="Aantal vegetariërs" title="Aantal vegetariërs" value="{{group.nrVegetarians}}" style="width:75px">
           </div>
           <div style="margin-top:1em">
               <button type="submit" class="btn btn-default btn-xs" id="cmd_register" title="Registreer en print voucher">
@@ -837,18 +859,23 @@
               <div class="form-group">
                   <label class="sr-only" for="group_name">Groep naam</label>
                   <input type="hidden" id="group_id" value="{{group.id}}">
-                  <input type="text" class="form-control" id="group_name" placeholder="Groep naam"
+                  <input type="text" class="form-control" id="group_name" placeholder="Groep naam" title="Groep naam"
                          value="{{group.name}}" style="width:300px" autofocus>
               </div>
               <div class="form-group">
                   <label class="sr-only" for="group_nrPersons">Aantal personen</label>
                   <input type="number" min="1" max="6" class="form-control" id="group_nrPersons"
-                         placeholder="Aantal personen" value="{{group.nrPersons}}" style="width:100px">
+                         placeholder="Aantal personen" title="Aantal personen" value="{{group.nrPersons}}" style="width:75px">
               </div>
               <div class="checkbox">
                   <label>
                       <input type="checkbox" id="group_vegetarian" {{attr group.vegetarian 'checked' }}> Vegetarisch
                   </label>
+              </div>
+              <div class="form-group">
+                  <label class="sr-only" for="new_group_nrPersons">Aantal vegetariërs</label>
+                  <input type="number" min="0" max="{{maxGroupSize}}" class="form-control" id="group_nrVegetarians"
+                         placeholder="Aantal vegetariërs" title="Aantal vegetariërs" value="{{group.nrVegetarians}}" style="width:75px">
               </div>
           </div>
           <div>
