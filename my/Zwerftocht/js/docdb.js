@@ -1,5 +1,8 @@
 ﻿// Document database
 // properties: id, name, type, id
+// 
+// Error: DOMException, QuotaExceededError
+//   see: https://support.mozilla.org/en-US/questions/1353337
 
 (function (global) {
     var LOCAL_STORAGE_KEY = "DOEKMAN_DDB",
@@ -24,7 +27,15 @@
        },
        saveEntries = function (entries) {
            var data = JSON.stringify(entries);
-           localStorage.setItem(LOCAL_STORAGE_KEY, data);
+           try {
+               localStorage.setItem(LOCAL_STORAGE_KEY, data);
+           }
+           catch(error) {
+               if (error.code == 22 || error.name == "QuotaExceededError") {
+                   alert(`Problemen met opslaan (1); vraag technische ondersteuning.\n\n${error.message}`);
+               }
+               throw error;
+           }
        },
        documentKey = function () {
            return LOCAL_STORAGE_KEY + "$" + currentId;
@@ -110,7 +121,15 @@
            },
            saveDoc: function (newDoc) {
                var data = JSON.stringify(newDoc || currentDoc);
-               localStorage.setItem(documentKey(), data);
+               try {
+                   localStorage.setItem(documentKey(), data);
+               }
+               catch(error) {
+                   if (error.code == 22 || error.name == "QuotaExceededError") {
+                       alert(`Problemen met opslaan (2); vraag technische ondersteuning.\n\n${error.message}`);
+                   }
+                   throw error;
+               }
            },
            removeDoc: function (id) {
                currentId = id;
