@@ -7,6 +7,7 @@
         name: "",
         nrSeats: 16,
         nrIssuedCourses: [0,0,0],
+        nrIssuedVegetarians: [0,0,0],
         vegetarian: false //caters vegetarian
         // stats{nr, pct, clr }  (via getStats)
     }],
@@ -87,6 +88,7 @@ var initTochtModel = function (tochtData, initial) {
                 name: "",
                 nrSeats: 12,
                 nrIssuedCourses: [0, 0, 0],
+                nrIssuedVegetarians: [0, 0, 0],
                 vegetarian: true,
                 coordinates: [1, 1],
                 alternatives: []
@@ -120,6 +122,7 @@ var initTochtModel = function (tochtData, initial) {
             var list = data.restaurants;
             for (var i = 0; i < list.length; i++) {
                 list[i].nrIssuedCourses = [0, 0, 0];
+                list[i].nrIssuedVegetarians = [0, 0, 0];
             }
         },
         recalculateCourses: function () {
@@ -132,6 +135,7 @@ var initTochtModel = function (tochtData, initial) {
             for (var i = 0; i < list.length; i++) {
                 restaurant = list[i];
                 restaurant.nrIssuedCourses = [0, 0, 0]; //reset
+                restaurant.nrIssuedVegetarians = [0, 0, 0]; //reset
                 restaurantLookup[restaurant.id] = restaurant; //add to dictionary
                 //console.info("Restaurant '%s' reset to: %s", restaurant.name, restaurant.nrIssuedCourses.join(','))
             }
@@ -144,6 +148,7 @@ var initTochtModel = function (tochtData, initial) {
                         var courseId = group.issuedCourses[courseNr];
                         restaurant = restaurantLookup[courseId];
                         restaurant.nrIssuedCourses[courseNr] += group.nrPersons;
+                        restaurant.nrIssuedVegetarians[courseNr] += group.nrVegetarians;
                         //console.info("- Restaurant '%s' (%s) updated to: %s", restaurant.name, restaurant.id, (restaurant.nrIssuedCourses||[]).join(','))
                     }
                 }
@@ -189,9 +194,16 @@ var initTochtModel = function (tochtData, initial) {
                 var courseLabels = Tocht.getCourseLabels().split(',');
                 rest.stats = [];
                 for (var j = 0; j < rest.nrIssuedCourses.length; j++) {
-                    var nr = rest.nrIssuedCourses[j]
-                    , st = { nr: nr, pctFilled: (nr / rest.nrSeats) * 100, pctRelative: (rest.nrSeats / maxSeats) * 100, clr: colors[j], course: courseLabels[j] }
-                    ;
+                    var nr = rest.nrIssuedCourses[j];
+                    var nrVega = rest.nrIssuedVegetarians[j];
+                    let st = { 
+                        nr: nr,
+                        nrVega: nrVega,
+                        pctFilled: (nr / rest.nrSeats) * 100, 
+                        pctRelative: (rest.nrSeats / maxSeats) * 100, 
+                        clr: colors[j], 
+                        course: courseLabels[j]
+                    };
                     rest.stats.push(st);
                 }
                 result.push(rest);

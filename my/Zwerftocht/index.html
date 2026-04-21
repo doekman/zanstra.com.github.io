@@ -916,7 +916,8 @@
 {{#each restaurants}}▻ {{name}}
 {{/each}}" data-toggle="tooltip" data-placement="left">
                   <strong data-key="{{id}}" class="btn-link cmd_edit">{{name}}</strong>
-                  ({{nrPersons}})
+                  <span class="niet-printen">({{nrPersons}}{{#if vegetarian}}, vega: {{nrVegetarians}}{{/if}})</span>
+                  <span class="printen">({{voud nrPersons 'persoon' 'personen'}}{{#if vegetarian}} waarvan {{voud nrVegetarians 'vegetariër' 'vegetariërs'}}{{/if}})</span>
               </li>
               {{/each}}
           </ul>
@@ -931,11 +932,11 @@
         <p>Maximale groeps grootte: {{maxGroupSize}}</p>
         {{#each restaurants}}
         <div class="stat" title="{{name}} ({{nrSeats}} plaatsen)
-{{#each stats}}▻ {{course}}: {{voud nr 'plaatsing' 'plaatsingen'}} &lt;span class=&quot;note&quot;&gt;({{floor pctFilled}}%)&lt;/span&gt;
+{{#each stats}}▻ {{course}}: {{voud nr 'plaatsing' 'plaatsingen'}} &lt;span class=&quot;note&quot;&gt;({{#if nrVega}}{{nrVega}} vega; {{/if}}{{floor pctFilled}}% vulling)&lt;/span&gt;
 {{/each}}" data-toggle="tooltip" data-placement="left">
           <h6 style="margin-bottom:2px">{{name}}</h6>
           {{#each stats}}
-          <div class="printen">{{course}}: {{nr}}</div>
+          <div class="printen">{{course}}: {{nr}} personen{{#if nrVega}}, waarvan {{nrVega}} vegetarisch{{/if}}.</div>
           <div class="progress grouped niet-printen" style="width:{{floor pctRelative}}%">
             <div class="progress-bar {{clr}}" role="progressbar" aria-valuenow="{{floor pctFilled}}" aria-valuemin="0" aria-valuemax="100" style="width:{{pctFilled}}%">
               <span class="sr-only">{{PCT}}% Complete (success)</span>
