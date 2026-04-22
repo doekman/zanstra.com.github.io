@@ -52,11 +52,13 @@
             <div class="form-group">
               <label for="exportModal_dataDump">Data dump</label>
               <input type="hidden" id="exportModal_dataDumpId" value="">
+              <input type="hidden" id="exportModal_dataDumpKind" value="">
               <textarea id="exportModal_dataDump" rows="11" class="form-control"></textarea>
               <span class="help-block">
                 Gebruik het klemboard (copy/paste) om data te bewaren of opnieuw in te laden.
               </span>
             </div>
+            <div id="exportModal_dataDumpHelp"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -163,27 +165,51 @@
         });
         $('#exportModal').on('shown.bs.modal', function (e) {
           var id = $(e.relatedTarget).data("id")
-          ,   doc = ddb.openDoc(id)
-          ,   json = JSON.stringify(doc)
+          ,   kind = $(e.relatedTarget).data("kind")
           ;
-          $("#exportModal_dataDumpId").val(id);
-          $("#exportModal_dataDump").val(json).select();
+          if (kind == "tocht") {
+            var doc = ddb.openDoc(id)
+            ,   json = JSON.stringify(doc)
+            ;
+            $("#exportModal_dataDumpId").val(id);
+            $("#exportModal_dataDumpKind").val(kind);
+            $("#exportModal_dataDump").val(json).select();
+            $("#exportModal_dataDumpHelp").html("");
+          }
+          else if (kind == "courses") {
+            var model = initTochtModel(ddb.currentDoc());
+            var csv = model.Groups.getGroupsAsCsv();
+            $("#exportModal_dataDumpKind").val(kind);
+            $("#exportModal_dataDump").val(csv).select();
+            $("#exportModal_dataDumpHelp").html("<strong>Opgelet:</strong> bij het importeren worden alleen <em>nieuwe</em> rijen verwerkt.");
+          }
+          else {
+            console.warn("Unkown kind '%s'", kind);
+          }
         });
         $('#exportModal_importButton').click(function (e) {
-          try {
-            var id = $("#exportModal_dataDumpId").val()
-            ,   json = $("#exportModal_dataDump").val()
+          let id = $("#exportModal_dataDumpId").val()
+          ,   kind = $("#exportModal_dataDumpKind").val()
+          ;
+          if (kind == "tocht") {
+            let json = $("#exportModal_dataDump").val()
             ,   newDoc = JSON.parse(json)
             ;
-            var oldDoc = ddb.openDoc(id);
+            let oldDoc = ddb.openDoc(id);
             ddb.saveDoc(newDoc);
             if (oldDoc.name != newDoc.name) {
               ddb.rename(newDoc.name)
             }
           }
-          catch(ex) {
-            alert("Er is een fout opgetreden:\n\n" + ex);
-            console.dir(ex);
+          else if (kind == "courses") {
+            let csv_text = $("#exportModal_dataDump").val()
+            ,   model = initTochtModel(ddb.currentDoc())
+            ;
+            model.Groups.upsertWithCsv(csv_text);
+            ddb.saveDoc();
+            $('#exportModal').modal('hide');
+            self.uitgifteForm();
+            return;
           }
           $('#exportModal').modal('hide');
           self.mainForm();
@@ -578,6 +604,12 @@
                 self.uitgifteForm(key);
             }
         });
+        $("#cmd_save", container).click(function (e) {
+            e.preventDefault();
+            var key = $("#group_id").val2();
+            self.uitgifteForm();
+            self.clearAlert();
+        });
         $("#cmd_close", container).click(function (e) {
             e.preventDefault();
             var key = $("#group_id").val2();
@@ -609,6 +641,10 @@
     };
 
     $(function () {
+      Handlebars.registerHelper('json', function(data) {
+        return JSON.stringify(data);
+      });
+      
       controller.initialize();
       controller.mainForm();
     });
@@ -637,7 +673,7 @@
           <td>{{type}}</td>
           <td>
             <button type="button" class="btn btn-danger btn-xs cmd_delete" data-id="{{id}}"><span class="glyphicon glyphicon-remove"></span> Verwijderen</button>
-            <button type="button" class="btn btn-default btn-xs cmd_import_export" data-id="{{id}}" title="Import/export dialoog"  data-toggle="modal" data-target="#exportModal"><span class="glyphicon glyphicon-transfer"></span> Transfer</button>
+            <button type="button" class="btn btn-default btn-xs cmd_import_export" data-id="{{id}}" data-kind="tocht" title="Import/export dialoog"  data-toggle="modal" data-target="#exportModal"><span class="glyphicon glyphicon-transfer"></span> Transfer</button>
             <button type="button" class="btn btn-default btn-xs cmd_mail" data-id="{{id}}" title="Export naar e-mail"><span class="glyphicon glyphicon-envelope"></span></button>
           </td>
         </tr>
@@ -898,7 +934,11 @@
                   <span class="glyphicon glyphicon-refresh"></span>
                   Andere restaurants
               </button>
-            <button type="submit" class="btn btn-link" id="cmd_close" title="Print en sluit voucher">
+            <button type="submit" class="btn btn-default btn-xs" id="cmd_save" title="Sluit voucher">
+                Bewaren
+            </button>
+            <button type="submit" class="btn btn-default btn-xs" id="cmd_close" title="Print en sluit voucher">
+                <span class="glyphicon glyphicon-print"></span>
                 Afronden
             </button>
         </div>
@@ -921,10 +961,15 @@
               </li>
               {{/each}}
           </ul>
-        <button type="reset" class="btn btn-link niet-printen" id="cmd_reset">
-          <span class="glyphicon glyphicon-remove"></span>
-          Groepen weggooien
-        </button>
+          <span class="niet-printen">
+            <button type="button" class="btn btn-default btn-xs cmd_courses_transfer" data-id="{{id}}" data-kind="courses" title="Import/export dialoog"  data-toggle="modal" data-target="#exportModal">
+              <span class="glyphicon glyphicon-transfer"></span> CSV Transfer
+            </button>
+          <button type="reset" class="btn btn-link" id="cmd_reset">
+            <span class="glyphicon glyphicon-remove"></span>
+            Groepen weggooien
+          </button>
+        </span>
       </div>
       
       <div class="col-md-6">
@@ -969,7 +1014,7 @@
         {{> tickets this}}
       </body>
     </html>
-</script>
+  </script>
 
   <script type="text/template" id="tickets-template">
     {{#each tickets}}
@@ -979,8 +1024,11 @@
         <h3>{{name}}</h3>
         <p>
           <strong>{{label}}</strong><br>
-          <em>Groep</em>: {{../group.name}}<br>
-          <em>Aantal personen</em>: {{../group.nrPersons}}
+          {{#with ../group}}
+          <em>Groep</em>: {{name}}<br>
+          <em>Aantal personen</em>: {{nrPersons}}{{#if vegetarian}}<br>
+          <em>↳ waarvan vegetariërs</em>: {{nrVegetarians}} {{/if}}<br>
+          {{/with}}
         </p>
         <div class="footer">
           Coupon voor culinaire zwerftocht {{../../tocht.name}}, volgnummer {{../group.id}}.{{../group.rev}}

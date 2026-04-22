@@ -417,15 +417,21 @@ var initTochtModel = function (tochtData, initial) {
             Restaurants.recalculateCourses();
             return;
         },
-        addEntry: function (group) {
+        addEntry: function (group, issuedCourses) {
             var list = data.groups
-            ,   errorMessage;
+            ,   errorMessage
+            ;
             if (errorMessage = Groups.validate(group)) {
                 return errorMessage;
             }
             if (!group.id) group.id = nextId(list);
-            theFilter = data.maxDistance ? createRestaurantMaxDistanceFilter(data.maxDistance) : restaurantFilter;
-            group.issuedCourses = Restaurants.issueCourses(group, theFilter);
+            if (issuedCourses) {
+                group.issuedCourses = issuedCourses;
+            }
+            else {
+                theFilter = data.maxDistance ? createRestaurantMaxDistanceFilter(data.maxDistance) : restaurantFilter;
+                group.issuedCourses = Restaurants.issueCourses(group, theFilter);
+            }
             if (group.issuedCourses) {
                 // Now add group to list, and actually issue courses
                 list.push(group);
@@ -540,6 +546,66 @@ var initTochtModel = function (tochtData, initial) {
                 result += grps[i].nrPersons;
             }
             return result;
+        },
+        getGroupsAsCsv: function() {
+            const seperator = '\t'
+            ,     headers = 'id,rev,name,nrPersons,nrVegetarians,issuedCourses'.split(',')
+            ;
+            var res = [headers.join(seperator)]
+            ,   list = data.groups
+            ;
+            for (var i = 0; i < list.length; i++) {
+                var entry = list[i];
+                res.push([
+                    String(entry.id), String(entry.rev), entry.name,
+                    String(entry.nrPersons), String(entry.nrVegetarians || 0), 
+                    String(entry.issuedCourses)].join(seperator))
+            }
+            return res.join('\n');
+        },
+        upsertWithCsv: function(blob) {
+            const seperator = '\t'
+            ,     headers = 'id,rev,name,nrPersons,nrVegetarians,issuedCourses'.split(',')
+            let lines = blob.split('\n');
+            if (lines.length > 1) {
+                let firstLine = lines.shift();
+                let list = data.groups;
+                //console.info("firstLine [%s]", firstLine)
+                if (headers.join(seperator) == firstLine) {
+                    for (const line of lines) {
+                        const fields = line.split(seperator);
+                        if (fields[0]) {
+                            // update
+                            console.warn("Skipping update: [%s]", line);
+                        }
+                        else {
+                            //insert ("Registreren", alleen fouten skippen)
+                            if (fields[2]) {
+                                var group = Groups.getDefaultEntry(),
+                                    errorMessage;
+                                group.name = fields[2];
+                                group.nrPersons = +fields[3];
+                                group.vegetarian = +fields[4] > 0;
+                                group.nrVegetarians = +fields[4];
+                                issuedCourses = fields[5] ? fields[5].split(',') : null;
+      
+                                if (errorMessage = Groups.addEntry(group, issuedCourses)) {
+                                    console.error("upsertWithCsv: [%s]", errorMessage, group, issuedCourses)
+                                }
+                            }
+                            else {
+                                console.warn("Skipping insert without name: [%s]", line);
+                            }
+                        }
+                    }
+                }
+                else {
+                    console.error("Headers incorrect: [%s]", firstLine);
+                }
+            }
+            else {
+                console.warn("No lines to import");
+            }
         }
     };
 
